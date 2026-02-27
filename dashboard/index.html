@@ -538,6 +538,90 @@ footer{
 .health-kpi-err{color:var(--err)!important}
 .health-kpi-label{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:500}
 
+/* ── Overview view switcher ── */
+.ov-switcher{display:flex;gap:4px;margin-bottom:16px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:4px}
+.ov-tab{flex:1;padding:7px 10px;border-radius:7px;border:none;background:transparent;color:var(--muted);font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;transition:all .2s;white-space:nowrap}
+.ov-tab:hover{color:#fff;background:rgba(255,255,255,0.04)}
+.ov-tab.active{background:rgba(245,166,35,0.12);color:var(--accent);border:1px solid rgba(245,166,35,0.25)}
+.ov-view{display:none}
+.ov-view.active{display:block}
+
+/* ── Analytics view ── */
+.av-table{width:100%;border-collapse:collapse;font-size:11px}
+.av-table th{padding:7px 10px;text-align:left;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:600;border-bottom:1px solid var(--border);white-space:nowrap}
+.av-table th.r,.av-table td.r{text-align:right}
+.av-table td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:middle}
+.av-table tr:last-child td{border-bottom:none}
+.av-table tr:hover td{background:rgba(255,255,255,0.025)}
+.av-op{font-weight:600;color:#fff;font-size:11px}
+.av-chip{font-size:8px;font-weight:700;letter-spacing:.5px;padding:2px 6px;border-radius:4px;margin-left:6px;text-transform:uppercase;vertical-align:middle}
+.av-lat{font-variant-numeric:tabular-nums;font-weight:600}
+.av-err{font-variant-numeric:tabular-nums}
+.av-bar{display:flex;align-items:center;gap:6px}
+.av-bar-track{flex:1;height:3px;background:rgba(255,255,255,0.08);border-radius:2px;min-width:60px}
+.av-bar-fill{height:3px;border-radius:2px;transition:width .5s}
+.av-stat-strip{display:flex;gap:12px;margin-bottom:14px}
+.av-stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 18px;flex:1;display:flex;flex-direction:column;gap:4px}
+.av-stat-val{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;color:#fff}
+.av-stat-label{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:500}
+.av-stat-delta{font-size:10px;font-weight:700}
+.av-stat-delta.up{color:var(--err)}.av-stat-delta.down{color:#4ade80}.av-stat-delta.flat{color:var(--muted)}
+
+/* ── Sparklines view ── */
+.sp-grid{display:flex;flex-direction:column;gap:10px}
+.sp-row{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:20px}
+.sp-meta{min-width:120px}
+.sp-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:4px}
+.sp-val{font-size:32px;font-weight:800;font-variant-numeric:tabular-nums;color:#fff;line-height:1}
+.sp-delta{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-top:6px}
+.sp-delta.up{background:rgba(232,83,58,0.12);color:var(--err)}
+.sp-delta.down{background:rgba(74,222,128,0.1);color:#4ade80}
+.sp-delta.flat{background:rgba(255,255,255,0.05);color:var(--muted)}
+.sp-chart{flex:1;min-width:0}
+.sp-minmax{min-width:80px;text-align:right}
+.sp-min,.sp-max{font-size:9px;font-variant-numeric:tabular-nums;color:var(--muted)}
+.sp-max{color:rgba(255,255,255,0.4);margin-bottom:4px}
+
+/* ── Status codes view ── */
+.sc-layout{display:flex;gap:16px;align-items:flex-start;margin-bottom:16px}
+.sc-donut-wrap{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;display:flex;flex-direction:column;align-items:center;gap:12px;min-width:240px}
+.sc-donut-title{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:600}
+.sc-legend{display:flex;flex-direction:column;gap:8px;width:100%}
+.sc-legend-row{display:flex;align-items:center;gap:8px;font-size:11px}
+.sc-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sc-legend-label{flex:1;color:rgba(255,255,255,0.6)}
+.sc-legend-val{font-weight:700;font-variant-numeric:tabular-nums;color:#fff}
+.sc-legend-pct{font-size:9px;color:var(--muted);min-width:32px;text-align:right}
+.sc-right{flex:1;display:flex;flex-direction:column;gap:10px}
+.sc-stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.sc-stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.sc-stat-val{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;color:#fff;margin-bottom:4px}
+.sc-stat-label{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:500}
+.sc-timeline{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.sc-timeline-title{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:10px}
+
+/* ── Top offenders view ── */
+.to-table{width:100%;border-collapse:collapse;font-size:11px}
+.to-table th{padding:7px 12px;text-align:left;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:600;border-bottom:1px solid var(--border);white-space:nowrap}
+.to-table th.r,.to-table td.r{text-align:right}
+.to-table td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:middle}
+.to-table tr:last-child td{border-bottom:none}
+.to-table tr:hover td{background:rgba(255,255,255,0.025)}
+.to-rank{font-size:11px;font-weight:800;color:var(--muted);min-width:24px;display:inline-block;text-align:center}
+.to-rank.gold{color:#F5A623}.to-rank.silver{color:#aaa}.to-rank.bronze{color:#cd7f32}
+.to-op{font-weight:600;color:#fff}
+.to-badge{font-size:8px;font-weight:800;letter-spacing:.5px;padding:3px 8px;border-radius:4px;text-transform:uppercase}
+.to-badge.pass{background:rgba(74,222,128,0.1);color:#4ade80;border:1px solid rgba(74,222,128,0.2)}
+.to-badge.fail{background:rgba(232,83,58,0.1);color:var(--err);border:1px solid rgba(232,83,58,0.2)}
+.to-p95-wrap{display:flex;align-items:center;gap:8px}
+.to-p95-val{font-weight:700;font-variant-numeric:tabular-nums;min-width:64px}
+.to-p95-track{flex:1;height:4px;background:rgba(255,255,255,0.07);border-radius:2px;min-width:80px}
+.to-p95-fill{height:4px;border-radius:2px;transition:width .5s}
+.to-summary{display:flex;gap:12px;margin-bottom:14px}
+.to-summary-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px;flex:1;display:flex;flex-direction:column;gap:3px}
+.to-summary-val{font-size:18px;font-weight:800;font-variant-numeric:tabular-nums;color:#fff}
+.to-summary-label{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:500}
+
 /* toast container */
 #toastContainer{position:fixed;bottom:60px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
 </style>
@@ -653,6 +737,18 @@ footer{
       <div class="health-kpi-label">Error Rate</div>
     </div>
   </div>
+
+  <!-- View Switcher -->
+  <div class="ov-switcher">
+    <button class="ov-tab active" onclick="switchOvView('default',this)">Overview</button>
+    <button class="ov-tab" onclick="switchOvView('analytics',this)">Analytics</button>
+    <button class="ov-tab" onclick="switchOvView('sparklines',this)">Sparklines</button>
+    <button class="ov-tab" onclick="switchOvView('status',this)">Status Codes</button>
+    <button class="ov-tab" onclick="switchOvView('offenders',this)">Top Offenders</button>
+  </div>
+
+  <!-- ── VIEW: Default ── -->
+  <div class="ov-view active" id="ov-default">
 
   <!-- Row 1: Core -->
   <div class="section-divider">Core</div>
@@ -888,7 +984,115 @@ footer{
     <div class="check-row ok" id="tRow5"><div class="check-icon"></div><div class="check-name">http_req_duration p(90) &lt; 3 000 ms</div><div class="check-val" id="tV5">—</div></div>
   </div>
 
-</div>
+  </div><!-- /ov-default -->
+
+  <!-- ── VIEW: Analytics ── -->
+  <div class="ov-view" id="ov-analytics">
+    <div class="av-stat-strip">
+      <div class="av-stat"><div class="av-stat-val" id="av-totalReqs">—</div><div class="av-stat-label">Total Requests</div><div class="av-stat-delta flat" id="av-rps">—</div></div>
+      <div class="av-stat"><div class="av-stat-val" id="av-p95">—</div><div class="av-stat-label">p95 Latency</div><div class="av-stat-delta flat" id="av-p95delta">—</div></div>
+      <div class="av-stat"><div class="av-stat-val" id="av-errRate">—</div><div class="av-stat-label">Error Rate</div><div class="av-stat-delta flat" id="av-errdelta">—</div></div>
+      <div class="av-stat"><div class="av-stat-val" id="av-ops">—</div><div class="av-stat-label">Active Endpoints</div><div class="av-stat-delta flat" id="av-opsdelta">&nbsp;</div></div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden">
+      <table class="av-table">
+        <thead><tr>
+          <th>Endpoint</th>
+          <th class="r">Reqs</th>
+          <th class="r">RPS</th>
+          <th class="r">Avg</th>
+          <th class="r">p90</th>
+          <th class="r" style="min-width:140px">p95 (bar)</th>
+          <th class="r">Err%</th>
+          <th>Trend</th>
+        </tr></thead>
+        <tbody id="avBody"><tr><td colspan="8" style="text-align:center;padding:24px;color:var(--muted);font-size:10px">Waiting for endpoint data…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── VIEW: Sparklines ── -->
+  <div class="ov-view" id="ov-sparklines">
+    <div class="sp-grid" id="spGrid">
+      <!-- rows injected by JS -->
+      <div class="sp-row" id="sp-rps">
+        <div class="sp-meta"><div class="sp-label">Requests / sec</div><div class="sp-val" id="sp-rps-val">—</div><div class="sp-delta flat" id="sp-rps-delta">—</div></div>
+        <div class="sp-chart"><svg id="sp-rps-svg" width="100%" height="56" preserveAspectRatio="none"></svg></div>
+        <div class="sp-minmax"><div class="sp-max" id="sp-rps-max">max —</div><div class="sp-min" id="sp-rps-min">min —</div></div>
+      </div>
+      <div class="sp-row" id="sp-p95">
+        <div class="sp-meta"><div class="sp-label">p95 Latency (ms)</div><div class="sp-val" id="sp-p95-val">—</div><div class="sp-delta flat" id="sp-p95-delta">—</div></div>
+        <div class="sp-chart"><svg id="sp-p95-svg" width="100%" height="56" preserveAspectRatio="none"></svg></div>
+        <div class="sp-minmax"><div class="sp-max" id="sp-p95-max">max —</div><div class="sp-min" id="sp-p95-min">min —</div></div>
+      </div>
+      <div class="sp-row" id="sp-vu">
+        <div class="sp-meta"><div class="sp-label">Active VUs</div><div class="sp-val" id="sp-vu-val">—</div><div class="sp-delta flat" id="sp-vu-delta">—</div></div>
+        <div class="sp-chart"><svg id="sp-vu-svg" width="100%" height="56" preserveAspectRatio="none"></svg></div>
+        <div class="sp-minmax"><div class="sp-max" id="sp-vu-max">max —</div><div class="sp-min" id="sp-vu-min">min —</div></div>
+      </div>
+      <div class="sp-row" id="sp-p99">
+        <div class="sp-meta"><div class="sp-label">p99 Latency (ms)</div><div class="sp-val" id="sp-p99-val">—</div><div class="sp-delta flat" id="sp-p99-delta">—</div></div>
+        <div class="sp-chart"><svg id="sp-p99-svg" width="100%" height="56" preserveAspectRatio="none"></svg></div>
+        <div class="sp-minmax"><div class="sp-max" id="sp-p99-max">max —</div><div class="sp-min" id="sp-p99-min">min —</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── VIEW: Status Codes ── -->
+  <div class="ov-view" id="ov-status">
+    <div class="sc-layout">
+      <div class="sc-donut-wrap">
+        <div class="sc-donut-title">HTTP Status Distribution</div>
+        <canvas id="scDonut" width="180" height="180"></canvas>
+        <div class="sc-legend">
+          <div class="sc-legend-row"><div class="sc-dot" style="background:#4ade80"></div><span class="sc-legend-label">2xx Success</span><span class="sc-legend-val" id="sc-2xx-n">—</span><span class="sc-legend-pct" id="sc-2xx-pct">—</span></div>
+          <div class="sc-legend-row"><div class="sc-dot" style="background:#60a5fa"></div><span class="sc-legend-label">3xx Redirect</span><span class="sc-legend-val" id="sc-3xx-n">—</span><span class="sc-legend-pct" id="sc-3xx-pct">—</span></div>
+          <div class="sc-legend-row"><div class="sc-dot" style="background:#facc15"></div><span class="sc-legend-label">4xx Client Err</span><span class="sc-legend-val" id="sc-4xx-n">—</span><span class="sc-legend-pct" id="sc-4xx-pct">—</span></div>
+          <div class="sc-legend-row"><div class="sc-dot" style="background:#f87171"></div><span class="sc-legend-label">5xx Server Err</span><span class="sc-legend-val" id="sc-5xx-n">—</span><span class="sc-legend-pct" id="sc-5xx-pct">—</span></div>
+        </div>
+      </div>
+      <div class="sc-right">
+        <div class="sc-stat-grid">
+          <div class="sc-stat"><div class="sc-stat-val" id="sc-total">—</div><div class="sc-stat-label">Total Requests</div></div>
+          <div class="sc-stat"><div class="sc-stat-val" id="sc-rps">—</div><div class="sc-stat-label">Req / sec</div></div>
+          <div class="sc-stat"><div class="sc-stat-val" id="sc-p95">—</div><div class="sc-stat-label">p95 Latency</div></div>
+          <div class="sc-stat"><div class="sc-stat-val" id="sc-avg">—</div><div class="sc-stat-label">Avg Latency</div></div>
+          <div class="sc-stat"><div class="sc-stat-val" id="sc-ttfb">—</div><div class="sc-stat-label">TTFB (avg)</div></div>
+          <div class="sc-stat"><div class="sc-stat-val" id="sc-err">—</div><div class="sc-stat-label">Error Rate</div></div>
+        </div>
+        <div class="sc-timeline">
+          <div class="sc-timeline-title">Error Rate Over Time</div>
+          <canvas id="scErrChart" height="64"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── VIEW: Top Offenders ── -->
+  <div class="ov-view" id="ov-offenders">
+    <div class="to-summary" id="toSummary">
+      <div class="to-summary-card"><div class="to-summary-val" id="to-endpoints">—</div><div class="to-summary-label">Endpoints Tracked</div></div>
+      <div class="to-summary-card"><div class="to-summary-val" id="to-slowest">—</div><div class="to-summary-label">Slowest p95</div></div>
+      <div class="to-summary-card"><div class="to-summary-val" id="to-passing">—</div><div class="to-summary-label">Passing (&lt;500ms)</div></div>
+      <div class="to-summary-card"><div class="to-summary-val" id="to-failing">—</div><div class="to-summary-label">Failing (&gt;500ms)</div></div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden">
+      <table class="to-table">
+        <thead><tr>
+          <th style="width:36px">#</th>
+          <th>Endpoint</th>
+          <th style="min-width:160px">p95 vs 500ms threshold</th>
+          <th class="r">Reqs</th>
+          <th class="r">Avg</th>
+          <th class="r">Err%</th>
+          <th>Status</th>
+        </tr></thead>
+        <tbody id="toBody"><tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted);font-size:10px">Waiting for endpoint data…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /pane-overview -->
 
 <!-- ══ ENDPOINTS ═════════════════════════════════════════════════════════════ -->
 <div id="pane-endpoints" class="pane">
@@ -1484,6 +1688,172 @@ window.updateGauge=function(p95,rps,vus,run){
 window.updateOrb=window.updateGauge;
 
 /* ══════════════════════════════════════════════════════════════════
+   OVERVIEW VIEW SWITCHER
+   ══════════════════════════════════════════════════════════════════ */
+let _ovView='default';
+function switchOvView(name,btn){
+  _ovView=name;
+  document.querySelectorAll('.ov-tab').forEach(t=>t.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  document.querySelectorAll('.ov-view').forEach(v=>v.classList.remove('active'));
+  const el=document.getElementById('ov-'+name);if(el)el.classList.add('active');
+}
+
+/* ── Analytics view renderer ── */
+let _avBaseReqs=null,_avBaseP95=null,_avBaseErr=null;
+let _avLastOps=[];
+function renderAnalyticsView(ops,totalReqs,p95Ms,failRate,rps){
+  // When called from renderMetrics (no ops), update strip only and re-render with cached ops
+  const useOps=ops.length?ops:_avLastOps;
+  if(ops.length)_avLastOps=ops;
+  // Summary strip — only update if we have real values
+  if(totalReqs>0){
+    if(_avBaseReqs===null){_avBaseReqs=totalReqs;_avBaseP95=p95Ms;_avBaseErr=failRate;}
+    const fmtP95=v=>v>0?(v<1000?Math.round(v)+' ms':((v/1000).toFixed(1))+' s'):'—';
+    set('av-totalReqs',fmt(totalReqs));
+    set('av-rps',rps>0?rps.toFixed(1)+' /s':'—');
+    set('av-p95',fmtP95(p95Ms));
+    set('av-errRate',failRate>0?(failRate*100).toFixed(1)+'%':'—');
+    const p95d=_avBaseP95&&p95Ms>0?p95Ms-_avBaseP95:null;
+    const p95dEl=document.getElementById('av-p95delta');
+    if(p95dEl&&p95d!==null){p95dEl.textContent=(p95d>0?'↑ +':p95d<0?'↓ ':'')+fmtP95(Math.abs(p95d));p95dEl.className='av-stat-delta '+(p95d>0?'up':p95d<0?'down':'flat');}
+  }
+  const activeOps=useOps.filter(r=>r.reqs>0).length;
+  if(activeOps)set('av-ops',activeOps);
+  // Table
+  if(!useOps.length){document.getElementById('avBody').innerHTML=`<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--muted);font-size:10px">No endpoint data yet…</td></tr>`;return;}
+  const mxP95=Math.max(...useOps.map(r=>r.p95),1);
+  document.getElementById('avBody').innerHTML=useOps.map(r=>{
+    const c=groupColor(r.group);
+    const latC=latClr(r.p95);
+    const errPct=r.reqs>0?((r.errs/r.reqs)*100).toFixed(1):'0.0';
+    const bPct=(r.p95/mxP95*100).toFixed(1);
+    const spark=miniSpark(opTrends[r.op]??[],latC);
+    return`<tr>
+      <td><span class="av-op">${r.op}</span><span class="av-chip" style="color:${c};background:${c}18;border:1px solid ${c}33">${r.group}</span></td>
+      <td class="r" style="color:rgba(255,255,255,0.7)">${fmt(r.reqs)}</td>
+      <td class="r" style="color:var(--muted)">${r.reqs>0&&S.rps.d.length>1?(r.reqs/Math.max(1,S.rps.d.length)).toFixed(1):'—'}</td>
+      <td class="r av-lat" style="color:${latClr(r.avg)}">${fmtMs(r.avg)}</td>
+      <td class="r av-lat" style="color:${latClr(r.p90)}">${fmtMs(r.p90)}</td>
+      <td><div class="av-bar"><span class="av-lat" style="color:${latC};min-width:60px;text-align:right">${fmtMs(r.p95)}</span><div class="av-bar-track"><div class="av-bar-fill" style="width:${bPct}%;background:${latC}"></div></div></div></td>
+      <td class="r av-err" style="color:${parseFloat(errPct)>0?'var(--err)':'var(--muted)'}">${errPct}%</td>
+      <td>${spark}</td>
+    </tr>`;
+  }).join('');
+}
+
+/* ── Sparklines view renderer ── */
+const _spInit={rps:null,p95:null,vu:null,p99:null};
+function renderSparklinesView(){
+  function drawSparkSvg(svgId,data,color){
+    const svg=document.getElementById(svgId);if(!svg||data.length<2)return;
+    const W=svg.clientWidth||svg.parentElement?.clientWidth||400,H=56;
+    const mn=Math.min(...data),mx=Math.max(...data,mn+1);
+    const pts=data.map((v,i)=>`${(i/(data.length-1))*W},${H-((v-mn)/(mx-mn))*(H-4)-2}`).join(' ');
+    // gradient fill
+    const id='spg'+svgId;
+    svg.innerHTML=`<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${color}" stop-opacity=".25"/><stop offset="100%" stop-color="${color}" stop-opacity="0"/></linearGradient></defs>
+      <polygon points="0,${H} ${pts} ${W},${H}" fill="url(#${id})"/>
+      <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`;
+  }
+  function setSpRow(key,data,color,unit,fmt2){
+    if(!data||!data.length)return;
+    const cur=data[data.length-1];
+    const first=_spInit[key]===null?(_spInit[key]=cur,cur):_spInit[key];
+    const delta=cur-first;
+    const valEl=document.getElementById('sp-'+key+'-val');
+    const dEl=document.getElementById('sp-'+key+'-delta');
+    const maxEl=document.getElementById('sp-'+key+'-max');
+    const minEl=document.getElementById('sp-'+key+'-min');
+    if(valEl)valEl.textContent=fmt2(cur);
+    if(dEl){const sign=delta>0?'↑ +':delta<0?'↓ ':'';dEl.textContent=sign+fmt2(Math.abs(delta));dEl.className='sp-delta '+(delta>0.5?'up':delta<-0.5?'down':'flat');}
+    if(maxEl)maxEl.textContent='max '+fmt2(Math.max(...data));
+    if(minEl)minEl.textContent='min '+fmt2(Math.min(...data));
+    drawSparkSvg('sp-'+key+'-svg',data,color);
+  }
+  const fmtMs2=v=>v<1000?Math.round(v)+'ms':((v/1000).toFixed(1))+'s';
+  setSpRow('rps',  S.rps.d, 'var(--accent)', '/s',  v=>v.toFixed(1));
+  setSpRow('p95',  S.p95.d, '#60a5fa',       'ms',  fmtMs2);
+  setSpRow('vu',   S.vu.d,  '#a78bfa',       '',    v=>Math.round(v));
+  setSpRow('p99',  S.p99.d, '#f87171',       'ms',  fmtMs2);
+}
+
+/* ── Status codes view renderer ── */
+let _scChart=null,_scErrChart=null;
+const _scErrHistory=[];
+function renderStatusView(s2xx,s4xx,s5xx,totalReqs,rps,p95Ms,avgMs,ttfbMs,failRate){
+  const s3xx=Math.max(0,totalReqs-s2xx-s4xx-s5xx);
+  const tot=s2xx+s3xx+s4xx+s5xx||1;
+  const pct=n=>tot>0?(n/tot*100).toFixed(1)+'%':'0%';
+  set('sc-2xx-n',fmt(s2xx));set('sc-2xx-pct',pct(s2xx));
+  set('sc-3xx-n',fmt(s3xx));set('sc-3xx-pct',pct(s3xx));
+  set('sc-4xx-n',fmt(s4xx));set('sc-4xx-pct',pct(s4xx));
+  set('sc-5xx-n',fmt(s5xx));set('sc-5xx-pct',pct(s5xx));
+  set('sc-total',fmt(totalReqs));
+  set('sc-rps',rps>0?rps.toFixed(1)+'/s':'—');
+  set('sc-p95',p95Ms>0?(p95Ms<1000?Math.round(p95Ms)+' ms':((p95Ms/1000).toFixed(1))+' s'):'—');
+  set('sc-avg',avgMs>0?Math.round(avgMs)+' ms':'—');
+  set('sc-ttfb',ttfbMs>0?Math.round(ttfbMs)+' ms':'—');
+  set('sc-err',failRate>0?(failRate*100).toFixed(1)+'%':'0%');
+  // Donut chart
+  const cv=document.getElementById('scDonut');if(!cv)return;
+  const data=[s2xx,s3xx,s4xx,s5xx];
+  if(!_scChart){
+    _scChart=new Chart(cv,{type:'doughnut',data:{labels:['2xx','3xx','4xx','5xx'],datasets:[{data,backgroundColor:['#4ade80','#60a5fa','#facc15','#f87171'],borderColor:'#14171C',borderWidth:3,hoverOffset:4}]},options:{responsive:false,cutout:'70%',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${fmt(ctx.raw)} (${pct(ctx.raw)})`}}}}});
+  } else {
+    _scChart.data.datasets[0].data=data;_scChart.update('none');
+  }
+  // Error rate history sparkline
+  _scErrHistory.push(failRate*100);if(_scErrHistory.length>40)_scErrHistory.shift();
+  const ecv=document.getElementById('scErrChart');if(!ecv)return;
+  if(!_scErrChart){
+    _scErrChart=new Chart(ecv,{type:'line',data:{labels:_scErrHistory.map((_,i)=>i),datasets:[{data:_scErrHistory,borderColor:'#f87171',backgroundColor:'rgba(248,113,113,0.1)',borderWidth:1.5,pointRadius:0,fill:true,tension:0.4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{enabled:false}},scales:{x:{display:false},y:{display:true,min:0,ticks:{color:'rgba(255,255,255,0.2)',font:{size:8}},grid:{color:'rgba(255,255,255,0.04)'}}}}});
+  } else {
+    _scErrChart.data.labels=_scErrHistory.map((_,i)=>i);
+    _scErrChart.data.datasets[0].data=[..._scErrHistory];
+    _scErrChart.update('none');
+  }
+}
+
+/* ── Top offenders view renderer ── */
+const TO_THRESHOLD=500;
+function renderOffendersView(ops){
+  if(!ops.length){document.getElementById('toBody').innerHTML=`<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted);font-size:10px">No endpoint data yet…</td></tr>`;return;}
+  const sorted=ops.filter(r=>r.reqs>0).sort((a,b)=>b.p95-a.p95);
+  const passing=sorted.filter(r=>r.p95<=TO_THRESHOLD).length;
+  const failing=sorted.filter(r=>r.p95>TO_THRESHOLD).length;
+  set('to-endpoints',sorted.length);
+  set('to-slowest',sorted[0]?fmtMs(sorted[0].p95)+'ms':'—');
+  set('to-passing',passing);
+  set('to-failing',failing);
+  const mxP95=Math.max(sorted[0]?.p95||0,TO_THRESHOLD,1);
+  const rankClass=i=>i===0?'gold':i===1?'silver':i===2?'bronze':'';
+  document.getElementById('toBody').innerHTML=sorted.map((r,i)=>{
+    const c=groupColor(r.group);
+    const latC=latClr(r.p95);
+    const errPct=r.reqs>0?((r.errs/r.reqs)*100).toFixed(1):'0.0';
+    const bPct=Math.min(100,(r.p95/mxP95*100)).toFixed(1);
+    const pass=r.p95<=TO_THRESHOLD;
+    const threshPct=Math.min(100,(TO_THRESHOLD/mxP95*100)).toFixed(1);
+    return`<tr>
+      <td><span class="to-rank ${rankClass(i)}">${i+1}</span></td>
+      <td><span class="to-op">${r.op}</span> <span class="av-chip" style="color:${c};background:${c}18;border:1px solid ${c}33">${r.group}</span></td>
+      <td><div class="to-p95-wrap">
+        <span class="to-p95-val" style="color:${latC}">${fmtMs(r.p95)} ms</span>
+        <div class="to-p95-track" style="position:relative">
+          <div style="position:absolute;top:0;left:0;width:${threshPct}%;height:100%;border-right:1px dashed rgba(255,255,255,0.2)"></div>
+          <div class="to-p95-fill" style="width:${bPct}%;background:${latC}"></div>
+        </div>
+      </div></td>
+      <td class="r" style="color:rgba(255,255,255,0.6)">${fmt(r.reqs)}</td>
+      <td class="r" style="color:${latClr(r.avg)}">${fmtMs(r.avg)} ms</td>
+      <td class="r" style="color:${parseFloat(errPct)>0?'var(--err)':'var(--muted)'}">${errPct}%</td>
+      <td><span class="to-badge ${pass?'pass':'fail'}">${pass?'PASS':'FAIL'}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+/* ══════════════════════════════════════════════════════════════════
    TAB ROUTING
    ══════════════════════════════════════════════════════════════════ */
 const TAB_NAMES=['run','overview','endpoints','http','log','history','discover'];
@@ -1814,6 +2184,11 @@ function renderMetrics(data){
   const ee=document.getElementById('herErrVal');
   if(ee){ee.textContent=failRate>0?(failRate*100).toFixed(1)+'%':'—';ee.style.color=failRate>0.01?'var(--err)':'inherit';}
   if(window.updateGauge)updateGauge(p95Ms, S.rps.d.slice(-1)[0]??0, S.vu.d.slice(-1)[0]??0, (S.vu.d.slice(-1)[0]??0)>0||(S.rps.d.slice(-1)[0]??0)>0);
+  // Update switchable views
+  const liveRps2=S.rps.d.slice(-1)[0]??0;
+  renderAnalyticsView([],totalReqs,p95Ms,failRate,liveRps2);
+  renderSparklinesView();
+  renderStatusView(s2xx,s4xx,s5xx,totalReqs,liveRps2,p95Ms,avgMs,+(wait.avg??0),failRate);
 }
 
 function wf(key,val,max){
@@ -1899,6 +2274,10 @@ function renderEndpointsTab(data){
   fil.sort((a,b)=>{const ga=gord.indexOf(a.group),gb=gord.indexOf(b.group);return ga!==gb?ga-gb:a.op.localeCompare(b.op)});
 
   renderSlowestOps(ops);
+  // Update analytics + offenders views
+  const _liveRps=S.rps.d.slice(-1)[0]??0;
+  renderAnalyticsView(ops,0,0,0,_liveRps);
+  renderOffendersView(ops);
   if(!fil.length){document.getElementById('opsBody').innerHTML=`<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--muted)">No op data yet…</td></tr>`;return}
   document.getElementById('opsBody').innerHTML=fil.map(r=>{
     const c=groupColor(r.group),bPct=mxP>0?Math.min(100,(r.p95/mxP)*100):0,bClr=latClr(r.p95);
