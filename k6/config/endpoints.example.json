@@ -1,0 +1,196 @@
+{
+  "_comment": "Example endpoint configs for different service types. Copy the relevant sections into endpoints.json.",
+
+  "_examples": {
+
+    "rest_api": {
+      "_comment": "REST API example — GET, POST, authenticated with Bearer token",
+      "service": "My REST API",
+      "endpoints": [
+        {
+          "name": "ListUsers",
+          "group": "users",
+          "type": "rest",
+          "method": "GET",
+          "path": "/api/v1/users",
+          "weight": 3,
+          "headers": { "Accept": "application/json" },
+          "checks": { "status": 200, "body_path": "data" }
+        },
+        {
+          "name": "GetUser",
+          "group": "users",
+          "type": "rest",
+          "method": "GET",
+          "path": "/api/v1/users/1",
+          "weight": 2,
+          "checks": { "status": 200 }
+        },
+        {
+          "name": "SearchProducts",
+          "group": "products",
+          "type": "rest",
+          "method": "POST",
+          "path": "/api/v1/products/search",
+          "weight": 2,
+          "body": { "query": "laptop", "page": 1, "limit": 20 },
+          "checks": { "status": 200, "body_path": "results" }
+        },
+        {
+          "name": "GetProduct",
+          "group": "products",
+          "type": "rest",
+          "method": "GET",
+          "path": "/api/v1/products/42",
+          "weight": 1,
+          "checks": { "status": 200 }
+        },
+        {
+          "name": "GetHealth",
+          "group": "infra",
+          "type": "rest",
+          "method": "GET",
+          "path": "/health",
+          "weight": 1,
+          "checks": { "status": 200 }
+        }
+      ],
+      "setup": [],
+      "teardown": []
+    },
+
+    "graphql_api": {
+      "_comment": "Pure GraphQL API example",
+      "service": "My GraphQL API",
+      "endpoints": [
+        {
+          "name": "ListItems",
+          "group": "items",
+          "type": "graphql",
+          "path": "/graphql",
+          "weight": 3,
+          "query": "query ListItems($limit: Int) { items(limit: $limit) { id name price } }",
+          "variables": { "limit": 50 },
+          "checks": { "status": 200, "no_graphql_errors": true, "has_data": true }
+        },
+        {
+          "name": "GetItem",
+          "group": "items",
+          "type": "graphql",
+          "path": "/graphql",
+          "weight": 2,
+          "requires": ["itemId"],
+          "query": "query GetItem($id: ID!) { item(id: $id) { id name description price } }",
+          "variables": {},
+          "variables_from_data": { "id": "itemId" },
+          "checks": { "status": 200, "no_graphql_errors": true, "has_data": true }
+        }
+      ],
+      "setup": [
+        {
+          "name": "CreateItem",
+          "group": "setup",
+          "type": "graphql",
+          "path": "/graphql",
+          "query": "mutation CreateItem($input: ItemInput!) { createItem(input: $input) { id } }",
+          "variables": { "input": { "name": "k6-test-item", "price": 9.99 } },
+          "result_key": "itemId",
+          "result_path": "data.createItem.id"
+        }
+      ],
+      "teardown": [
+        {
+          "name": "DeleteItem",
+          "group": "teardown",
+          "type": "graphql",
+          "path": "/graphql",
+          "requires": ["itemId"],
+          "query": "mutation DeleteItem($id: ID!) { deleteItem(id: $id) { id } }",
+          "variables_from_data": { "id": "itemId" }
+        }
+      ]
+    },
+
+    "api_key_auth": {
+      "_comment": "API key authentication — set AUTH_API_KEY and optionally AUTH_API_KEY_HEADER",
+      "service": "API Key Protected Service",
+      "endpoints": [
+        {
+          "name": "GetData",
+          "group": "data",
+          "type": "rest",
+          "method": "GET",
+          "path": "/api/data",
+          "weight": 1,
+          "checks": { "status": 200 }
+        }
+      ],
+      "setup": [],
+      "teardown": []
+    },
+
+    "no_auth_public_api": {
+      "_comment": "Public API with no authentication — set AUTH_NONE=true",
+      "service": "Public API",
+      "endpoints": [
+        {
+          "name": "GetStatus",
+          "group": "status",
+          "type": "rest",
+          "method": "GET",
+          "path": "/status",
+          "weight": 1,
+          "checks": { "status": 200 }
+        },
+        {
+          "name": "GetVersion",
+          "group": "status",
+          "type": "rest",
+          "method": "GET",
+          "path": "/version",
+          "weight": 1,
+          "checks": { "status": 200 }
+        }
+      ],
+      "setup": [],
+      "teardown": []
+    },
+
+    "mixed_rest_graphql": {
+      "_comment": "Mixed REST + GraphQL — common in APIs that have both",
+      "service": "Mixed API",
+      "endpoints": [
+        {
+          "name": "HealthCheck",
+          "group": "infra",
+          "type": "rest",
+          "method": "GET",
+          "path": "/health",
+          "weight": 1,
+          "checks": { "status": 200 }
+        },
+        {
+          "name": "GetProfile",
+          "group": "users",
+          "type": "rest",
+          "method": "GET",
+          "path": "/api/me",
+          "weight": 2,
+          "checks": { "status": 200 }
+        },
+        {
+          "name": "QueryFeed",
+          "group": "feed",
+          "type": "graphql",
+          "path": "/graphql",
+          "weight": 3,
+          "query": "query GetFeed($limit: Int) { feed(limit: $limit) { id title } }",
+          "variables": { "limit": 20 },
+          "checks": { "status": 200, "no_graphql_errors": true, "has_data": true }
+        }
+      ],
+      "setup": [],
+      "teardown": []
+    }
+  }
+}

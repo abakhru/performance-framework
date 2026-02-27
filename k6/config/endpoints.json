@@ -1,0 +1,225 @@
+{
+  "_comment": "Edit this file to target any HTTP service. See k6/config/endpoints.example.json for more patterns.",
+  "service": "Matrix Strike48",
+  "endpoints": [
+    {
+      "name": "ListAllAgents",
+      "group": "agents",
+      "type": "graphql",
+      "path": "/api/v1alpha",
+      "weight": 2,
+      "query": "query ListAllAgents { templateAgents: listAgents(first: 1000, filter: {isTemplate: true}) { edges { node { id name description isPublic isTemplate isEnabled systemMessage tools knowledgeBaseIds } } pageInfo { hasNextPage } } customAgents: listAgents(first: 1000) { edges { node { id name description isPublic isTemplate isEnabled systemMessage tools knowledgeBaseIds } } pageInfo { hasNextPage } } }",
+      "variables": {},
+      "checks": { "status": 200, "no_graphql_errors": true, "has_data": true }
+    },
+    {
+      "name": "GetTools",
+      "group": "agents",
+      "type": "graphql",
+      "path": "/api/v1alpha",
+      "weight": 1,
+      "query": "query GetTools { tools { name description enabled category } }",
+      "variables": {},
+      "checks": { "status": 200, "no_graphql_errors": true, "has_data": true }
+    },
+    {
+      "name": "ListJobConfigs",
+      "group": "jobs",
+      "type": "graphql",
+      "path": "/api/v1alpha",
+      "weight": 1,
+      "query": "query ListJobConfigs($agentId: ID, $limit: Int) { listJobConfigs(agentId: $agentId, limit: $limit) { id name description enabled cronExpr agent { id name } } }",
+      "variables": { "limit": 1000 },
+      "variables_from_data": { "agentId": "agentId" },
+      "checks": { "status": 200, "no_graphql_errors": true, "has_data": true }
+    },
+    {
+      "name": "ListAllJobInstances",
+      "group": "jobs",
+      "type": "graphql",
+      "path": "/api/v1alpha",
+      "weight": 1,
+      "query": "query ListAllJobInstances($agentId: ID, $limit: Int) { listAllJobInstances(agentId: $agentId, limit: $limit) { id startedAt updatedAt status errorMessage agent { id name } } }",
+      "variables": { "limit": 100 },
+      "variables_from_data": { "agentId": "agentId" },
+      "checks": { "status": 200, "no_graphql_errors": true, "has_data": true }
+    },
+    {
+      "name": "GetKnowledgeBases",
+      "group": "knowledge",
+      "type": "graphql",
+      "path": "/api/v1alpha",
+      "weight": 2,
+      "query": "query GetKnowledgeBases($filter: KnowledgeBaseFilterInput) { knowledgeBases(filter: $filter) { id name description status documentCount insertedAt updatedAt } }",
+      "variables": {},
+      "checks": { "status": 200, "no_graphql_errors": true, "has_data": true }
+    },
+    {
+      "name": "SearchKnowledgeBases",
+      "group": "knowledge",
+      "type": "graphql",
+      "path": "/api/v1alpha",
+      "weight": 1,
+      "query": "query GetKnowledgeBases($filter: KnowledgeBaseFilterInput) { knowledgeBases(filter: $filter) { id name description status documentCount } }",
+      "variables": { "filter": { "nameContains": "perf-test" } },
+      "checks": { "status": 200, "no_graphql_errors": true, "has_data": true }
+    },
+    {
+      "name": "QueryKnowledgeBase",
+      "group": "knowledge",
+      "type": "graphql",
+      "path": "/api/v1alpha",
+      "weight": 2,
+      "requires": ["knowledgeBaseId"],
+      "query": "query QueryKnowledgeBase($id: ID!, $query: String!, $mode: QueryMode, $topK: Int) { queryKnowledgeBase(id: $id, query: $query, mode: $mode, topK: $topK) { content sourceDocuments metadata } }",
+      "variables": { "query": "test query", "mode": "HYBRID", "topK": 10 },
+      "variables_from_data": { "id": "knowledgeBaseId" },
+      "checks": { "status": 200, "no_graphql_errors": true, "has_data": true }
+    },
+    {
+      "name": "GetKnowledgeGraph",
+      "group": "knowledge",
+      "type": "graphql",
+      "path": "/api/v1alpha",
+      "weight": 1,
+      "requires": ["knowledgeBaseId"],
+      "query": "query GetKnowledgeGraph($knowledgeBaseId: ID!, $limit: Int, $maxDepth: Int, $label: String) { knowledgeGraph(knowledgeBaseId: $knowledgeBaseId, limit: $limit, maxDepth: $maxDepth, label: $label) { entities { id type name } relationships { id source target type } stats { totalEntities totalRelationships } } }",
+      "variables": { "limit": 100, "maxDepth": 3, "label": "*" },
+      "variables_from_data": { "knowledgeBaseId": "knowledgeBaseId" },
+      "checks": { "status": 200, "no_graphql_errors": true, "has_data": true }
+    },
+    {
+      "name": "GetConversations",
+      "group": "conversations",
+      "type": "graphql",
+      "path": "/api/v1alpha",
+      "weight": 2,
+      "query": "query GetConversations($filter: ConversationFilterInput) { conversations(filter: $filter) { id title summary metadata } }",
+      "variables": {},
+      "checks": { "status": 200, "no_graphql_errors": true, "has_data": true }
+    },
+    {
+      "name": "GetConversation",
+      "group": "conversations",
+      "type": "graphql",
+      "path": "/api/v1alpha",
+      "weight": 1,
+      "requires": ["conversationId"],
+      "query": "query GetConversation($id: ID!) { conversation(id: $id) { id title summary metadata messages { id timestamp } } }",
+      "variables": {},
+      "variables_from_data": { "id": "conversationId" },
+      "checks": { "status": 200, "no_graphql_errors": true, "has_data": true }
+    },
+    {
+      "name": "ListDocuments",
+      "group": "documents",
+      "type": "graphql",
+      "path": "/api/v1alpha",
+      "weight": 1,
+      "query": "query ListDocuments($first: Int, $filter: ListDocumentsFilter) { listDocuments(first: $first, filter: $filter) { edges { node { id title type conversationId timestamp } } pageInfo { hasNextPage } } }",
+      "variables": { "first": 100 },
+      "checks": { "status": 200, "no_graphql_errors": true, "has_data": true }
+    },
+    {
+      "name": "GetDocument",
+      "group": "documents",
+      "type": "graphql",
+      "path": "/api/v1alpha",
+      "weight": 1,
+      "requires": ["documentConversationId", "documentId"],
+      "query": "query GetDocument($conversationId: ID!, $documentId: ID!) { document(conversationId: $conversationId, documentId: $documentId) { id title type content timestamp } }",
+      "variables": {},
+      "variables_from_data": { "conversationId": "documentConversationId", "documentId": "documentId" },
+      "checks": { "status": 200, "no_graphql_errors": true, "has_data": true }
+    },
+    {
+      "name": "userDetails",
+      "group": "user",
+      "type": "graphql",
+      "path": "/api/v1alpha",
+      "weight": 1,
+      "query": "query { userDetails { details } }",
+      "variables": {},
+      "checks": { "status": 200, "no_graphql_errors": true, "has_data": true }
+    },
+    {
+      "name": "GetUserDetailsForSession",
+      "group": "user",
+      "type": "graphql",
+      "path": "/api/v1alpha",
+      "weight": 1,
+      "query": "query GetUserDetailsForSession { userDetails { details roles features { gitlabToolsEnabled customAgents rbacEnabled } } }",
+      "variables": {},
+      "checks": { "status": 200, "no_graphql_errors": true, "has_data": true }
+    }
+  ],
+  "setup": [
+    {
+      "name": "CreateAgent",
+      "group": "setup",
+      "type": "graphql",
+      "path": "/api/v1alpha",
+      "query": "mutation CreateAgent($input: AgentInput!) { createAgent(input: $input) { id model systemMessage } }",
+      "variables": {
+        "input": {
+          "name": "k6-perf-test-agent",
+          "description": "Temporary agent created by k6 performance tests",
+          "knowledgeBaseIds": [],
+          "systemMessage": "You are a helpful assistant used for performance testing.",
+          "tools": []
+        }
+      },
+      "result_key": "agentId",
+      "result_path": "data.createAgent.id"
+    },
+    {
+      "name": "CreateConversation",
+      "group": "setup",
+      "type": "graphql",
+      "path": "/api/v1alpha",
+      "query": "mutation CreateConversation($input: CreateConversationInput!) { createConversation(input: $input) { id title } }",
+      "variables_template": { "input": { "title": "k6-perf-test-${timestamp}", "metadata": "{}" } },
+      "result_key": "conversationId",
+      "result_path": "data.createConversation.id"
+    },
+    {
+      "name": "CreateKnowledgeBase",
+      "group": "setup",
+      "type": "graphql",
+      "path": "/api/v1alpha",
+      "query": "mutation CreateKnowledgeBase($input: CreateKnowledgeBaseInput!) { createKnowledgeBase(input: $input) { id name } }",
+      "variables": { "input": { "name": "k6-perf-test-kb", "description": "Temporary knowledge base created by k6 performance tests" } },
+      "result_key": "knowledgeBaseId",
+      "result_path": "data.createKnowledgeBase.id"
+    }
+  ],
+  "teardown": [
+    {
+      "name": "DeleteKnowledgeBase",
+      "group": "teardown",
+      "type": "graphql",
+      "path": "/api/v1alpha",
+      "requires": ["knowledgeBaseId"],
+      "query": "mutation DeleteKnowledgeBase($id: ID!) { deleteKnowledgeBase(id: $id) { id } }",
+      "variables_from_data": { "id": "knowledgeBaseId" }
+    },
+    {
+      "name": "DeleteConversation",
+      "group": "teardown",
+      "type": "graphql",
+      "path": "/api/v1alpha",
+      "requires": ["conversationId"],
+      "query": "mutation DeleteConversation($id: ID!) { deleteConversation(id: $id) { id } }",
+      "variables_from_data": { "id": "conversationId" }
+    },
+    {
+      "name": "DeleteAgent",
+      "group": "teardown",
+      "type": "graphql",
+      "path": "/api/v1alpha",
+      "requires": ["agentId"],
+      "query": "mutation DeleteAgent($id: ID!) { deleteAgent(id: $id) { id } }",
+      "variables_from_data": { "id": "agentId" }
+    }
+  ]
+}

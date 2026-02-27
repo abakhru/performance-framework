@@ -1,0 +1,3242 @@
+{
+  "info": {
+    "_postman_id": "60503240-261c-4c66-bc0c-6fe8598f817d",
+    "name": "Matrix/Strike48 collections",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "637902",
+    "_collection_link": "https://go.postman.co/collection/637902-60503240-261c-4c66-bc0c-6fe8598f817d?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Persona",
+      "item": [
+        {
+          "name": "Create persona",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en-US,en;q=0.9"
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive"
+              },
+              {
+                "key": "Origin",
+                "value": "https://ai-beta-us-east-2.devo.cloud"
+              },
+              {
+                "key": "Referer",
+                "value": "https://ai-beta-us-east-2.devo.cloud/studio"
+              },
+              {
+                "key": "Sec-Fetch-Dest",
+                "value": "empty"
+              },
+              {
+                "key": "Sec-Fetch-Mode",
+                "value": "cors"
+              },
+              {
+                "key": "Sec-Fetch-Site",
+                "value": "same-origin"
+              },
+              {
+                "key": "User-Agent",
+                "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+              },
+              {
+                "key": "accept",
+                "value": "*/*"
+              },
+              {
+                "key": "authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlbGYiLCJpYXQiOjE3NTgwMDE2MDgxMjQsInJvbGVzIjpbIkFkbWluaXN0cmF0b3IiXSwidG9rZW4iOm51bGx9.HsfBmICcBWoL5zAVBBEVszS9z7fDAyLByf-XDfNjLCA"
+              },
+              {
+                "key": "content-type",
+                "value": "application/json"
+              },
+              {
+                "key": "sec-ch-ua",
+                "value": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\""
+              },
+              {
+                "key": "sec-ch-ua-mobile",
+                "value": "?0"
+              },
+              {
+                "key": "sec-ch-ua-platform",
+                "value": "\"macOS\""
+              },
+              {
+                "key": "traceparent",
+                "value": "00-17de3a6c2fe24f7091452279e7ab6f1e-8f62c922535c3df4-01"
+              },
+              {
+                "key": "tracestate",
+                "value": "sentry=sampled"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation CreateAgent($input: AgentInput!) {\n  createAgent(input: $input) {\n    id\n    model\n    systemMessage\n    context\n    __typename\n  }\n}\n",
+                "variables": "{\n  \"input\": {\n    \"name\": \"Test Persona\",\n    \"description\": \"Test Persona description\",\n    \"knowledgeBaseIds\": [],\n    \"systemMessage\": \"Imagine you're at a trivia night, and the next category is a mix of general knowledge. You’re asked the following questions:\\n\\nHistory: Who was the first emperor of the Roman Empire, and when did it transition from a republic to an empire?\\n\\nGeography: What’s the name of the deepest freshwater lake in the world, and where is it located?\\n\\nScience: What is quantum entanglement, and why is it considered one of the strangest phenomena in physics?\\n\\nTechnology: Can you name the first computer virus, and in what year was it created?\\n\\nArt & Culture: Which iconic painting by Leonardo da Vinci is housed in the Louvre Museum, and why is it famous?\\n\\nAnimals: What is unique about the blood of octopuses, and how many hearts do they have?\\n\\nFood: What key ingredients define the Mediterranean diet, and why is it considered one of the healthiest in the world?\",\n    \"tools\": []\n  }\n}"
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/v1alpha",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Send a prompt to run as job",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en-US,en;q=0.9"
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive"
+              },
+              {
+                "key": "Origin",
+                "value": "https://ai-beta-us-east-2.devo.cloud"
+              },
+              {
+                "key": "Referer",
+                "value": "https://ai-beta-us-east-2.devo.cloud/studio"
+              },
+              {
+                "key": "Sec-Fetch-Dest",
+                "value": "empty"
+              },
+              {
+                "key": "Sec-Fetch-Mode",
+                "value": "cors"
+              },
+              {
+                "key": "Sec-Fetch-Site",
+                "value": "same-origin"
+              },
+              {
+                "key": "User-Agent",
+                "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+              },
+              {
+                "key": "accept",
+                "value": "*/*"
+              },
+              {
+                "key": "authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlbGYiLCJpYXQiOjE3NTgwMDE2MDgxMjQsInJvbGVzIjpbIkFkbWluaXN0cmF0b3IiXSwidG9rZW4iOm51bGx9.HsfBmICcBWoL5zAVBBEVszS9z7fDAyLByf-XDfNjLCA"
+              },
+              {
+                "key": "content-type",
+                "value": "application/json"
+              },
+              {
+                "key": "sec-ch-ua",
+                "value": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\""
+              },
+              {
+                "key": "sec-ch-ua-mobile",
+                "value": "?0"
+              },
+              {
+                "key": "sec-ch-ua-platform",
+                "value": "\"macOS\""
+              },
+              {
+                "key": "traceparent",
+                "value": "00-594530559ce5498fbbd7f2da07f24fed-8df23d0d1ae0c010-01"
+              },
+              {
+                "key": "tracestate",
+                "value": "sentry=sampled"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation Ask($input: ConversationInput!) {\n  ask(input: $input) {\n    userMessage {\n      id\n      __typename\n    }\n    __typename\n  }\n}\n",
+                "variables": "{\n  \"input\": {\n    \"conversationId\": \"0199515f-b2b0-7df8-9574-0a9c141b49da\",\n    \"parts\": [\n      {\n        \"type\": \"TEXT\",\n        \"text\": \"Update the user on the current weather forecast in italy\"\n      }\n    ],\n    \"agentId\": \"0199515d-893b-78af-8b44-eedd26f66b6a\"\n  }\n}"
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/v1alpha",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get all agents",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en-US,en;q=0.9"
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive"
+              },
+              {
+                "key": "Origin",
+                "value": "https://ai-beta-us-east-2.devo.cloud",
+                "disabled": true
+              },
+              {
+                "key": "Referer",
+                "value": "https://ai-beta-us-east-2.devo.cloud/studio",
+                "disabled": true
+              },
+              {
+                "key": "Sec-Fetch-Dest",
+                "value": "empty",
+                "disabled": true
+              },
+              {
+                "key": "Sec-Fetch-Mode",
+                "value": "cors",
+                "disabled": true
+              },
+              {
+                "key": "Sec-Fetch-Site",
+                "value": "same-origin",
+                "disabled": true
+              },
+              {
+                "key": "User-Agent",
+                "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
+                "disabled": true
+              },
+              {
+                "key": "accept",
+                "value": "*/*"
+              },
+              {
+                "key": "authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlbGYiLCJpYXQiOjE3NTgwMDkzODAxNTgsInJvbGVzIjpbIkFkbWluaXN0cmF0b3IiXSwidG9rZW4iOm51bGx9.6tV6kzpawtmOB1bz5JcC1thR2pmVBFPIyTMhD5BROjk",
+                "disabled": true
+              },
+              {
+                "key": "content-type",
+                "value": "application/json"
+              },
+              {
+                "key": "sec-ch-ua",
+                "value": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\"",
+                "disabled": true
+              },
+              {
+                "key": "sec-ch-ua-mobile",
+                "value": "?0",
+                "disabled": true
+              },
+              {
+                "key": "sec-ch-ua-platform",
+                "value": "\"macOS\"",
+                "disabled": true
+              },
+              {
+                "key": "traceparent",
+                "value": "00-214e42adf7c94cbcb5f81960ccd1f290-abe4f628cae9258e-01",
+                "disabled": true
+              },
+              {
+                "key": "tracestate",
+                "value": "sentry=sampled",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query ListAllAgents {\n  templateAgents: listAgents(first: 1000, filter: {isTemplate: true}) {\n    edges {\n      cursor\n      node {\n        id\n        name\n        description\n        isPublic\n        isTemplate\n        isEnabled\n        systemMessage\n        tools\n        knowledgeBaseIds\n        knowledgeBases {\n          id\n          name\n          description\n          status\n          documentCount\n          __typename\n        }\n        __typename\n      }\n      __typename\n    }\n    pageInfo {\n      hasNextPage\n      hasPreviousPage\n      startCursor\n      endCursor\n      __typename\n    }\n    __typename\n  }\n  customAgents: listAgents(first: 1000) {\n    edges {\n      cursor\n      node {\n        id\n        name\n        description\n        isPublic\n        isTemplate\n        isEnabled\n        systemMessage\n        tools\n        knowledgeBaseIds\n        knowledgeBases {\n          id\n          name\n          description\n          status\n          documentCount\n          __typename\n        }\n        __typename\n      }\n      __typename\n    }\n    pageInfo {\n      hasNextPage\n      hasPreviousPage\n      startCursor\n      endCursor\n      __typename\n    }\n    __typename\n  }\n}\n",
+                "variables": ""
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/v1alpha",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get all tools",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query GetTools {\n  tools {\n    name\n    description\n    enabled\n    category\n    __typename\n  }\n}\n",
+                "variables": ""
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/v1alpha",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Fetch configuration in a persona",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en-US,en;q=0.9"
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive"
+              },
+              {
+                "key": "Origin",
+                "value": "https://ai-beta-us-east-2.devo.cloud"
+              },
+              {
+                "key": "Referer",
+                "value": "https://ai-beta-us-east-2.devo.cloud/studio"
+              },
+              {
+                "key": "Sec-Fetch-Dest",
+                "value": "empty"
+              },
+              {
+                "key": "Sec-Fetch-Mode",
+                "value": "cors"
+              },
+              {
+                "key": "Sec-Fetch-Site",
+                "value": "same-origin"
+              },
+              {
+                "key": "User-Agent",
+                "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+              },
+              {
+                "key": "accept",
+                "value": "*/*"
+              },
+              {
+                "key": "authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlbGYiLCJpYXQiOjE3NTgwMDE2MDgxMjQsInJvbGVzIjpbIkFkbWluaXN0cmF0b3IiXSwidG9rZW4iOm51bGx9.HsfBmICcBWoL5zAVBBEVszS9z7fDAyLByf-XDfNjLCA"
+              },
+              {
+                "key": "content-type",
+                "value": "application/json"
+              },
+              {
+                "key": "sec-ch-ua",
+                "value": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\""
+              },
+              {
+                "key": "sec-ch-ua-mobile",
+                "value": "?0"
+              },
+              {
+                "key": "sec-ch-ua-platform",
+                "value": "\"macOS\""
+              },
+              {
+                "key": "traceparent",
+                "value": "00-6230a833791943308cd79e8eeb71b554-9b157c86f21d5d10-01"
+              },
+              {
+                "key": "tracestate",
+                "value": "sentry=sampled"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query ListJobConfigs($agentId: ID, $limit: Int) {\n  listJobConfigs(agentId: $agentId, limit: $limit) {\n    id\n    name\n    description\n    enabled\n    cronExpr\n    toolsApproved\n    agent {\n      id\n      name\n      __typename\n    }\n    __typename\n  }\n}\n",
+                "variables": "{\n  \"limit\": 1000,\n  \"agentId\": \"01995183-c176-7efc-8e59-c5d2390b252d\"\n}"
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/v1alpha",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Fetch all personas",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query GetTools {\n  tools {\n    name\n    description\n    enabled\n    category\n    __typename\n  }\n}\n",
+                "variables": ""
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/v1alpha",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Jobs",
+      "item": [
+        {
+          "name": "Create a job",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en-US,en;q=0.9"
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive"
+              },
+              {
+                "key": "Origin",
+                "value": "https://ai-beta-us-east-2.devo.cloud"
+              },
+              {
+                "key": "Referer",
+                "value": "https://ai-beta-us-east-2.devo.cloud/studio"
+              },
+              {
+                "key": "Sec-Fetch-Dest",
+                "value": "empty"
+              },
+              {
+                "key": "Sec-Fetch-Mode",
+                "value": "cors"
+              },
+              {
+                "key": "Sec-Fetch-Site",
+                "value": "same-origin"
+              },
+              {
+                "key": "User-Agent",
+                "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+              },
+              {
+                "key": "accept",
+                "value": "*/*"
+              },
+              {
+                "key": "authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlbGYiLCJpYXQiOjE3NTgwMDE2MDgxMjQsInJvbGVzIjpbIkFkbWluaXN0cmF0b3IiXSwidG9rZW4iOm51bGx9.HsfBmICcBWoL5zAVBBEVszS9z7fDAyLByf-XDfNjLCA"
+              },
+              {
+                "key": "content-type",
+                "value": "application/json"
+              },
+              {
+                "key": "sec-ch-ua",
+                "value": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\""
+              },
+              {
+                "key": "sec-ch-ua-mobile",
+                "value": "?0"
+              },
+              {
+                "key": "sec-ch-ua-platform",
+                "value": "\"macOS\""
+              },
+              {
+                "key": "traceparent",
+                "value": "00-01529875f0134f7393e4be455129b741-9cf8f4120190fa84-01"
+              },
+              {
+                "key": "tracestate",
+                "value": "sentry=sampled"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation CreateJobConfig($input: JobConfigInput!) {\n  createJobConfig(input: $input) {\n    id\n    __typename\n  }\n}\n",
+                "variables": "{\n  \"input\": {\n    \"agentId\": \"01995183-c176-7efc-8e59-c5d2390b252d\",\n    \"cronExpr\": \"1 * * * *\",\n    \"description\": \"test job 2\",\n    \"enabled\": true,\n    \"name\": \"test job 2\",\n    \"prompt\": \"what is 2+2?\",\n    \"toolsApproved\": []\n  }\n}"
+              }
+            },
+            "url": {
+              "raw": "https://ai-beta-us-east-2.devo.cloud/api/v1alpha",
+              "protocol": "https",
+              "host": [
+                "ai-beta-us-east-2",
+                "devo",
+                "cloud"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Fetch all jobs in a persona",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query ListAllJobInstances($agentId: ID, $jobConfigId: ID, $limit: Int, $status: String) {\n  listAllJobInstances(\n    agentId: $agentId\n    jobConfigId: $jobConfigId\n    limit: $limit\n    status: $status\n  ) {\n    id\n    startedAt\n    updatedAt\n    status\n    errorMessage\n    isRead\n    agent {\n      id\n      __typename\n    }\n    conversation {\n      id\n      __typename\n    }\n    jobConfig {\n      id\n      name\n      description\n      __typename\n    }\n    agent {\n      id\n      name\n      __typename\n    }\n    __typename\n  }\n}\n",
+                "variables": "{\n  \"limit\": 1000,\n  \"agentId\": \"QWdlbnQ6MDE5YzI0MGEtODQyNi03OGMzLWFiMDktZWMzMjlmMWRlZTli\"\n}"
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/v1alpha",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create a new job",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en-US,en;q=0.9"
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive"
+              },
+              {
+                "key": "Origin",
+                "value": "https://ai-beta-us-east-2.devo.cloud"
+              },
+              {
+                "key": "Referer",
+                "value": "https://ai-beta-us-east-2.devo.cloud/studio"
+              },
+              {
+                "key": "Sec-Fetch-Dest",
+                "value": "empty"
+              },
+              {
+                "key": "Sec-Fetch-Mode",
+                "value": "cors"
+              },
+              {
+                "key": "Sec-Fetch-Site",
+                "value": "same-origin"
+              },
+              {
+                "key": "User-Agent",
+                "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+              },
+              {
+                "key": "accept",
+                "value": "*/*"
+              },
+              {
+                "key": "authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlbGYiLCJpYXQiOjE3NTgxMDEzODgzNjksInJvbGVzIjpbIkFkbWluaXN0cmF0b3IiXSwidG9rZW4iOm51bGx9.oa9Q465mKKi1vfty0BjjCP90lTJN8RzKcVbEwdMKo74"
+              },
+              {
+                "key": "content-type",
+                "value": "application/json"
+              },
+              {
+                "key": "sec-ch-ua",
+                "value": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\""
+              },
+              {
+                "key": "sec-ch-ua-mobile",
+                "value": "?0"
+              },
+              {
+                "key": "sec-ch-ua-platform",
+                "value": "\"macOS\""
+              },
+              {
+                "key": "traceparent",
+                "value": "00-e490bb326c1a446386cd3863f3d5f846-9205298612b6ec1f-01"
+              },
+              {
+                "key": "tracestate",
+                "value": "sentry=sampled"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation CreateJobConfig($input: JobConfigInput!) {\n  createJobConfig(input: $input) {\n    id\n    __typename\n  }\n}\n",
+                "variables": "{\n  \"input\": {\n    \"agentId\": \"QWdlbnQ6MDE5OTU3NTQtOWZjNi03Y2M3LTk4YWEtYTcyNDc5ZmVhNzBh\",\n    \"cronExpr\": \"* * * * *\",\n    \"description\": \"Automated Test Every min\",\n    \"enabled\": true,\n    \"name\": \"Automated Test Every min\",\n    \"prompt\": \"What is the quadratic formula and how do you use it?\",\n    \"toolsApproved\": []\n  }\n}"
+              }
+            },
+            "url": {
+              "raw": "https://ai-beta-us-east-2.devo.cloud/api/v1alpha",
+              "protocol": "https",
+              "host": [
+                "ai-beta-us-east-2",
+                "devo",
+                "cloud"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Test job created via config",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en-US,en;q=0.9"
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive"
+              },
+              {
+                "key": "Origin",
+                "value": "https://ai-beta-us-east-2.devo.cloud"
+              },
+              {
+                "key": "Referer",
+                "value": "https://ai-beta-us-east-2.devo.cloud/studio"
+              },
+              {
+                "key": "Sec-Fetch-Dest",
+                "value": "empty"
+              },
+              {
+                "key": "Sec-Fetch-Mode",
+                "value": "cors"
+              },
+              {
+                "key": "Sec-Fetch-Site",
+                "value": "same-origin"
+              },
+              {
+                "key": "User-Agent",
+                "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+              },
+              {
+                "key": "accept",
+                "value": "*/*"
+              },
+              {
+                "key": "authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlbGYiLCJpYXQiOjE3NTgxMDEzODgzNjksInJvbGVzIjpbIkFkbWluaXN0cmF0b3IiXSwidG9rZW4iOm51bGx9.oa9Q465mKKi1vfty0BjjCP90lTJN8RzKcVbEwdMKo74"
+              },
+              {
+                "key": "content-type",
+                "value": "application/json"
+              },
+              {
+                "key": "sec-ch-ua",
+                "value": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\""
+              },
+              {
+                "key": "sec-ch-ua-mobile",
+                "value": "?0"
+              },
+              {
+                "key": "sec-ch-ua-platform",
+                "value": "\"macOS\""
+              },
+              {
+                "key": "traceparent",
+                "value": "00-2fbe8697b72d40c79d8949c196b89ef0-98be7a8da6f75b13-01"
+              },
+              {
+                "key": "tracestate",
+                "value": "sentry=sampled"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query ListJobConfigs($filter: JobConfigFilter, $first: Int, $last: Int, $before: String, $after: String) {\n  listJobConfigs(\n    filter: $filter\n    first: $first\n    last: $last\n    before: $before\n    after: $after\n  ) {\n    edges {\n      cursor\n      node {\n        id\n        name\n        description\n        enabled\n        cronExpr\n        toolsApproved\n        agent {\n          id\n          name\n          __typename\n        }\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}\n",
+                "variables": "{\n  \"first\": 1000,\n  \"filter\": {\n    \"agentId\": \"QWdlbnQ6MDE5OTU2ODctYTc1ZS03ZmE5LWEwMDctMTg1ODU3NTY1MDAx\"\n  }\n}"
+              }
+            },
+            "url": {
+              "raw": "https://ai-beta-us-east-2.devo.cloud/api/v1alpha",
+              "protocol": "https",
+              "host": [
+                "ai-beta-us-east-2",
+                "devo",
+                "cloud"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update a job via config",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en-US,en;q=0.9"
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive"
+              },
+              {
+                "key": "Origin",
+                "value": "https://ai-beta-us-east-2.devo.cloud"
+              },
+              {
+                "key": "Referer",
+                "value": "https://ai-beta-us-east-2.devo.cloud/studio"
+              },
+              {
+                "key": "Sec-Fetch-Dest",
+                "value": "empty"
+              },
+              {
+                "key": "Sec-Fetch-Mode",
+                "value": "cors"
+              },
+              {
+                "key": "Sec-Fetch-Site",
+                "value": "same-origin"
+              },
+              {
+                "key": "User-Agent",
+                "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+              },
+              {
+                "key": "accept",
+                "value": "*/*"
+              },
+              {
+                "key": "authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlbGYiLCJpYXQiOjE3NTgxMDEzODgzNjksInJvbGVzIjpbIkFkbWluaXN0cmF0b3IiXSwidG9rZW4iOm51bGx9.oa9Q465mKKi1vfty0BjjCP90lTJN8RzKcVbEwdMKo74"
+              },
+              {
+                "key": "content-type",
+                "value": "application/json"
+              },
+              {
+                "key": "sec-ch-ua",
+                "value": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\""
+              },
+              {
+                "key": "sec-ch-ua-mobile",
+                "value": "?0"
+              },
+              {
+                "key": "sec-ch-ua-platform",
+                "value": "\"macOS\""
+              },
+              {
+                "key": "traceparent",
+                "value": "00-196fef32c11244868e049ae031c7a908-9de56a28bbd18523-01"
+              },
+              {
+                "key": "tracestate",
+                "value": "sentry=sampled"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation UpdateJobConfig($id: ID!, $input: JobConfigUpdateInput!) {\n  updateJobConfig(id: $id, input: $input) {\n    id\n    __typename\n  }\n}\n",
+                "variables": "{\n  \"id\": \"Sm9iQ29uZmlnOjAxOTk1NzI2LTQzOGUtNzIyOC1hMjRiLTVlZjQ1ODcyYTE3Ng==\",\n  \"input\": {\n    \"agentId\": \"QWdlbnQ6MDE5OTU2ODctYTc1ZS03ZmE5LWEwMDctMTg1ODU3NTY1MDAx\",\n    \"cronExpr\": \"30 * * * *\",\n    \"description\": \"Automated Test Job 2\",\n    \"enabled\": false,\n    \"name\": \"Automated Test Job 2\",\n    \"prompt\": \"What is the quadratic formula and how do you use it?\",\n    \"toolsApproved\": []\n  }\n}"
+              }
+            },
+            "url": {
+              "raw": "https://ai-beta-us-east-2.devo.cloud/api/v1alpha",
+              "protocol": "https",
+              "host": [
+                "ai-beta-us-east-2",
+                "devo",
+                "cloud"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Disable a job running every minute",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en-US,en;q=0.9"
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive"
+              },
+              {
+                "key": "Origin",
+                "value": "https://ai-beta-us-east-2.devo.cloud"
+              },
+              {
+                "key": "Referer",
+                "value": "https://ai-beta-us-east-2.devo.cloud/studio"
+              },
+              {
+                "key": "Sec-Fetch-Dest",
+                "value": "empty"
+              },
+              {
+                "key": "Sec-Fetch-Mode",
+                "value": "cors"
+              },
+              {
+                "key": "Sec-Fetch-Site",
+                "value": "same-origin"
+              },
+              {
+                "key": "User-Agent",
+                "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+              },
+              {
+                "key": "accept",
+                "value": "*/*"
+              },
+              {
+                "key": "authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlbGYiLCJpYXQiOjE3NTgxMDEzODgzNjksInJvbGVzIjpbIkFkbWluaXN0cmF0b3IiXSwidG9rZW4iOm51bGx9.oa9Q465mKKi1vfty0BjjCP90lTJN8RzKcVbEwdMKo74"
+              },
+              {
+                "key": "content-type",
+                "value": "application/json"
+              },
+              {
+                "key": "sec-ch-ua",
+                "value": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\""
+              },
+              {
+                "key": "sec-ch-ua-mobile",
+                "value": "?0"
+              },
+              {
+                "key": "sec-ch-ua-platform",
+                "value": "\"macOS\""
+              },
+              {
+                "key": "traceparent",
+                "value": "00-4e9c5fc78b5e4b99a9e96055ba8d2af8-bfe5055ee093091f-01"
+              },
+              {
+                "key": "tracestate",
+                "value": "sentry=sampled"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation UpdateJobConfig($id: ID!, $input: JobConfigUpdateInput!) {\n  updateJobConfig(id: $id, input: $input) {\n    id\n    __typename\n  }\n}\n",
+                "variables": "{\n  \"id\": \"Sm9iQ29uZmlnOjAxOTk1NzU1LWExZWQtN2Y0MS1iMjQzLTM2ZTVkY2YyZGYyMQ==\",\n  \"input\": {\n    \"agentId\": \"QWdlbnQ6MDE5OTU3NTQtOWZjNi03Y2M3LTk4YWEtYTcyNDc5ZmVhNzBh\",\n    \"cronExpr\": \"30 18 * * *\",\n    \"description\": \"Automated Test Every min\",\n    \"enabled\": false,\n    \"name\": \"Automated Test Every min\",\n    \"prompt\": \"What is the quadratic formula and how do you use it?\",\n    \"toolsApproved\": []\n  }\n}"
+              }
+            },
+            "url": {
+              "raw": "https://ai-beta-us-east-2.devo.cloud/api/v1alpha",
+              "protocol": "https",
+              "host": [
+                "ai-beta-us-east-2",
+                "devo",
+                "cloud"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete knowledge base",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en-US,en;q=0.9"
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive"
+              },
+              {
+                "key": "Origin",
+                "value": "https://ai-beta-us-east-2.devo.cloud"
+              },
+              {
+                "key": "Referer",
+                "value": "https://ai-beta-us-east-2.devo.cloud/studio"
+              },
+              {
+                "key": "Sec-Fetch-Dest",
+                "value": "empty"
+              },
+              {
+                "key": "Sec-Fetch-Mode",
+                "value": "cors"
+              },
+              {
+                "key": "Sec-Fetch-Site",
+                "value": "same-origin"
+              },
+              {
+                "key": "User-Agent",
+                "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+              },
+              {
+                "key": "accept",
+                "value": "*/*"
+              },
+              {
+                "key": "authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlbGYiLCJpYXQiOjE3NTgxMDEzODgzNjksInJvbGVzIjpbIkFkbWluaXN0cmF0b3IiXSwidG9rZW4iOm51bGx9.oa9Q465mKKi1vfty0BjjCP90lTJN8RzKcVbEwdMKo74"
+              },
+              {
+                "key": "content-type",
+                "value": "application/json"
+              },
+              {
+                "key": "sec-ch-ua",
+                "value": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\""
+              },
+              {
+                "key": "sec-ch-ua-mobile",
+                "value": "?0"
+              },
+              {
+                "key": "sec-ch-ua-platform",
+                "value": "\"macOS\""
+              },
+              {
+                "key": "traceparent",
+                "value": "00-c91c0648cf0349839873cf25febade52-b28b84746b9e9703-01"
+              },
+              {
+                "key": "tracestate",
+                "value": "sentry=sampled"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation DeleteKnowledgeBase($id: ID!) {\n  deleteKnowledgeBase(id: $id)\n}\n",
+                "variables": "{\n  \"id\": \"23ecbffa-7a9c-4e35-a189-f7408e4723cd\"\n}"
+              }
+            },
+            "url": {
+              "raw": "https://ai-beta-us-east-2.devo.cloud/api/v1alpha",
+              "protocol": "https",
+              "host": [
+                "ai-beta-us-east-2",
+                "devo",
+                "cloud"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "test job update via config",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en-US,en;q=0.9"
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive"
+              },
+              {
+                "key": "Origin",
+                "value": "https://ai-beta-us-east-2.devo.cloud"
+              },
+              {
+                "key": "Referer",
+                "value": "https://ai-beta-us-east-2.devo.cloud/studio"
+              },
+              {
+                "key": "Sec-Fetch-Dest",
+                "value": "empty"
+              },
+              {
+                "key": "Sec-Fetch-Mode",
+                "value": "cors"
+              },
+              {
+                "key": "Sec-Fetch-Site",
+                "value": "same-origin"
+              },
+              {
+                "key": "User-Agent",
+                "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+              },
+              {
+                "key": "accept",
+                "value": "*/*"
+              },
+              {
+                "key": "authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlbGYiLCJpYXQiOjE3NTgxMDEzODgzNjksInJvbGVzIjpbIkFkbWluaXN0cmF0b3IiXSwidG9rZW4iOm51bGx9.oa9Q465mKKi1vfty0BjjCP90lTJN8RzKcVbEwdMKo74"
+              },
+              {
+                "key": "content-type",
+                "value": "application/json"
+              },
+              {
+                "key": "sec-ch-ua",
+                "value": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\""
+              },
+              {
+                "key": "sec-ch-ua-mobile",
+                "value": "?0"
+              },
+              {
+                "key": "sec-ch-ua-platform",
+                "value": "\"macOS\""
+              },
+              {
+                "key": "traceparent",
+                "value": "00-196fef32c11244868e049ae031c7a908-83bb7d5de378c19c-01"
+              },
+              {
+                "key": "tracestate",
+                "value": "sentry=sampled"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query ListJobConfigs($filter: JobConfigFilter, $first: Int, $last: Int, $before: String, $after: String) {\n  listJobConfigs(\n    filter: $filter\n    first: $first\n    last: $last\n    before: $before\n    after: $after\n  ) {\n    edges {\n      cursor\n      node {\n        id\n        name\n        description\n        enabled\n        cronExpr\n        toolsApproved\n        agent {\n          id\n          name\n          __typename\n        }\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}\n",
+                "variables": "{\n  \"first\": 1000,\n  \"filter\": {\n    \"agentId\": \"QWdlbnQ6MDE5OTU2ODctYTc1ZS03ZmE5LWEwMDctMTg1ODU3NTY1MDAx\"\n  }\n}"
+              }
+            },
+            "url": {
+              "raw": "https://ai-beta-us-east-2.devo.cloud/api/v1alpha",
+              "protocol": "https",
+              "host": [
+                "ai-beta-us-east-2",
+                "devo",
+                "cloud"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Knowledge",
+      "item": [
+        {
+          "name": "Create knowledge base",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en-US,en;q=0.9"
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive"
+              },
+              {
+                "key": "Origin",
+                "value": "https://ai-beta-us-east-2.devo.cloud"
+              },
+              {
+                "key": "Referer",
+                "value": "https://ai-beta-us-east-2.devo.cloud/studio"
+              },
+              {
+                "key": "Sec-Fetch-Dest",
+                "value": "empty"
+              },
+              {
+                "key": "Sec-Fetch-Mode",
+                "value": "cors"
+              },
+              {
+                "key": "Sec-Fetch-Site",
+                "value": "same-origin"
+              },
+              {
+                "key": "User-Agent",
+                "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+              },
+              {
+                "key": "accept",
+                "value": "*/*"
+              },
+              {
+                "key": "authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlbGYiLCJpYXQiOjE3NTgwMDE2MDgxMjQsInJvbGVzIjpbIkFkbWluaXN0cmF0b3IiXSwidG9rZW4iOm51bGx9.HsfBmICcBWoL5zAVBBEVszS9z7fDAyLByf-XDfNjLCA"
+              },
+              {
+                "key": "content-type",
+                "value": "application/json"
+              },
+              {
+                "key": "sec-ch-ua",
+                "value": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\""
+              },
+              {
+                "key": "sec-ch-ua-mobile",
+                "value": "?0"
+              },
+              {
+                "key": "sec-ch-ua-platform",
+                "value": "\"macOS\""
+              },
+              {
+                "key": "traceparent",
+                "value": "00-486544ed535845e587ed37adaf1f5063-bec3cd75970e54ff-01"
+              },
+              {
+                "key": "tracestate",
+                "value": "sentry=sampled"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation CreateKnowledgeBase($input: CreateKnowledgeBaseInput!) {\n  createKnowledgeBase(input: $input) {\n    id\n    name\n    description\n    status\n    config\n    metadata\n    documentCount\n    insertedAt\n    updatedAt\n    __typename\n  }\n}\n",
+                "variables": "{\n  \"input\": {\n    \"name\": \"Auto KB 2\",\n    \"description\": \"Auto KB 2\"\n  }\n}"
+              }
+            },
+            "url": {
+              "raw": "https://ai-beta-us-east-2.devo.cloud/api/v1alpha",
+              "protocol": "https",
+              "host": [
+                "ai-beta-us-east-2",
+                "devo",
+                "cloud"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Upload knowledge base document",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "en-US,en;q=0.9"
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive"
+              },
+              {
+                "key": "Origin",
+                "value": "https://ai-beta-us-east-2.devo.cloud"
+              },
+              {
+                "key": "Referer",
+                "value": "https://ai-beta-us-east-2.devo.cloud/studio"
+              },
+              {
+                "key": "Sec-Fetch-Dest",
+                "value": "empty"
+              },
+              {
+                "key": "Sec-Fetch-Mode",
+                "value": "cors"
+              },
+              {
+                "key": "Sec-Fetch-Site",
+                "value": "same-origin"
+              },
+              {
+                "key": "User-Agent",
+                "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+              },
+              {
+                "key": "authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlbGYiLCJpYXQiOjE3NTgwMDE2MDgxMjQsInJvbGVzIjpbIkFkbWluaXN0cmF0b3IiXSwidG9rZW4iOm51bGx9.HsfBmICcBWoL5zAVBBEVszS9z7fDAyLByf-XDfNjLCA"
+              },
+              {
+                "key": "sec-ch-ua",
+                "value": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\""
+              },
+              {
+                "key": "sec-ch-ua-mobile",
+                "value": "?0"
+              },
+              {
+                "key": "sec-ch-ua-platform",
+                "value": "\"macOS\""
+              },
+              {
+                "key": "traceparent",
+                "value": "00-1b7d49591eca4c45ac682ae846ffbfae-8248719e4698b2d0-01"
+              },
+              {
+                "key": "tracestate",
+                "value": "sentry=sampled"
+              },
+              {
+                "key": "x-requested-with",
+                "value": "XMLHttpRequest"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "query",
+                  "value": "mutation UploadDocument($input: UploadDocumentInput!) {\r\n  uploadDocument(input: $input) {\r\n    id\r\n    knowledgeBaseId\r\n    filename\r\n    originalFilename\r\n    contentType\r\n    fileSize\r\n    status\r\n    processedAt\r\n    processingError\r\n    metadata\r\n    insertedAt\r\n    updatedAt\r\n    __typename\r\n  }\r\n}\r\n",
+                  "type": "text"
+                },
+                {
+                  "key": "variables",
+                  "value": "{\"input\":{\"knowledgeBaseId\":\"10601dfc-8524-4809-a5a2-06e2856641fa\",\"file\":\"i.n.p.u.t.file\"}}",
+                  "type": "text"
+                },
+                {
+                  "key": "i.n.p.u.t.file",
+                  "type": "file",
+                  "src": "job_test.txt"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ai-beta-us-east-2.devo.cloud/api/v1alpha",
+              "protocol": "https",
+              "host": [
+                "ai-beta-us-east-2",
+                "devo",
+                "cloud"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Fetch all knowlegde base",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en-US,en;q=0.9"
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive"
+              },
+              {
+                "key": "Origin",
+                "value": "https://ai-beta-us-east-2.devo.cloud"
+              },
+              {
+                "key": "Referer",
+                "value": "https://ai-beta-us-east-2.devo.cloud/studio"
+              },
+              {
+                "key": "Sec-Fetch-Dest",
+                "value": "empty"
+              },
+              {
+                "key": "Sec-Fetch-Mode",
+                "value": "cors"
+              },
+              {
+                "key": "Sec-Fetch-Site",
+                "value": "same-origin"
+              },
+              {
+                "key": "User-Agent",
+                "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+              },
+              {
+                "key": "accept",
+                "value": "*/*"
+              },
+              {
+                "key": "authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlbGYiLCJpYXQiOjE3NTgwMDkzODAxNTgsInJvbGVzIjpbIkFkbWluaXN0cmF0b3IiXSwidG9rZW4iOm51bGx9.6tV6kzpawtmOB1bz5JcC1thR2pmVBFPIyTMhD5BROjk"
+              },
+              {
+                "key": "content-type",
+                "value": "application/json"
+              },
+              {
+                "key": "sec-ch-ua",
+                "value": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\""
+              },
+              {
+                "key": "sec-ch-ua-mobile",
+                "value": "?0"
+              },
+              {
+                "key": "sec-ch-ua-platform",
+                "value": "\"macOS\""
+              },
+              {
+                "key": "traceparent",
+                "value": "00-d329cebf70434f68ac402a9ab7e998ec-bc7f5e16253883c8-01"
+              },
+              {
+                "key": "tracestate",
+                "value": "sentry=sampled"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query GetKnowledgeBases($filter: KnowledgeBaseFilterInput) {\n  knowledgeBases(filter: $filter) {\n    id\n    name\n    description\n    status\n    config\n    metadata\n    documentCount\n    insertedAt\n    updatedAt\n    __typename\n  }\n}\n",
+                "variables": "{\n  \"filter\": {}\n}"
+              }
+            },
+            "url": {
+              "raw": "https://ai-beta-us-east-2.devo.cloud/api/v1alpha",
+              "protocol": "https",
+              "host": [
+                "ai-beta-us-east-2",
+                "devo",
+                "cloud"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create a kb",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en-US,en;q=0.9"
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive"
+              },
+              {
+                "key": "Origin",
+                "value": "https://ai-beta-us-east-2.devo.cloud"
+              },
+              {
+                "key": "Referer",
+                "value": "https://ai-beta-us-east-2.devo.cloud/studio"
+              },
+              {
+                "key": "Sec-Fetch-Dest",
+                "value": "empty"
+              },
+              {
+                "key": "Sec-Fetch-Mode",
+                "value": "cors"
+              },
+              {
+                "key": "Sec-Fetch-Site",
+                "value": "same-origin"
+              },
+              {
+                "key": "User-Agent",
+                "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+              },
+              {
+                "key": "accept",
+                "value": "*/*"
+              },
+              {
+                "key": "authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlbGYiLCJpYXQiOjE3NTgwODQ4NTY5NDUsInJvbGVzIjpbIkFkbWluaXN0cmF0b3IiXSwidG9rZW4iOm51bGx9.SvadGu9EQuDc3i-a2c-0t5FhcoT2VBnn-WApJq2bij0"
+              },
+              {
+                "key": "content-type",
+                "value": "application/json"
+              },
+              {
+                "key": "sec-ch-ua",
+                "value": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\""
+              },
+              {
+                "key": "sec-ch-ua-mobile",
+                "value": "?0"
+              },
+              {
+                "key": "sec-ch-ua-platform",
+                "value": "\"macOS\""
+              },
+              {
+                "key": "traceparent",
+                "value": "00-d7f8660e977f4d72b142db8e1d8c95bc-9a52ec511ffe575f-01"
+              },
+              {
+                "key": "tracestate",
+                "value": "sentry=sampled"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation CreateKnowledgeBase($input: CreateKnowledgeBaseInput!) {\n  createKnowledgeBase(input: $input) {\n    id\n    name\n    description\n    status\n    config\n    metadata\n    documentCount\n    insertedAt\n    updatedAt\n    __typename\n  }\n}\n",
+                "variables": "{\n  \"input\": {\n    \"name\": \"test kb creation 3\",\n    \"description\": \"test kb creation 3\"\n  }\n}"
+              }
+            },
+            "url": {
+              "raw": "https://ai-beta-us-east-2.devo.cloud/api/v1alpha",
+              "protocol": "https",
+              "host": [
+                "ai-beta-us-east-2",
+                "devo",
+                "cloud"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Upload document to knowledge base",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "en-US,en;q=0.9"
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive"
+              },
+              {
+                "key": "Origin",
+                "value": "https://ai-beta-us-east-2.devo.cloud"
+              },
+              {
+                "key": "Referer",
+                "value": "https://ai-beta-us-east-2.devo.cloud/studio"
+              },
+              {
+                "key": "Sec-Fetch-Dest",
+                "value": "empty"
+              },
+              {
+                "key": "Sec-Fetch-Mode",
+                "value": "cors"
+              },
+              {
+                "key": "Sec-Fetch-Site",
+                "value": "same-origin"
+              },
+              {
+                "key": "User-Agent",
+                "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+              },
+              {
+                "key": "authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlbGYiLCJpYXQiOjE3NTgwODQ4NTY5NDUsInJvbGVzIjpbIkFkbWluaXN0cmF0b3IiXSwidG9rZW4iOm51bGx9.SvadGu9EQuDc3i-a2c-0t5FhcoT2VBnn-WApJq2bij0"
+              },
+              {
+                "key": "sec-ch-ua",
+                "value": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\""
+              },
+              {
+                "key": "sec-ch-ua-mobile",
+                "value": "?0"
+              },
+              {
+                "key": "sec-ch-ua-platform",
+                "value": "\"macOS\""
+              },
+              {
+                "key": "traceparent",
+                "value": "00-3f2a4f89f5d7439aaad85abbbfab635a-808076def40d287f-01"
+              },
+              {
+                "key": "tracestate",
+                "value": "sentry=sampled"
+              },
+              {
+                "key": "x-requested-with",
+                "value": "XMLHttpRequest"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "query",
+                  "value": "mutation UploadDocument($input: UploadDocumentInput!) {\r\n  uploadDocument(input: $input) {\r\n    id\r\n    knowledgeBaseId\r\n    filename\r\n    originalFilename\r\n    contentType\r\n    fileSize\r\n    status\r\n    processedAt\r\n    processingError\r\n    metadata\r\n    insertedAt\r\n    updatedAt\r\n    __typename\r\n  }\r\n}\r\n",
+                  "type": "text"
+                },
+                {
+                  "key": "variables",
+                  "value": "{\"input\":{\"knowledgeBaseId\":\"810863dc-0b44-4c3e-9a31-5bc0a1ccd738\",\"file\":\"i.n.p.u.t.file\"}}",
+                  "type": "text"
+                },
+                {
+                  "key": "i.n.p.u.t.file",
+                  "type": "file",
+                  "src": "postman-cloud:///1f092d17-3e43-4080-885c-4176f572e78f"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ai-beta-us-east-2.devo.cloud/api/v1alpha",
+              "protocol": "https",
+              "host": [
+                "ai-beta-us-east-2",
+                "devo",
+                "cloud"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search kb",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en-US,en;q=0.9"
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive"
+              },
+              {
+                "key": "Origin",
+                "value": "https://ai-beta-us-east-2.devo.cloud"
+              },
+              {
+                "key": "Referer",
+                "value": "https://ai-beta-us-east-2.devo.cloud/studio"
+              },
+              {
+                "key": "Sec-Fetch-Dest",
+                "value": "empty"
+              },
+              {
+                "key": "Sec-Fetch-Mode",
+                "value": "cors"
+              },
+              {
+                "key": "Sec-Fetch-Site",
+                "value": "same-origin"
+              },
+              {
+                "key": "User-Agent",
+                "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+              },
+              {
+                "key": "accept",
+                "value": "*/*"
+              },
+              {
+                "key": "authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlbGYiLCJpYXQiOjE3NTgwODQ4NTY5NDUsInJvbGVzIjpbIkFkbWluaXN0cmF0b3IiXSwidG9rZW4iOm51bGx9.SvadGu9EQuDc3i-a2c-0t5FhcoT2VBnn-WApJq2bij0"
+              },
+              {
+                "key": "content-type",
+                "value": "application/json"
+              },
+              {
+                "key": "sec-ch-ua",
+                "value": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\""
+              },
+              {
+                "key": "sec-ch-ua-mobile",
+                "value": "?0"
+              },
+              {
+                "key": "sec-ch-ua-platform",
+                "value": "\"macOS\""
+              },
+              {
+                "key": "traceparent",
+                "value": "00-f7f4f8481ab5483f98728e7e6527eafe-a65459aa4371d7ad-01"
+              },
+              {
+                "key": "tracestate",
+                "value": "sentry=sampled"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query GetKnowledgeBases($filter: KnowledgeBaseFilterInput) {\n  knowledgeBases(filter: $filter) {\n    id\n    name\n    description\n    status\n    config\n    metadata\n    documentCount\n    insertedAt\n    updatedAt\n    __typename\n  }\n}\n",
+                "variables": "{\n  \"filter\": {\n    \"nameContains\": \"test kb creation 3\"\n  }\n}"
+              }
+            },
+            "url": {
+              "raw": "https://ai-beta-us-east-2.devo.cloud/api/v1alpha",
+              "protocol": "https",
+              "host": [
+                "ai-beta-us-east-2",
+                "devo",
+                "cloud"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Query inside a knowledge base(as per document)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en-US,en;q=0.9"
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive"
+              },
+              {
+                "key": "Origin",
+                "value": "https://ai-beta-us-east-2.devo.cloud"
+              },
+              {
+                "key": "Referer",
+                "value": "https://ai-beta-us-east-2.devo.cloud/studio"
+              },
+              {
+                "key": "Sec-Fetch-Dest",
+                "value": "empty"
+              },
+              {
+                "key": "Sec-Fetch-Mode",
+                "value": "cors"
+              },
+              {
+                "key": "Sec-Fetch-Site",
+                "value": "same-origin"
+              },
+              {
+                "key": "User-Agent",
+                "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+              },
+              {
+                "key": "accept",
+                "value": "*/*"
+              },
+              {
+                "key": "authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlbGYiLCJpYXQiOjE3NTgwODQ4NTY5NDUsInJvbGVzIjpbIkFkbWluaXN0cmF0b3IiXSwidG9rZW4iOm51bGx9.SvadGu9EQuDc3i-a2c-0t5FhcoT2VBnn-WApJq2bij0"
+              },
+              {
+                "key": "content-type",
+                "value": "application/json"
+              },
+              {
+                "key": "sec-ch-ua",
+                "value": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\""
+              },
+              {
+                "key": "sec-ch-ua-mobile",
+                "value": "?0"
+              },
+              {
+                "key": "sec-ch-ua-platform",
+                "value": "\"macOS\""
+              },
+              {
+                "key": "traceparent",
+                "value": "00-8f11b778ba8e4260812d52a998589fce-bca6fe8f84357af1-01"
+              },
+              {
+                "key": "tracestate",
+                "value": "sentry=sampled"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query QueryKnowledgeBase($id: ID!, $query: String!, $mode: QueryMode, $topK: Int) {\n  queryKnowledgeBase(id: $id, query: $query, mode: $mode, topK: $topK) {\n    content\n    sourceDocuments\n    metadata\n    __typename\n  }\n}\n",
+                "variables": "{\n  \"id\": \"810863dc-0b44-4c3e-9a31-5bc0a1ccd738\",\n  \"query\": \"tell geography of mount everest\",\n  \"mode\": \"HYBRID\",\n  \"topK\": 10\n}"
+              }
+            },
+            "url": {
+              "raw": "https://ai-beta-us-east-2.devo.cloud/api/v1alpha",
+              "protocol": "https",
+              "host": [
+                "ai-beta-us-east-2",
+                "devo",
+                "cloud"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Fetch knowledge base graph",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en-US,en;q=0.9"
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive"
+              },
+              {
+                "key": "Origin",
+                "value": "https://ai-beta-us-east-2.devo.cloud"
+              },
+              {
+                "key": "Referer",
+                "value": "https://ai-beta-us-east-2.devo.cloud/studio"
+              },
+              {
+                "key": "Sec-Fetch-Dest",
+                "value": "empty"
+              },
+              {
+                "key": "Sec-Fetch-Mode",
+                "value": "cors"
+              },
+              {
+                "key": "Sec-Fetch-Site",
+                "value": "same-origin"
+              },
+              {
+                "key": "User-Agent",
+                "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+              },
+              {
+                "key": "accept",
+                "value": "*/*"
+              },
+              {
+                "key": "authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlbGYiLCJpYXQiOjE3NTgxMDEzODgzNjksInJvbGVzIjpbIkFkbWluaXN0cmF0b3IiXSwidG9rZW4iOm51bGx9.oa9Q465mKKi1vfty0BjjCP90lTJN8RzKcVbEwdMKo74"
+              },
+              {
+                "key": "content-type",
+                "value": "application/json"
+              },
+              {
+                "key": "sec-ch-ua",
+                "value": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\""
+              },
+              {
+                "key": "sec-ch-ua-mobile",
+                "value": "?0"
+              },
+              {
+                "key": "sec-ch-ua-platform",
+                "value": "\"macOS\""
+              },
+              {
+                "key": "traceparent",
+                "value": "00-1d9f4b728adc4f79859e39b2741b5b67-b3e8b80a91901653-01"
+              },
+              {
+                "key": "tracestate",
+                "value": "sentry=sampled"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query GetKnowledgeGraph($knowledgeBaseId: ID!, $limit: Int, $maxDepth: Int, $label: String) {\n  knowledgeGraph(\n    knowledgeBaseId: $knowledgeBaseId\n    limit: $limit\n    maxDepth: $maxDepth\n    label: $label\n  ) {\n    entities {\n      id\n      type\n      name\n      properties\n      importanceScore\n      __typename\n    }\n    relationships {\n      id\n      source\n      target\n      type\n      properties\n      weight\n      __typename\n    }\n    stats {\n      totalEntities\n      totalRelationships\n      totalDocuments\n      totalChunks\n      entityTypes\n      relationshipTypes\n      __typename\n    }\n    __typename\n  }\n}\n",
+                "variables": "{\n  \"knowledgeBaseId\": \"810863dc-0b44-4c3e-9a31-5bc0a1ccd738\",\n  \"limit\": 100,\n  \"maxDepth\": 3,\n  \"label\": \"*\"\n}"
+              }
+            },
+            "url": {
+              "raw": "https://ai-beta-us-east-2.devo.cloud/api/v1alpha",
+              "protocol": "https",
+              "host": [
+                "ai-beta-us-east-2",
+                "devo",
+                "cloud"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Enable a knowledge graph",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en-US,en;q=0.9"
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive"
+              },
+              {
+                "key": "Origin",
+                "value": "https://ai-beta-us-east-2.devo.cloud"
+              },
+              {
+                "key": "Referer",
+                "value": "https://ai-beta-us-east-2.devo.cloud/studio"
+              },
+              {
+                "key": "Sec-Fetch-Dest",
+                "value": "empty"
+              },
+              {
+                "key": "Sec-Fetch-Mode",
+                "value": "cors"
+              },
+              {
+                "key": "Sec-Fetch-Site",
+                "value": "same-origin"
+              },
+              {
+                "key": "User-Agent",
+                "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+              },
+              {
+                "key": "accept",
+                "value": "*/*"
+              },
+              {
+                "key": "authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlbGYiLCJpYXQiOjE3NTgxMDEzODgzNjksInJvbGVzIjpbIkFkbWluaXN0cmF0b3IiXSwidG9rZW4iOm51bGx9.oa9Q465mKKi1vfty0BjjCP90lTJN8RzKcVbEwdMKo74"
+              },
+              {
+                "key": "content-type",
+                "value": "application/json"
+              },
+              {
+                "key": "sec-ch-ua",
+                "value": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\""
+              },
+              {
+                "key": "sec-ch-ua-mobile",
+                "value": "?0"
+              },
+              {
+                "key": "sec-ch-ua-platform",
+                "value": "\"macOS\""
+              },
+              {
+                "key": "traceparent",
+                "value": "00-1d9f4b728adc4f79859e39b2741b5b67-bd24858a301e3f5c-01"
+              },
+              {
+                "key": "tracestate",
+                "value": "sentry=sampled"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation UpdateKnowledgeBaseStatus($id: ID!, $status: KnowledgeBaseStatus!) {\n  updateKnowledgeBaseStatus(id: $id, status: $status) {\n    id\n    name\n    description\n    status\n    config\n    metadata\n    documentCount\n    insertedAt\n    updatedAt\n    __typename\n  }\n}\n",
+                "variables": "{\n  \"id\": \"810863dc-0b44-4c3e-9a31-5bc0a1ccd738\",\n  \"status\": \"ACTIVE\"\n}"
+              }
+            },
+            "url": {
+              "raw": "https://ai-beta-us-east-2.devo.cloud/api/v1alpha",
+              "protocol": "https",
+              "host": [
+                "ai-beta-us-east-2",
+                "devo",
+                "cloud"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Disable a knowledge graph",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en-US,en;q=0.9"
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive"
+              },
+              {
+                "key": "Origin",
+                "value": "https://ai-beta-us-east-2.devo.cloud"
+              },
+              {
+                "key": "Referer",
+                "value": "https://ai-beta-us-east-2.devo.cloud/studio"
+              },
+              {
+                "key": "Sec-Fetch-Dest",
+                "value": "empty"
+              },
+              {
+                "key": "Sec-Fetch-Mode",
+                "value": "cors"
+              },
+              {
+                "key": "Sec-Fetch-Site",
+                "value": "same-origin"
+              },
+              {
+                "key": "User-Agent",
+                "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+              },
+              {
+                "key": "accept",
+                "value": "*/*"
+              },
+              {
+                "key": "authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlbGYiLCJpYXQiOjE3NTgxMDEzODgzNjksInJvbGVzIjpbIkFkbWluaXN0cmF0b3IiXSwidG9rZW4iOm51bGx9.oa9Q465mKKi1vfty0BjjCP90lTJN8RzKcVbEwdMKo74"
+              },
+              {
+                "key": "content-type",
+                "value": "application/json"
+              },
+              {
+                "key": "sec-ch-ua",
+                "value": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\""
+              },
+              {
+                "key": "sec-ch-ua-mobile",
+                "value": "?0"
+              },
+              {
+                "key": "sec-ch-ua-platform",
+                "value": "\"macOS\""
+              },
+              {
+                "key": "traceparent",
+                "value": "00-1d9f4b728adc4f79859e39b2741b5b67-946e079ed49a7174-01"
+              },
+              {
+                "key": "tracestate",
+                "value": "sentry=sampled"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation UpdateKnowledgeBaseStatus($id: ID!, $status: KnowledgeBaseStatus!) {\n  updateKnowledgeBaseStatus(id: $id, status: $status) {\n    id\n    name\n    description\n    status\n    config\n    metadata\n    documentCount\n    insertedAt\n    updatedAt\n    __typename\n  }\n}\n",
+                "variables": "{\n  \"id\": \"810863dc-0b44-4c3e-9a31-5bc0a1ccd738\",\n  \"status\": \"INACTIVE\"\n}"
+              }
+            },
+            "url": {
+              "raw": "https://ai-beta-us-east-2.devo.cloud/api/v1alpha",
+              "protocol": "https",
+              "host": [
+                "ai-beta-us-east-2",
+                "devo",
+                "cloud"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update a knowledge base",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en-US,en;q=0.9"
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive"
+              },
+              {
+                "key": "Origin",
+                "value": "https://ai-beta-us-east-2.devo.cloud"
+              },
+              {
+                "key": "Referer",
+                "value": "https://ai-beta-us-east-2.devo.cloud/studio"
+              },
+              {
+                "key": "Sec-Fetch-Dest",
+                "value": "empty"
+              },
+              {
+                "key": "Sec-Fetch-Mode",
+                "value": "cors"
+              },
+              {
+                "key": "Sec-Fetch-Site",
+                "value": "same-origin"
+              },
+              {
+                "key": "User-Agent",
+                "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+              },
+              {
+                "key": "accept",
+                "value": "*/*"
+              },
+              {
+                "key": "authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlbGYiLCJpYXQiOjE3NTgxMDEzODgzNjksInJvbGVzIjpbIkFkbWluaXN0cmF0b3IiXSwidG9rZW4iOm51bGx9.oa9Q465mKKi1vfty0BjjCP90lTJN8RzKcVbEwdMKo74"
+              },
+              {
+                "key": "content-type",
+                "value": "application/json"
+              },
+              {
+                "key": "sec-ch-ua",
+                "value": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\""
+              },
+              {
+                "key": "sec-ch-ua-mobile",
+                "value": "?0"
+              },
+              {
+                "key": "sec-ch-ua-platform",
+                "value": "\"macOS\""
+              },
+              {
+                "key": "traceparent",
+                "value": "00-1d9f4b728adc4f79859e39b2741b5b67-a6e6229312a596e3-01"
+              },
+              {
+                "key": "tracestate",
+                "value": "sentry=sampled"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation UpdateKnowledgeBase($id: ID!, $input: UpdateKnowledgeBaseInput!) {\n  updateKnowledgeBase(id: $id, input: $input) {\n    id\n    name\n    description\n    status\n    config\n    metadata\n    documentCount\n    insertedAt\n    updatedAt\n    __typename\n  }\n}\n",
+                "variables": "{\n  \"id\": \"810863dc-0b44-4c3e-9a31-5bc0a1ccd738\",\n  \"input\": {\n    \"name\": \"test kb creation updated 3\",\n    \"description\": \"test kb creation updated 3\"\n  }\n}"
+              }
+            },
+            "url": {
+              "raw": "https://ai-beta-us-east-2.devo.cloud/api/v1alpha",
+              "protocol": "https",
+              "host": [
+                "ai-beta-us-east-2",
+                "devo",
+                "cloud"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Conversations",
+      "item": [
+        {
+          "name": "Get a conversation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlY3VyaXR5X2ludGVsbGlnZW5jZSIsImlhdCI6MTc1MzQyNTY2MzAxNSwicm9sZXMiOlsiQWRtaW5pc3RyYXRvciJdLCJ0b2tlbiI6bnVsbH0._P_5f7Wm85dd34MAtj4xeNeB6Ns6LOFz3R8TtmXl9ZM"
+              },
+              {
+                "key": "content-type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query GetConversations($filter: ConversationFilterInput) {\n  conversations(filter: $filter) {\n    id\n    title\n    summary\n    metadata\n    __typename\n  }\n}",
+                "variables": ""
+              }
+            },
+            "url": {
+              "raw": "http://localhost:4000/api/v1alpha",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get a conversation by id",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlY3VyaXR5X2ludGVsbGlnZW5jZSIsImlhdCI6MTc1MzQyNTY2MzAxNSwicm9sZXMiOlsiQWRtaW5pc3RyYXRvciJdLCJ0b2tlbiI6bnVsbH0._P_5f7Wm85dd34MAtj4xeNeB6Ns6LOFz3R8TtmXl9ZM"
+              },
+              {
+                "key": "content-type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query GetConversation($id: ID!) {\n  conversation(id: $id) {\n    id\n    title\n    summary\n    metadata\n    messages {\n      id\n      parts {\n        ... on TextPart {\n          id\n          text\n          __typename\n        }\n        ... on ToolCallPart {\n          id\n          toolCall {\n            id\n            name\n            arguments\n            result\n            error\n            status\n            __typename\n          }\n          __typename\n        }\n        __typename\n      }\n      profile {\n        id\n        type\n        name\n        avatarUrl\n        __typename\n      }\n      timestamp\n      conversationId\n      parentId\n      metadata\n      __typename\n    }\n    __typename\n  }\n}",
+                "variables": "{\n  \"id\": \"01984067-836c-758f-930c-7ab28897d7d9\"\n}"
+              }
+            },
+            "url": {
+              "raw": "http://localhost:4000/api/v1alpha",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create a conversation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlY3VyaXR5X2ludGVsbGlnZW5jZSIsImlhdCI6MTc1MzQyNTY2MzAxNSwicm9sZXMiOlsiQWRtaW5pc3RyYXRvciJdLCJ0b2tlbiI6bnVsbH0._P_5f7Wm85dd34MAtj4xeNeB6Ns6LOFz3R8TtmXl9ZM"
+              },
+              {
+                "key": "content-type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation CreateConversation($input: CreateConversationInput!) {\n  createConversation(input: $input) {\n    id\n    title\n    summary\n    metadata\n    __typename\n  }\n}",
+                "variables": "{\n  \"input\": {\n    \"title\": \"Chat started Jul 26 10:20\",\n    \"metadata\": \"{}\"\n  }\n}"
+              }
+            },
+            "url": {
+              "raw": "http://localhost:4000/api/v1alpha",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Conversation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlY3VyaXR5X2ludGVsbGlnZW5jZSIsImlhdCI6MTc1MzQyNTY2MzAxNSwicm9sZXMiOlsiQWRtaW5pc3RyYXRvciJdLCJ0b2tlbiI6bnVsbH0._P_5f7Wm85dd34MAtj4xeNeB6Ns6LOFz3R8TtmXl9ZM"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation DeleteConversation($id: ID!) { deleteConversation(id: $id) { id title } }\",\n  \"variables\": {\n    \"id\": \"019845ac-f257-7c51-943d-775d209c574e\"\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:4000/api/v1alpha",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            },
+            "description": "Delete a conversation by its ID."
+          },
+          "response": []
+        },
+        {
+          "name": "Ask agent",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlY3VyaXR5X2ludGVsbGlnZW5jZSIsImlhdCI6MTc1MzQyNTY2MzAxNSwicm9sZXMiOlsiQWRtaW5pc3RyYXRvciJdLCJ0b2tlbiI6bnVsbH0._P_5f7Wm85dd34MAtj4xeNeB6Ns6LOFz3R8TtmXl9ZM"
+              },
+              {
+                "key": "content-type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation Ask($input: ConversationInput!) {\n  ask(input: $input) {\n    userMessage {\n      id\n      __typename\n    }\n    __typename\n  }\n}",
+                "variables": "{\n  \"input\": {\n    \"content\": \"Summarize and prioritize critical security alerts.\",\n    \"conversationId\": \"01984067-836c-758f-930c-7ab28897d7d9\",\n    \"title\": \"Optional conversation title\",\n    \"parentId\": null\n  }\n}"
+              }
+            },
+            "url": {
+              "raw": "http://localhost:4000/api/v1alpha",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Stop the agent",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlY3VyaXR5X2ludGVsbGlnZW5jZSIsImlhdCI6MTc1MzQyNTY2MzAxNSwicm9sZXMiOlsiQWRtaW5pc3RyYXRvciJdLCJ0b2tlbiI6bnVsbH0._P_5f7Wm85dd34MAtj4xeNeB6Ns6LOFz3R8TtmXl9ZM"
+              },
+              {
+                "key": "content-type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation StopAgentStream($conversationId: ID!, $agentId: ID!) {\n  stopAgentStream(conversationId: $conversationId, agentId: $agentId)\n}",
+                "variables": "{\n  \"conversationId\": \"01984050-a4d3-7cb1-b0f6-871926431a79\",\n  \"agentId\": \"\"\n}"
+              }
+            },
+            "url": {
+              "raw": "http://localhost:4000/api/v1alpha",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "dummy search advance",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": ""
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "search advance",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json, text/plain, */*"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "en-US,en;q=0.9"
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "https://ssotest.soar-stage.devo.com"
+              },
+              {
+                "key": "Referer",
+                "value": "https://ssotest.soar-stage.devo.com/cases?mode=%22basic%22"
+              },
+              {
+                "key": "Sec-Fetch-Dest",
+                "value": "empty"
+              },
+              {
+                "key": "Sec-Fetch-Mode",
+                "value": "cors"
+              },
+              {
+                "key": "Sec-Fetch-Site",
+                "value": "same-origin"
+              },
+              {
+                "key": "User-Agent",
+                "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"
+              },
+              {
+                "key": "lh-client-iso-timestamp",
+                "value": "2025-08-20T13:23:17+05:30"
+              },
+              {
+                "key": "sec-ch-ua",
+                "value": "\"Not;A=Brand\";v=\"99\", \"Google Chrome\";v=\"139\", \"Chromium\";v=\"139\""
+              },
+              {
+                "key": "sec-ch-ua-mobile",
+                "value": "?0"
+              },
+              {
+                "key": "sec-ch-ua-platform",
+                "value": "\"macOS\""
+              },
+              {
+                "key": "Cookie",
+                "value": "_gcl_au=1.1.289571571.1750914913; __hstc=7965229.745fe5010563c203b26e65d165b1d72d.1750914915077.1750914915077.1750914915077.1; hubspotutk=745fe5010563c203b26e65d165b1d72d; __hs_opt_out=no; _ga=GA1.1.1403919838.1750914913; _hjSessionUser_5084597=eyJpZCI6ImVkOTJmOWI3LWQ0MDItNWUzNC1iZjZiLTgwZjRjYzM3NThiMyIsImNyZWF0ZWQiOjE3NTA5MTQ5MTMyMTUsImV4aXN0aW5nIjp0cnVlfQ==; _uetvid=eb82d240360011f0810cf99024888f06; _ga_Y9MRV0P8CJ=GS2.1.s1750999181$o16$g1$t1750999181$j60$l0$h1005717345; cfz_zaraz-analytics=%7B%22_cfa_clientId%22%3A%7B%22v%22%3A%2249567991263507784%22%2C%22e%22%3A1779204971075%7D%2C%22_cfa_sId%22%3A%7B%22v%22%3A%2273970468425545900%22%2C%22e%22%3A1755166801075%7D%7D; DEVOSESSION=bfc1f611e02f0d5892b9ef14eb913940|a95b260e429e59b837243601ee3f0c07; PLAY_SESSION=eyJhbGciOiJIUzI1NiJ9.eyJkYXRhIjp7ImxodWItc2Vzc2lvbi1pZCI6ImxMWVJLdExlN0VacWc1dVc1cWpHIn0sIm5iZiI6MTc1NTY3NjM5NywiaWF0IjoxNzU1Njc2Mzk3fQ.HbYQfZgP0GdS09cT2eaSgFEuAp0PCIozkSWz7KASLjk"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"pageNumber\":0,\"pageSize\":25,\"query\":\"issueType = 'case'\",\"includeTaskEntityType\":true,\"includeWorkflow\":true,\"sortCol\":\"id\",\"sortOrder\":\"desc\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://ssotest.soar-stage.devo.com/api/cases/v2/search/advanced",
+              "protocol": "https",
+              "host": [
+                "ssotest",
+                "soar-stage",
+                "devo",
+                "com"
+              ],
+              "path": [
+                "api",
+                "cases",
+                "v2",
+                "search",
+                "advanced"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "New Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer a48f6d37ac697f3e9552e88a52c7289b",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"pageNumber\": 0,\n    \"pageSize\": 25,\n    \"query\": \"issueType = 'case'\",\n    \"includeTaskEntityType\": true,\n    \"includeWorkflow\": true,\n    \"sortCol\": \"id\",\n    \"sortOrder\": \"desc\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://api.stage.devo.com/case-management/api/casemanagement/cases/v2/search/advanced",
+              "protocol": "https",
+              "host": [
+                "api",
+                "stage",
+                "devo",
+                "com"
+              ],
+              "path": [
+                "case-management",
+                "api",
+                "casemanagement",
+                "cases",
+                "v2",
+                "search",
+                "advanced"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Authentication & User",
+      "item": [
+        {
+          "name": "Get User Details",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"query\": \"query { userDetails { details } }\"\n}"
+            },
+            "url": {
+              "raw": "{{host}}/api/v1alpha",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            },
+            "description": "Get current user's details from session cache using JWT token."
+          },
+          "response": []
+        },
+        {
+          "name": "Login with Devo Credentials",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer a48f6d37ac697f3e9552e88a52c7289b",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"query\": \"mutation LoginWithDevoCreds($details: Json!) { loginWithDevoCreds(details: $details) { details } }\",\n    \"variables\": {\n        \"details\": \"{\\\"credential\\\":{\\\"jwtSessionCredentials\\\":{\\\"jwtUserId\\\":\\\"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlY3VyaXR5X2ludGVsbGlnZW5jZSIsImlhdCI6MTc1MzUxOTAzMjgyNSwicm9sZXMiOlsiQWRtaW5pc3RyYXRvciJdLCJ0b2tlbiI6bnVsbH0.u0IXTDOeIZkwx2UKyN-czobzsKC3kcfODp5yOce9nSE\\\"},\\\"standAloneToken\\\":\\\"cde5f6e77ee6697d659ad5611b33fda4\\\"},\\\"domain\\\":{\\\"id\\\":\\\"a67d69c1-b31c-432d-8964-8bb7c28ab811\\\",\\\"name\\\":\\\"security_intelligence\\\"},\\\"email\\\":\\\"prashant.singh@devo.com\\\",\\\"id\\\":\\\"47e75d60-ce7a-4902-b344-006f2cd82e80\\\",\\\"jwt\\\":\\\"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlY3VyaXR5X2ludGVsbGlnZW5jZSIsImlhdCI6MTc1MzUxOTAzMjgyNSwicm9sZXMiOlsiQWRtaW5pc3RyYXRvciJdLCJ0b2tlbiI6bnVsbH0.u0IXTDOeIZkwx2UKyN-czobzsKC3kcfODp5yOce9nSE\\\",\\\"roleNames\\\":[\\\"Administrator\\\"],\\\"roleType\\\":\\\"ADMIN\\\",\\\"userDomain\\\":{\\\"email\\\":\\\"prashant.singh@devo.com\\\",\\\"id\\\":89736,\\\"userId\\\":\\\"47e75d60-ce7a-4902-b344-006f2cd82e80\\\",\\\"userName\\\":\\\"prashant.singh@devo.com\\\"},\\\"userName\\\":\\\"prashant.singh@devo.com\\\"}\"\n    }\n}"
+            },
+            "url": {
+              "raw": "{{host}}/api/v1alpha",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            },
+            "description": "Login with Devo credentials and store user details in session cache."
+          },
+          "response": []
+        },
+        {
+          "name": "GetUserDetailsForSession-cookie",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "_matrix_admin_console_key=SFMyNTY.g3QAAAACbQAAAAtfY3NyZl90b2tlbm0AAAAYZ0pTRlhpYm4yeExwMXMxV3lnNktpS3lzbQAAAAtfbWF0cml4X3NpZG0AAAAkNDc1NWI2MjYtNjU0Ny00MTMyLWIyZjAtZjliNmYwZTdkMjli.cJ0KYHalyGjbSVbiDq4kl0tKCWNpHSejg634mzhzSCY; _matrix_studio_key=SFMyNTY.g3QAAAACbQAAAAtfY3NyZl90b2tlbm0AAAAYQWFGUmQ5WG1sS1IxS3RMTjdDRmxHY25GbQAAAAtfbWF0cml4X3NpZG0AAAAkMzgyNGVmOGQtMTk3OS00N2E4LWE0ZTctM2QyNzE3MDg4Y2Y4.zqBNRfLft7elX-tAOJACH5Aw-0exrMwOlry3mjjMAFM; _matrix_sid=SFMyNTY.g2gDbQAAACQzODI0ZWY4ZC0xOTc5LTQ3YTgtYTRlNy0zZDI3MTcwODhjZjhuBgAiussqnAFiAAAHCA.pSRxn1HvSSwCst8FKWdvv6KCgUGMauogPfRFvrB3ums\n",
+                "type": "text",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"operationName\": \"GetUserDetailsForSession\",\n    \"variables\": {},\n    \"query\": \"query GetUserDetailsForSession {\\n  userDetails {\\n    details\\n    features {\\n      gitlabToolsEnabled\\n      customAgents\\n      secretsManagementEnabled\\n      devoAssistantEnabled\\n      devoToolsEnabled\\n      knowledgebasesViewOnly\\n      knowledgebasesEdit\\n      mcpManagement\\n      workflowsManage\\n      webhooksEnabled\\n      workflowBuilderEnabled\\n      rbacEnabled\\n      __typename\\n    }\\n    roles\\n    __typename\\n  }\\n}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/v1alpha",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "submit-token",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}/submit-token",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "submit-token"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "_exchange_session_for_token",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}/auth/refresh",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "auth",
+                "refresh"
+              ],
+              "query": [
+                {
+                  "key": "cookies",
+                  "value": null,
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Agents",
+      "item": [
+        {
+          "name": "Create Agent",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlY3VyaXR5X2ludGVsbGlnZW5jZSIsImlhdCI6MTc1MzQyNTY2MzAxNSwicm9sZXMiOlsiQWRtaW5pc3RyYXRvciJdLCJ0b2tlbiI6bnVsbH0._P_5f7Wm85dd34MAtj4xeNeB6Ns6LOFz3R8TtmXl9ZM",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation CreateAgent($input: AgentInput) { createAgent(input: $input) { id name model systemMessage context toolsCount } }\",\n  \"variables\": {\n    \"input\": {\n      \"name\": \"My Custom Agent\",\n      \"model\": \"claude-3-7-sonnet\",\n      \"systemMessage\": \"You are a helpful assistant.\",\n      \"context\": \"{\\\"role\\\": \\\"assistant\\\", \\\"domain\\\": \\\"general\\\"}\"\n    }\n  }\n} "
+            },
+            "url": {
+              "raw": "{{host}}/api/v1alpha",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            },
+            "description": "Create a new AI agent with custom configuration."
+          },
+          "response": []
+        },
+        {
+          "name": "Set Tool Call Policy",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlY3VyaXR5X2ludGVsbGlnZW5jZSIsImlhdCI6MTc1MzQyNTY2MzAxNSwicm9sZXMiOlsiQWRtaW5pc3RyYXRvciJdLCJ0b2tlbiI6bnVsbH0._P_5f7Wm85dd34MAtj4xeNeB6Ns6LOFz3R8TtmXl9ZM",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation SetToolCallPolicy($input: ToolCallPolicyInput!) { setToolCallPolicy(input: $input) { success message } }\",\n  \"variables\": {\n    \"input\": {\n      \"conversation_id\": \"019845b3-4893-7621-9d91-4ddbd35b9eae\",\n      \"tool_call_id\": \"tool_call_123\", \n      \"tool_call_approval_state\": \"APPROVE_ONCE\"\n    }\n  }\n} "
+            },
+            "url": {
+              "raw": "{{host}}/api/v1alpha",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            },
+            "description": "Set approval/denial policy for agent tool calls in a conversation."
+          },
+          "response": []
+        },
+        {
+          "name": "Curl tool call policy",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en-US,en;q=0.9"
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive"
+              },
+              {
+                "key": "Origin",
+                "value": "http://localhost:4000"
+              },
+              {
+                "key": "Referer",
+                "value": "http://localhost:4000/chat"
+              },
+              {
+                "key": "Sec-Fetch-Dest",
+                "value": "empty"
+              },
+              {
+                "key": "Sec-Fetch-Mode",
+                "value": "cors"
+              },
+              {
+                "key": "Sec-Fetch-Site",
+                "value": "same-origin"
+              },
+              {
+                "key": "User-Agent",
+                "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+              },
+              {
+                "key": "accept",
+                "value": "*/*"
+              },
+              {
+                "key": "authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlY3VyaXR5X2ludGVsbGlnZW5jZSIsImlhdCI6MTc1MzQyNTY2MzAxNSwicm9sZXMiOlsiQWRtaW5pc3RyYXRvciJdLCJ0b2tlbiI6bnVsbH0._P_5f7Wm85dd34MAtj4xeNeB6Ns6LOFz3R8TtmXl9ZM"
+              },
+              {
+                "key": "content-type",
+                "value": "application/json"
+              },
+              {
+                "key": "sec-ch-ua",
+                "value": "\"Not)A;Brand\";v=\"8\", \"Chromium\";v=\"138\", \"Google Chrome\";v=\"138\""
+              },
+              {
+                "key": "sec-ch-ua-mobile",
+                "value": "?0"
+              },
+              {
+                "key": "sec-ch-ua-platform",
+                "value": "\"macOS\""
+              },
+              {
+                "key": "Cookie",
+                "value": "Idea-5053a4ed=b8d7eba1-202c-415f-a792-03a1cd4c007c; _ga=GA1.1.773376948.1743928524; _ga_Z22WZS0E4E=GS1.1.1744111550.2.0.1744111550.0.0.0; _clck=1fka8pa%7C2%7Cfwh%7C0%7C1922; grafana_session=b957321da03522c3a05b2de9b1a4371c; grafana_session_expiry=1752639572"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation SetToolCallPolicy($input: ToolCallPolicyInput!) {\n  setToolCallPolicy(input: $input) {\n    success\n    message\n    __typename\n  }\n}",
+                "variables": "{\n  \"input\": {\n    \"conversationId\": \"019845de-04ad-73a3-b9d7-d20ddd1ada23\",\n    \"toolCallApprovalState\": \"APPROVE_ONCE\",\n    \"toolCallId\": \"tooluse_DSy5Pa4xSoecVzzDBFKDQw\"\n  }\n}"
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/v1alpha",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Documents",
+      "item": [
+        {
+          "name": "Get all documents",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en-US,en;q=0.9"
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive"
+              },
+              {
+                "key": "Origin",
+                "value": "https://ai-beta-us-east-2.devo.cloud"
+              },
+              {
+                "key": "Referer",
+                "value": "https://ai-beta-us-east-2.devo.cloud/studio"
+              },
+              {
+                "key": "Sec-Fetch-Dest",
+                "value": "empty"
+              },
+              {
+                "key": "Sec-Fetch-Mode",
+                "value": "cors"
+              },
+              {
+                "key": "Sec-Fetch-Site",
+                "value": "same-origin"
+              },
+              {
+                "key": "User-Agent",
+                "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+              },
+              {
+                "key": "accept",
+                "value": "*/*"
+              },
+              {
+                "key": "authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlbGYiLCJpYXQiOjE3NTgwODQ4NTY5NDUsInJvbGVzIjpbIkFkbWluaXN0cmF0b3IiXSwidG9rZW4iOm51bGx9.SvadGu9EQuDc3i-a2c-0t5FhcoT2VBnn-WApJq2bij0"
+              },
+              {
+                "key": "content-type",
+                "value": "application/json"
+              },
+              {
+                "key": "sec-ch-ua",
+                "value": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\""
+              },
+              {
+                "key": "sec-ch-ua-mobile",
+                "value": "?0"
+              },
+              {
+                "key": "sec-ch-ua-platform",
+                "value": "\"macOS\""
+              },
+              {
+                "key": "traceparent",
+                "value": "00-2897cefc02754c069456704406ef3903-a4c994707c893af7-01"
+              },
+              {
+                "key": "tracestate",
+                "value": "sentry=sampled"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query ListDocuments($first: Int, $after: String, $last: Int, $before: String, $filter: ListDocumentsFilter) {\n  listDocuments(\n    first: $first\n    after: $after\n    last: $last\n    before: $before\n    filter: $filter\n  ) {\n    edges {\n      cursor\n      node {\n        id\n        title\n        type\n        conversationId\n        timestamp\n        __typename\n      }\n      __typename\n    }\n    pageInfo {\n      hasNextPage\n      hasPreviousPage\n      startCursor\n      endCursor\n      __typename\n    }\n    __typename\n  }\n}\n",
+                "variables": "{\n  \"first\": 1000,\n  \"filter\": {}\n}"
+              }
+            },
+            "url": {
+              "raw": "https://ai-beta-us-east-2.devo.cloud/api/v1alpha",
+              "protocol": "https",
+              "host": [
+                "ai-beta-us-east-2",
+                "devo",
+                "cloud"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get docuemnt in coversation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en-US,en;q=0.9"
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive"
+              },
+              {
+                "key": "Origin",
+                "value": "https://ai-beta-us-east-2.devo.cloud"
+              },
+              {
+                "key": "Referer",
+                "value": "https://ai-beta-us-east-2.devo.cloud/studio"
+              },
+              {
+                "key": "Sec-Fetch-Dest",
+                "value": "empty"
+              },
+              {
+                "key": "Sec-Fetch-Mode",
+                "value": "cors"
+              },
+              {
+                "key": "Sec-Fetch-Site",
+                "value": "same-origin"
+              },
+              {
+                "key": "User-Agent",
+                "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+              },
+              {
+                "key": "accept",
+                "value": "*/*"
+              },
+              {
+                "key": "authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlbGYiLCJpYXQiOjE3NTgxMDEzODgzNjksInJvbGVzIjpbIkFkbWluaXN0cmF0b3IiXSwidG9rZW4iOm51bGx9.oa9Q465mKKi1vfty0BjjCP90lTJN8RzKcVbEwdMKo74"
+              },
+              {
+                "key": "content-type",
+                "value": "application/json"
+              },
+              {
+                "key": "sec-ch-ua",
+                "value": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\""
+              },
+              {
+                "key": "sec-ch-ua-mobile",
+                "value": "?0"
+              },
+              {
+                "key": "sec-ch-ua-platform",
+                "value": "\"macOS\""
+              },
+              {
+                "key": "traceparent",
+                "value": "00-db0eb35219534806a38d06f6889805fd-990e931521e3e006-01"
+              },
+              {
+                "key": "tracestate",
+                "value": "sentry=sampled"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query ListDocuments($first: Int, $after: String, $last: Int, $before: String, $filter: ListDocumentsFilter) {\n  listDocuments(\n    first: $first\n    after: $after\n    last: $last\n    before: $before\n    filter: $filter\n  ) {\n    edges {\n      cursor\n      node {\n        id\n        title\n        type\n        conversationId\n        timestamp\n        __typename\n      }\n      __typename\n    }\n    pageInfo {\n      hasNextPage\n      hasPreviousPage\n      startCursor\n      endCursor\n      __typename\n    }\n    __typename\n  }\n}\n",
+                "variables": "{\n  \"first\": 1000,\n  \"filter\": {\n    \"agentId\": \"QWdlbnQ6MDE5OTU3NjUtZjJhZS03NjY5LWI0NTQtMDllMmZiNDYwZGMy\"\n  }\n}"
+              }
+            },
+            "url": {
+              "raw": "https://ai-beta-us-east-2.devo.cloud/api/v1alpha",
+              "protocol": "https",
+              "host": [
+                "ai-beta-us-east-2",
+                "devo",
+                "cloud"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get document by id",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en-US,en;q=0.9"
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive"
+              },
+              {
+                "key": "Origin",
+                "value": "https://ai-beta-us-east-2.devo.cloud"
+              },
+              {
+                "key": "Referer",
+                "value": "https://ai-beta-us-east-2.devo.cloud/studio"
+              },
+              {
+                "key": "Sec-Fetch-Dest",
+                "value": "empty"
+              },
+              {
+                "key": "Sec-Fetch-Mode",
+                "value": "cors"
+              },
+              {
+                "key": "Sec-Fetch-Site",
+                "value": "same-origin"
+              },
+              {
+                "key": "User-Agent",
+                "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+              },
+              {
+                "key": "accept",
+                "value": "*/*"
+              },
+              {
+                "key": "authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsInVzZXIiOiJwcmFzaGFudC5zaW5naEBkZXZvLmNvbSIsImRvbWFpbiI6InNlbGYiLCJpYXQiOjE3NTgxMDEzODgzNjksInJvbGVzIjpbIkFkbWluaXN0cmF0b3IiXSwidG9rZW4iOm51bGx9.oa9Q465mKKi1vfty0BjjCP90lTJN8RzKcVbEwdMKo74"
+              },
+              {
+                "key": "content-type",
+                "value": "application/json"
+              },
+              {
+                "key": "sec-ch-ua",
+                "value": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\""
+              },
+              {
+                "key": "sec-ch-ua-mobile",
+                "value": "?0"
+              },
+              {
+                "key": "sec-ch-ua-platform",
+                "value": "\"macOS\""
+              },
+              {
+                "key": "traceparent",
+                "value": "00-aca7cce27e574a8fa9e63842e0e1ebee-abce7a6a27c8ccfc-01"
+              },
+              {
+                "key": "tracestate",
+                "value": "sentry=sampled"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query GetDocument($conversationId: ID!, $documentId: ID!) {\n  document(conversationId: $conversationId, documentId: $documentId) {\n    id\n    title\n    type\n    content\n    timestamp\n    __typename\n  }\n}\n",
+                "variables": "{\n  \"conversationId\": \"0199573c-6dda-7db3-a5ce-2c138aff389f\",\n  \"documentId\": \"recent_alerts_and_cases\"\n}"
+              }
+            },
+            "url": {
+              "raw": "https://ai-beta-us-east-2.devo.cloud/api/v1alpha",
+              "protocol": "https",
+              "host": [
+                "ai-beta-us-east-2",
+                "devo",
+                "cloud"
+              ],
+              "path": [
+                "api",
+                "v1alpha"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "alpaca",
+      "item": [
+        {
+          "name": "chat-completion",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"model\": \"fast\",\n    \"messages\": [\n        {\n            \"role\": \"user\",\n            \"content\": \"Hello\"\n        }\n    ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{alpacaHost}}/v1/chat/completions",
+              "host": [
+                "{{alpacaHost}}"
+              ],
+              "path": [
+                "v1",
+                "chat",
+                "completions"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "keycloak",
+      "item": [
+        {
+          "name": "get-token",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "grant_type",
+                  "value": "password",
+                  "type": "text",
+                  "uuid": "7569559d-a6d5-4ab0-a517-5a5d346422aa"
+                },
+                {
+                  "key": "client_id",
+                  "value": "admin-cli",
+                  "type": "text",
+                  "uuid": "ccf0815a-95f8-4965-afdb-f5b0308823a6"
+                },
+                {
+                  "key": "username",
+                  "value": "admin",
+                  "type": "text",
+                  "uuid": "e03355e5-1bc8-4d5d-ae11-5de3461a4377"
+                },
+                {
+                  "key": "password",
+                  "value": "admin",
+                  "type": "text",
+                  "uuid": "6fa7e5ef-8cb8-46a7-820c-97a2b628802c"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{authHost}}/realms/master/protocol/openid-connect/token",
+              "host": [
+                "{{authHost}}"
+              ],
+              "path": [
+                "realms",
+                "master",
+                "protocol",
+                "openid-connect",
+                "token"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

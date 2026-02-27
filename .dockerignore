@@ -1,0 +1,11 @@
+.env
+.git
+.mise.toml
+out/
+docs/
+*.md
+justfile
+Dockerfile
+.dockerignore
+.gitignore
+Matrix-Strike48_collections.postman_collection.json

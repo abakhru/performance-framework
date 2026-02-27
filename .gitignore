@@ -1,0 +1,7 @@
+.env
+out/
+bin/
+.DS_Store
+dashboard/runs.db
+influxdb_data/
+**/__pycache__/

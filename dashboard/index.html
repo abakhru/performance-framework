@@ -1,0 +1,3164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MATRIX // PERFORMANCE</title>
+<style>
+/* ═══════════════════════════════════════════════════════════════════
+   PREMIUM FINTECH THEME — Matrix Performance Dashboard
+   ═══════════════════════════════════════════════════════════════════ */
+:root,[data-theme="matrix"]{
+  --bg:#0B0D10;--bg2:#0E1014;--surface:#14171C;--surface2:#1A1E25;
+  --border:#1E2530;--border2:#2A3040;
+  --accent:#F5A623;--accent2:#E8962A;--accent3:#CC7A1A;--accent4:#7A4A10;--accentdim:#1E1508;
+  --text:#FFFFFF;--muted:#6B6F76;
+  --warn:#FFB547;--err:#EF4444;--blue:#3B82F6;--purple:#A855F7;--orange:#F97316;
+  --glow:0 4px 20px rgba(245,166,35,.25);
+  --rain-op:0;--rain-r:245;--rain-g:166;--rain-b:35;
+  --rain-fade-r:11;--rain-fade-g:13;--rain-fade-b:16;
+}
+[data-theme="cyberpunk"]{
+  --bg:#04000a;--bg2:#080010;--surface:#0d0018;--surface2:#130024;
+  --border:#2d0060;--border2:#4400aa;
+  --accent:#00fff5;--accent2:#00cccc;--accent3:#009999;--accent4:#004455;--accentdim:#001a22;
+  --text:#b3f8ff;--muted:#2a607a;
+  --warn:#ffe000;--err:#ff00aa;--blue:#00aaff;--purple:#cc88ff;--orange:#ff8800;
+  --glow:0 0 12px #00fff560;
+  --rain-op:0;--rain-r:0;--rain-g:255;--rain-b:245;
+  --rain-fade-r:4;--rain-fade-g:0;--rain-fade-b:10;
+}
+[data-theme="midnight"]{
+  --bg:#010308;--bg2:#02050f;--surface:#040a18;--surface2:#071224;
+  --border:#0e2244;--border2:#183566;
+  --accent:#4da6ff;--accent2:#2288ee;--accent3:#1166cc;--accent4:#0a3a80;--accentdim:#051a3d;
+  --text:#b8d4ff;--muted:#2a4870;
+  --warn:#ffe000;--err:#ff2222;--blue:#00aaff;--purple:#cc88ff;--orange:#ff8800;
+  --glow:0 0 12px #4da6ff60;
+  --rain-op:0;--rain-r:77;--rain-g:166;--rain-b:255;
+  --rain-fade-r:1;--rain-fade-g:3;--rain-fade-b:8;
+}
+[data-theme="amber"]{
+  --bg:#080400;--bg2:#100800;--surface:#160c00;--surface2:#1e1200;
+  --border:#3d2200;--border2:#5c3300;
+  --accent:#ff9500;--accent2:#cc7700;--accent3:#995500;--accent4:#553000;--accentdim:#2d1a00;
+  --text:#fff0b8;--muted:#705a20;
+  --warn:#ffe000;--err:#ff2222;--blue:#00aaff;--purple:#cc88ff;--orange:#ff8800;
+  --glow:0 0 12px #ff950060;
+  --rain-op:0;--rain-r:255;--rain-g:149;--rain-b:0;
+  --rain-fade-r:8;--rain-fade-g:4;--rain-fade-b:0;
+}
+[data-theme="aurora"]{
+  --bg:#010208;--bg2:#030412;--surface:#050616;--surface2:#080920;
+  --border:#1a0a3d;--border2:#2d1066;
+  --accent:#a855f7;--accent2:#8833dd;--accent3:#6611bb;--accent4:#3d0088;--accentdim:#1a003d;
+  --text:#e8d0ff;--muted:#5a3a7a;
+  --warn:#ffe000;--err:#ff2222;--blue:#00aaff;--purple:#cc88ff;--orange:#ff8800;
+  --glow:0 0 12px #a855f760;
+  --rain-op:0;--rain-r:168;--rain-g:85;--rain-b:247;
+  --rain-fade-r:1;--rain-fade-g:2;--rain-fade-b:8;
+}
+[data-theme="arctic"]{
+  --bg:#f0f6ff;--bg2:#e6f0ff;--surface:#ffffff;--surface2:#f5f8ff;
+  --border:#ccddf5;--border2:#aac5eb;
+  --accent:#0066cc;--accent2:#0055aa;--accent3:#004488;--accent4:#003066;--accentdim:#e0eeff;
+  --text:#0a2040;--muted:#5580aa;
+  --warn:#d97706;--err:#dc2626;--blue:#00aaff;--purple:#cc88ff;--orange:#ff8800;
+  --glow:0 0 12px #0066cc40;
+  --rain-op:0;--rain-r:0;--rain-g:102;--rain-b:204;
+  --rain-fade-r:240;--rain-fade-g:246;--rain-fade-b:255;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',system-ui,sans-serif;min-height:100vh;overflow:hidden}
+#rain{display:none}
+
+/* ═══════════════════════════════════════════════════════════════════
+   APP SHELL — sidebar + main area
+   ═══════════════════════════════════════════════════════════════════ */
+#app{display:flex;height:100vh;overflow:hidden;position:relative;z-index:1}
+
+/* ── Sidebar ── */
+.sidebar{
+  width:220px;flex-shrink:0;
+  background:var(--bg2);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+.sidebar-logo{
+  padding:20px 20px 16px;
+  border-bottom:1px solid var(--border);
+}
+.logo{
+  font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--accent);line-height:1;display:block;
+}
+.logo em{color:var(--text);font-style:normal;font-weight:400;opacity:.7}
+.logo-sub{font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:4px;display:flex;align-items:center;gap:6px}
+.sidebar-nav{flex:1;padding:12px 10px;overflow-y:auto}
+.sidebar-nav::-webkit-scrollbar{width:3px}
+.sidebar-nav::-webkit-scrollbar-thumb{background:var(--border2)}
+.tab{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;border-radius:10px;
+  color:var(--muted);font-size:12px;font-weight:500;letter-spacing:.3px;
+  cursor:pointer;transition:all .18s;user-select:none;
+  margin-bottom:2px;
+}
+.tab:hover{background:var(--surface);color:var(--text)}
+.tab.active{background:var(--surface);color:var(--accent)}
+.tab-icon{width:18px;height:18px;flex-shrink:0;opacity:.7}
+.tab.active .tab-icon{opacity:1}
+.tab-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);margin-left:auto;opacity:0}
+.tab.active .tab-dot{opacity:1}
+.sidebar-footer{padding:12px 10px;border-top:1px solid var(--border)}
+
+/* ── Main area ── */
+.main-area{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+/* ── Header ── */
+header{
+  height:64px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;
+  background:var(--bg2);
+  border-bottom:1px solid var(--border);
+}
+.header-left{display:flex;align-items:center;gap:12px}
+.status-bar{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--muted);transition:all .3s;flex-shrink:0}
+.dot.running{background:var(--accent);box-shadow:var(--glow);animation:blink 1.6s infinite}
+.dot.waiting{background:var(--warn);animation:blink 1s infinite}
+.dot.finished{background:var(--muted)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+.header-stats{display:flex;align-items:center;gap:6px}
+.hstat{
+  display:flex;flex-direction:column;align-items:flex-end;gap:1px;
+  padding:6px 12px;background:var(--surface);
+  border:1px solid var(--border);border-radius:10px;
+  min-width:72px;
+}
+.hstat-label{font-size:9px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;font-weight:500}
+.hstat-value{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--accent);line-height:1.2}
+.hstat-value.warn{color:var(--warn)}
+.hstat-value.err{color:var(--err)}
+.header-controls{display:flex;align-items:center;gap:8px;margin-left:8px}
+.theme-switcher{display:flex;align-items:center;gap:4px}
+.theme-swatch{width:14px;height:14px;border-radius:50%;border:2px solid transparent;background:var(--sw,#F5A623);cursor:pointer;transition:all .2s;padding:0;flex-shrink:0}
+.theme-swatch:hover{transform:scale(1.25)}
+.theme-swatch.active{border-color:var(--text);transform:scale(1.3)}
+.toggle-btn{
+  display:flex;align-items:center;gap:6px;padding:6px 12px;
+  background:var(--surface);border:1px solid var(--border2);border-radius:20px;
+  color:var(--muted);font-family:inherit;font-size:10px;font-weight:600;
+  letter-spacing:.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;white-space:nowrap;
+}
+.toggle-btn:hover{border-color:var(--accent3);color:var(--accent)}
+.toggle-btn.live{border-color:var(--accent);color:var(--accent);background:var(--accentdim)}
+.led{width:5px;height:5px;border-radius:50%;background:var(--muted);transition:all .2s}
+.toggle-btn.live .led{background:var(--accent);animation:blink 1s infinite}
+
+/* ── Content area ── */
+.content{flex:1;overflow-y:auto;overflow-x:hidden;padding:20px 24px}
+.content::-webkit-scrollbar{width:4px}
+.content::-webkit-scrollbar-track{background:transparent}
+.content::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+.pane{display:none}
+.pane.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.pane.active{animation:fadeIn .2s ease-out}
+
+/* ═══════════════════════════════════════════════════════════════════
+   CARDS
+   ═══════════════════════════════════════════════════════════════════ */
+.cards{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:12px}
+.cards.r2{grid-template-columns:repeat(6,1fr)}
+@media(max-width:1200px){.cards,.cards.r2{grid-template-columns:repeat(3,1fr)}}
+.card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:14px;padding:14px 16px;
+  position:relative;overflow:hidden;
+  box-shadow:0 4px 24px rgba(0,0,0,.3);
+  transition:box-shadow .2s,border-color .2s;
+}
+.card:hover{border-color:var(--border2);box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.card::before{content:'';position:absolute;top:0;left:20%;right:20%;height:1px;background:linear-gradient(90deg,transparent,rgba(245,166,35,.15),transparent)}
+.card-label{font-size:10px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.card-value{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--accent);line-height:1}
+.card-value.sm{font-size:17px}
+.card-value.warn{color:var(--warn)}
+.card-value.err{color:var(--err)}
+.card-value.blue{color:var(--blue)}
+.card-value.orange{color:var(--orange)}
+.card-value.purple{color:var(--purple)}
+.card-sub{font-size:10px;color:var(--muted);margin-top:4px}
+.card-delta{font-size:10px;margin-top:3px}
+.card-delta.up{color:var(--accent)}
+.card-delta.down{color:var(--err)}
+
+/* ─ Section divider ─ */
+.section-divider{
+  font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;
+  color:var(--muted);margin:16px 0 10px;
+  display:flex;align-items:center;gap:10px;
+}
+.section-divider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border2),transparent)}
+
+/* ═══════════════════════════════════════════════════════════════════
+   CHARTS
+   ═══════════════════════════════════════════════════════════════════ */
+.charts-row{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;margin-bottom:12px}
+@media(max-width:900px){.charts-row{grid-template-columns:1fr}}
+.chart-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:14px;padding:14px 16px;
+  box-shadow:0 4px 24px rgba(0,0,0,.3);
+}
+.chart-title{font-size:10px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.chart-title .cv{font-size:12px;font-weight:700;color:var(--accent)}
+canvas{width:100%!important;display:block}
+
+/* ─ Latency breakdown ─ */
+.lat-breakdown{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px}
+.lat-cell{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 12px;text-align:center}
+.lat-cell-label{font-size:9px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:5px}
+.lat-cell-val{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}
+
+/* ─ Timing waterfall ─ */
+.waterfall{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:12px;box-shadow:0 4px 24px rgba(0,0,0,.3)}
+.wf-row{display:flex;align-items:center;gap:10px;margin-bottom:7px;font-size:11px}
+.wf-label{width:140px;color:var(--muted);flex-shrink:0;font-weight:500}
+.wf-track{flex:1;height:6px;background:var(--surface2);border-radius:999px;overflow:hidden}
+.wf-fill{height:100%;border-radius:999px;transition:width .5s}
+.wf-val{width:60px;text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
+
+/* ─ Thresholds ─ */
+.checks-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
+.check-row{
+  display:flex;align-items:center;gap:10px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;padding:10px 14px;font-size:11px;font-weight:500;
+}
+.check-icon{font-size:14px;flex-shrink:0}
+.check-name{flex:1;color:var(--muted)}
+.check-val{font-weight:700;font-variant-numeric:tabular-nums;color:var(--accent)}
+.check-row.fail .check-name{color:var(--err)}
+.check-row.fail .check-val{color:var(--err)}
+.check-row.ok .check-icon::before{content:'✓';color:var(--accent)}
+.check-row.fail .check-icon::before{content:'✗';color:var(--err)}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ENDPOINTS TAB
+   ═══════════════════════════════════════════════════════════════════ */
+.group-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.filter-btn{
+  padding:5px 12px;font-size:11px;font-weight:500;letter-spacing:.3px;font-family:inherit;
+  background:var(--surface);border:1px solid var(--border);color:var(--muted);
+  border-radius:20px;cursor:pointer;transition:all .15s;
+}
+.filter-btn:hover{border-color:var(--border2);color:var(--text)}
+.filter-btn.active{border-color:var(--accent3);color:var(--accent);background:var(--accentdim)}
+
+/* ═══════════════════════════════════════════════════════════════════
+   TABLES
+   ═══════════════════════════════════════════════════════════════════ */
+table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.3)}
+thead tr{background:var(--surface2);border-bottom:1px solid var(--border2)}
+th{padding:10px 12px;text-align:left;font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+th.r,td.r{text-align:right}
+td{padding:10px 12px;font-size:12px;border-bottom:1px solid var(--border);font-variant-numeric:tabular-nums;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(245,166,35,.03)}
+.op-name{font-weight:600;color:var(--text)}
+.group-chip{display:inline-block;font-size:9px;padding:2px 7px;border-radius:20px;letter-spacing:.5px;text-transform:uppercase;font-weight:600;margin-left:6px;vertical-align:middle}
+.bar-wrap{display:flex;align-items:center;gap:10px}
+.bar-val{min-width:50px;text-align:right;font-weight:700}
+.bar-track{flex:1;height:4px;background:var(--surface2);border-radius:999px;overflow:hidden;min-width:80px}
+.bar-fill{height:100%;border-radius:999px;transition:width .5s}
+tr.active-row td{background:rgba(245,166,35,.05)!important}
+tr.active-row .op-name{color:var(--accent)}
+
+/* ═══════════════════════════════════════════════════════════════════
+   HTTP METRICS TAB
+   ═══════════════════════════════════════════════════════════════════ */
+.metrics-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:900px){.metrics-grid{grid-template-columns:1fr 1fr}}
+.metric-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;box-shadow:0 4px 24px rgba(0,0,0,.3)}
+.metric-name{font-size:10px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.metric-values{display:flex;gap:14px;flex-wrap:wrap}
+.mp{display:flex;flex-direction:column;gap:2px}
+.mp-label{font-size:9px;color:var(--muted);letter-spacing:.3px;font-weight:500}
+.mp-val{font-size:15px;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
+
+/* ═══════════════════════════════════════════════════════════════════
+   RUN TAB
+   ═══════════════════════════════════════════════════════════════════ */
+.run-section{margin-bottom:16px}
+.profile-picker{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.profile-btn{
+  flex:1;padding:12px 10px;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;
+  font-family:inherit;background:var(--surface);border:1px solid var(--border);
+  color:var(--muted);border-radius:12px;cursor:pointer;transition:all .2s;text-align:center;
+}
+.profile-btn:hover{border-color:var(--border2);color:var(--text)}
+.profile-btn.active{background:var(--accentdim);border-color:var(--accent);color:var(--accent);box-shadow:var(--glow)}
+.run-cfg-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:700px){.run-cfg-grid{grid-template-columns:1fr}}
+.run-cfg-grid.full{grid-template-columns:1fr}
+.field-group{display:flex;flex-direction:column;gap:4px}
+.field-label{font-size:10px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;color:var(--muted)}
+.field-input{
+  background:var(--bg2);border:1px solid var(--border2);color:var(--text);
+  font-family:inherit;font-size:13px;padding:8px 12px;
+  border-radius:10px;outline:none;transition:border-color .2s;width:100%;
+}
+.field-input:focus{border-color:var(--accent3);box-shadow:0 0 0 2px rgba(245,166,35,.1)}
+.field-input::placeholder{color:var(--muted);opacity:.5}
+select.field-input{cursor:pointer}
+.run-actions{display:flex;gap:10px;margin-top:16px}
+.run-btn{
+  flex:1;padding:13px;font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  font-family:inherit;border:1px solid;border-radius:12px;cursor:pointer;transition:all .2s;
+}
+.run-btn.start{background:var(--accentdim);border-color:var(--accent3);color:var(--accent);box-shadow:var(--glow)}
+.run-btn.start:hover:not(:disabled){background:var(--accent);color:#0B0D10;box-shadow:0 8px 32px rgba(245,166,35,.4)}
+.run-btn.stop{background:rgba(239,68,68,.08);border-color:#EF4444;color:var(--err)}
+.run-btn.stop:hover:not(:disabled){background:var(--err);color:#fff;box-shadow:0 8px 24px rgba(239,68,68,.4)}
+.run-btn:disabled{opacity:.35;cursor:not-allowed}
+.run-status-banner{
+  padding:12px 16px;border-radius:12px;font-size:12px;font-weight:500;
+  display:flex;align-items:center;gap:10px;margin-top:14px;border:1px solid;
+}
+.run-status-banner.idle{background:var(--surface);border-color:var(--border);color:var(--muted)}
+.run-status-banner.starting{background:rgba(255,181,71,.05);border-color:var(--warn);color:var(--warn)}
+.run-status-banner.running{background:rgba(245,166,35,.04);border-color:var(--accent3);color:var(--accent)}
+.run-status-banner.stopping{background:rgba(249,115,22,.05);border-color:var(--orange);color:var(--orange)}
+.run-status-banner.finished{background:var(--surface);border-color:var(--border2);color:var(--text)}
+.ramp-cfg{display:none}
+.ramp-cfg.visible{display:grid}
+
+/* ═══════════════════════════════════════════════════════════════════
+   HISTORY TAB
+   ═══════════════════════════════════════════════════════════════════ */
+.run-status{display:inline-block;font-size:9px;padding:3px 8px;border-radius:20px;letter-spacing:.5px;text-transform:uppercase;font-weight:600}
+.run-status.running{color:var(--accent);border:1px solid var(--accent3);animation:blink 1.6s infinite}
+.run-status.finished{color:var(--accent2);border:1px solid var(--accent4)}
+.run-status.failed{color:var(--err);border:1px solid var(--err)}
+.run-status.interrupted{color:var(--warn);border:1px solid var(--warn)}
+tr.run-row{cursor:pointer}
+tr.run-row:hover td{background:rgba(245,166,35,.04)!important;color:var(--text)}
+
+/* detail view */
+.detail-hidden{display:none}
+/* verdict banner */
+.verdict-banner{display:flex;align-items:center;gap:16px;padding:14px 18px;border-radius:14px;border:1px solid;margin-bottom:12px}
+.verdict-pass{background:rgba(245,166,35,.04);border-color:var(--accent3)}
+.verdict-fail{background:rgba(239,68,68,.04);border-color:var(--err)}
+.verdict-grade{font-size:28px;font-weight:800;line-height:1;min-width:56px;text-align:center}
+.verdict-pass .verdict-grade{color:var(--accent)}
+.verdict-fail .verdict-grade{color:var(--err)}
+.verdict-body{flex:1;display:flex;flex-direction:column;gap:5px}
+.verdict-title{font-size:12px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.verdict-pass .verdict-title{color:var(--accent)}
+.verdict-fail .verdict-title{color:var(--err)}
+.verdict-facts{display:flex;gap:20px;flex-wrap:wrap;font-size:11px;color:var(--muted)}
+.verdict-fact span{color:var(--text);font-weight:700}
+.verdict-score{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums;min-width:52px;text-align:right}
+.verdict-pass .verdict-score{color:var(--accent)}
+.verdict-fail .verdict-score{color:var(--err)}
+/* latency distribution */
+.lat-dist{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:12px;box-shadow:0 4px 24px rgba(0,0,0,.3)}
+.lat-dist-header{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);letter-spacing:.3px;margin-bottom:8px;text-transform:uppercase;font-weight:500}
+.lat-dist-track{position:relative;height:6px;background:var(--surface2);border-radius:999px;margin-bottom:8px}
+.lat-dist-range{position:absolute;top:0;height:100%;background:linear-gradient(90deg,var(--blue),var(--orange));border-radius:999px;opacity:.6}
+.lat-dist-pip{position:absolute;top:-4px;width:3px;height:14px;border-radius:1px}
+.lat-dist-labels{display:flex;justify-content:space-between;font-size:10px;font-variant-numeric:tabular-nums;color:var(--muted);font-weight:500}
+/* group distribution */
+.group-dist{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:12px;box-shadow:0 4px 24px rgba(0,0,0,.3)}
+.group-dist-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:11px}
+.group-dist-label{width:130px;flex-shrink:0;display:flex;align-items:center;gap:6px;white-space:nowrap;font-weight:500}
+.group-dist-track{flex:1;height:5px;background:var(--surface2);border-radius:999px;overflow:hidden}
+.group-dist-fill{height:100%;border-radius:999px}
+.group-dist-meta{font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:120px;text-align:right}
+/* 4-chart 2×2 grid */
+.charts-row-4{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+@media(max-width:900px){.charts-row-4{grid-template-columns:1fr}}
+/* ops table health badge */
+.op-health{display:inline-block;font-size:9px;padding:2px 7px;border-radius:20px;letter-spacing:.3px;text-transform:uppercase;font-weight:600;margin-left:6px;vertical-align:middle}
+.op-health.ok{color:var(--accent);border:1px solid var(--accent4);background:var(--accentdim)}
+.op-health.warn{color:var(--warn);border:1px solid rgba(255,181,71,.3);background:rgba(255,181,71,.06)}
+.op-health.slow{color:var(--err);border:1px solid rgba(239,68,68,.3);background:rgba(239,68,68,.06)}
+tr.ops-err td{background:rgba(239,68,68,.03)!important}
+tr.ops-slowest td{background:rgba(249,115,22,.03)!important}
+.back-btn{
+  padding:6px 14px;margin-bottom:14px;font-size:11px;font-weight:500;letter-spacing:.3px;text-transform:uppercase;
+  background:var(--surface);border:1px solid var(--border2);color:var(--muted);
+  font-family:inherit;border-radius:20px;cursor:pointer;transition:all .2s;
+}
+.back-btn:hover{color:var(--accent);border-color:var(--accent3)}
+.run-meta-bar{
+  display:flex;align-items:center;gap:20px;margin-bottom:14px;font-size:11px;
+  padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:14px;
+  box-shadow:0 4px 24px rgba(0,0,0,.3);
+}
+.run-meta-bar .mk{color:var(--muted);margin-right:4px;font-size:9px;text-transform:uppercase;letter-spacing:.5px;font-weight:500}
+.run-meta-bar .mv{color:var(--text);font-weight:700}
+.run-meta-bar .profile{color:var(--accent);letter-spacing:1px;text-transform:uppercase;font-weight:700}
+
+/* log stream */
+.log-stream{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:14px;padding:14px 16px;height:400px;overflow-y:auto;
+  font-size:11px;line-height:1.7;font-family:'SF Mono','Fira Code',monospace;
+  box-shadow:0 4px 24px rgba(0,0,0,.3);
+}
+.log-stream::-webkit-scrollbar{width:4px}
+.log-stream::-webkit-scrollbar-track{background:transparent}
+.log-stream::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.log-line{color:var(--muted)}
+.log-line .ts{color:var(--accent4);margin-right:10px;font-size:10px}
+.log-line .msg{color:var(--text)}
+.log-line.err .msg{color:var(--err)}
+.log-line.ok .msg{color:var(--accent)}
+
+/* section title */
+.stitle{
+  font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;
+  color:var(--muted);margin-bottom:10px;
+  display:flex;align-items:center;gap:10px;
+}
+.stitle::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border2),transparent)}
+
+/* histogram */
+.hist-wrap{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:12px;box-shadow:0 4px 24px rgba(0,0,0,.3)}
+.hist-bars{display:flex;align-items:flex-end;gap:4px;height:64px;margin-bottom:6px}
+.hist-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:default}
+.hist-bar{width:100%;border-radius:4px 4px 0 0;transition:opacity .2s;min-height:2px}
+.hist-bar-col:hover .hist-bar{opacity:.7}
+.hist-label{font-size:8px;color:var(--muted);white-space:nowrap;letter-spacing:.3px;text-align:center}
+.hist-pct{font-size:8px;color:var(--accent);font-weight:700;font-variant-numeric:tabular-nums}
+
+/* apdex */
+.apdex-detail{font-size:10px;color:var(--muted);margin-top:4px;font-weight:500}
+
+/* leaderboard */
+.leaderboard{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:4px 0;margin-bottom:12px;box-shadow:0 4px 24px rgba(0,0,0,.3)}
+.lb-row{display:flex;align-items:center;gap:10px;padding:8px 16px;border-bottom:1px solid var(--border);font-size:11px}
+.lb-row:last-child{border-bottom:none}
+.lb-rank{width:18px;font-size:10px;color:var(--muted);text-align:right;flex-shrink:0;font-weight:600}
+.lb-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;color:var(--text)}
+.lb-group{font-size:9px;padding:2px 7px;border-radius:20px;letter-spacing:.3px;text-transform:uppercase;flex-shrink:0;font-weight:600}
+.lb-bar-track{width:80px;height:4px;background:var(--surface2);border-radius:999px;overflow:hidden;flex-shrink:0}
+.lb-bar-fill{height:100%;border-radius:999px}
+.lb-val{width:54px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums;flex-shrink:0}
+
+/* 4-chart time-series row */
+.charts-row-live{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:10px;margin-bottom:12px}
+@media(max-width:1100px){.charts-row-live{grid-template-columns:1fr 1fr}}
+
+/* footer */
+footer{
+  flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
+  padding:8px 24px;border-top:1px solid var(--border);
+  background:var(--bg2);font-size:10px;color:var(--muted);font-weight:500;
+}
+
+/* discover tab */
+.disc-sources{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+@media(max-width:900px){.disc-sources{grid-template-columns:1fr}}
+.disc-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;box-shadow:0 4px 24px rgba(0,0,0,.3)}
+.disc-card-title{font-size:11px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+.disc-btn{
+  display:inline-block;padding:7px 16px;font-size:11px;font-weight:600;letter-spacing:.3px;text-transform:uppercase;
+  font-family:inherit;background:var(--surface2);border:1px solid var(--border2);color:var(--accent);
+  border-radius:20px;cursor:pointer;transition:all .2s;margin-top:8px;
+}
+.disc-btn:hover{background:var(--accentdim);border-color:var(--accent3)}
+.disc-btn:disabled{opacity:.4;cursor:not-allowed}
+.disc-drop-zone{border:1px dashed var(--border2);border-radius:12px;padding:14px;text-align:center;font-size:11px;color:var(--muted);cursor:pointer;margin-top:8px;transition:all .2s}
+.disc-drop-zone:hover,.disc-drop-zone.drag-over{border-color:var(--accent3);color:var(--text);background:var(--accentdim)}
+.disc-preview-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.disc-count{font-size:11px;color:var(--muted);font-weight:500}
+.disc-preview-table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:10px;font-size:11px}
+.disc-preview-table thead tr{background:var(--surface2)}
+.disc-preview-table th{padding:8px 10px;text-align:left;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;font-weight:600}
+.disc-preview-table td{padding:7px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+.disc-preview-table tr:last-child td{border-bottom:none}
+.disc-preview-table input[type=text],.disc-preview-table input[type=number]{background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-family:inherit;font-size:11px;padding:3px 8px;border-radius:8px;width:80px}
+.disc-preview-table input[type=text]{width:110px}
+.disc-preview-table input[type=number]{width:46px}
+.disc-remove-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:0 4px;transition:color .15s}
+.disc-remove-btn:hover{color:var(--err)}
+.disc-save-bar{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface);border:1px solid var(--border2);border-radius:14px}
+.disc-mode-toggle{display:flex;gap:10px;font-size:11px}
+.disc-mode-toggle label{display:flex;align-items:center;gap:5px;cursor:pointer;color:var(--muted);font-weight:500}
+.disc-mode-toggle input[type=radio]{accent-color:var(--accent)}
+.disc-mode-toggle label:has(input:checked){color:var(--accent)}
+.disc-save-btn{
+  padding:7px 20px;font-size:11px;font-weight:600;letter-spacing:.3px;text-transform:uppercase;
+  font-family:inherit;background:var(--accentdim);border:1px solid var(--accent3);color:var(--accent);
+  border-radius:20px;cursor:pointer;transition:all .2s;margin-left:auto;
+}
+.disc-save-btn:hover{background:var(--accent);color:#0B0D10}
+.disc-save-btn:disabled{opacity:.4;cursor:not-allowed}
+.disc-msg{font-size:11px;font-weight:500;padding:5px 10px;border-radius:8px}
+.disc-msg.ok{color:var(--accent);background:var(--accentdim)}
+.disc-msg.error{color:var(--err);background:rgba(239,68,68,.08)}
+.disc-empty{padding:28px;text-align:center;color:var(--muted);font-size:12px}
+.disc-type-chip{display:inline-block;font-size:9px;padding:2px 7px;border-radius:20px;letter-spacing:.3px;text-transform:uppercase;font-weight:600}
+.disc-type-rest{color:var(--blue);border:1px solid rgba(59,130,246,.3)}
+.disc-type-graphql{color:var(--purple);border:1px solid rgba(168,85,247,.3)}
+/* delta chips */
+.delta-chip{display:inline-block;font-size:9px;padding:2px 7px;border-radius:20px;margin-left:6px;font-weight:600}
+.delta-better{background:rgba(245,166,35,.1);color:var(--accent)}
+.delta-worse{background:rgba(239,68,68,.1);color:var(--err)}
+/* Chart.js integration */
+.chartjs-wrap{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:12px;box-shadow:0 4px 24px rgba(0,0,0,.3)}
+.chartjs-title{font-size:10px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.chartjs-title .cv{font-size:12px;font-weight:700;color:var(--accent)}
+#histTrendWrap{display:none}
+
+/* Health Hero Banner */
+.health-hero{display:flex;align-items:center;gap:0;background:var(--card);border-radius:14px;margin-bottom:16px;overflow:hidden;border:1px solid var(--border)}
+.health-status-block{padding:24px 32px;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:160px;background:rgba(255,255,255,0.02)}
+.health-badge{font-size:13px;font-weight:800;letter-spacing:3px;text-transform:uppercase;padding:6px 16px;border-radius:20px;background:rgba(255,255,255,0.06);color:var(--muted);transition:all .4s;white-space:nowrap}
+.health-badge.nominal{background:rgba(245,166,35,0.12);color:var(--accent);box-shadow:0 0 20px rgba(245,166,35,0.15)}
+.health-badge.degraded{background:rgba(245,197,66,0.12);color:var(--warn);box-shadow:0 0 20px rgba(245,197,66,0.12)}
+.health-badge.critical{background:rgba(232,83,58,0.12);color:var(--err);box-shadow:0 0 20px rgba(232,83,58,0.15)}
+.health-badge.loading{color:var(--muted);animation:pulse-opacity 1.2s ease-in-out infinite}
+@keyframes pulse-opacity{0%,100%{opacity:.4}50%{opacity:1}}
+.health-sub{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:500}
+.health-divider{width:1px;align-self:stretch;background:var(--border)}
+.health-kpi{flex:1;padding:20px 24px;display:flex;flex-direction:column;align-items:center;gap:6px;border-right:1px solid var(--border)}
+.health-kpi:last-child{border-right:none}
+.health-kpi-val{font-size:28px;font-weight:800;font-variant-numeric:tabular-nums;color:#fff;line-height:1;transition:color .4s}
+.health-kpi-err{color:var(--err)!important}
+.health-kpi-label{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:500}
+
+/* toast container */
+#toastContainer{position:fixed;bottom:60px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<canvas id="rain"></canvas>
+<div id="app">
+
+<!-- ══ SIDEBAR ═══════════════════════════════════════════════════════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <span class="logo"><span style="color:var(--accent)">M</span> PERF</span>
+    <div class="logo-sub">
+      <div class="dot waiting" id="statusDot"></div>
+      <span id="statusLabel">CONNECTING</span>
+      <span id="profileChip" style="color:var(--accent3);font-size:10px"></span>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="tab active" onclick="showTab('run')">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5,3 19,12 5,21"/></svg>
+      <span>Execute</span><div class="tab-dot"></div>
+    </div>
+    <div class="tab" onclick="showTab('overview')">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span>Overview</span><div class="tab-dot"></div>
+    </div>
+    <div class="tab" onclick="showTab('endpoints')">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3" cy="6" r="1.5" fill="currentColor"/><circle cx="3" cy="12" r="1.5" fill="currentColor"/><circle cx="3" cy="18" r="1.5" fill="currentColor"/></svg>
+      <span>Endpoints</span><div class="tab-dot"></div>
+    </div>
+    <div class="tab" onclick="showTab('http')">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+      <span>HTTP Metrics</span><div class="tab-dot"></div>
+    </div>
+    <div class="tab" onclick="showTab('log')">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4,17 10,11 4,5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+      <span>Log</span><div class="tab-dot"></div>
+    </div>
+    <div class="tab" onclick="showTab('history')">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+      <span>History</span><div class="tab-dot"></div>
+    </div>
+    <div class="tab" onclick="showTab('discover')">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span>Discover</span><div class="tab-dot"></div>
+    </div>
+  </nav>
+  <div class="sidebar-footer" style="font-size:10px;color:var(--muted)">
+    <div id="themeLabel" style="font-weight:500;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px"></div>
+    <div class="theme-switcher" id="themeSwitcher" style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">
+      <button class="theme-swatch active" data-theme="matrix"    title="Premium"   style="--sw:#F5A623"></button>
+      <button class="theme-swatch"        data-theme="cyberpunk" title="Cyberpunk" style="--sw:#00fff5"></button>
+      <button class="theme-swatch"        data-theme="midnight"  title="Midnight"  style="--sw:#4da6ff"></button>
+      <button class="theme-swatch"        data-theme="amber"     title="Amber"     style="--sw:#ff9500"></button>
+      <button class="theme-swatch"        data-theme="aurora"    title="Aurora"    style="--sw:#a855f7"></button>
+      <button class="theme-swatch"        data-theme="arctic"    title="Arctic"    style="--sw:#0066cc;background:#ddf"></button>
+    </div>
+  </div>
+</aside>
+
+<!-- ══ MAIN AREA ═══════════════════════════════════════════════════════════════ -->
+<div class="main-area">
+
+<!-- ── Header ── -->
+<header>
+  <div class="header-left" style="display:flex;align-items:center;gap:8px">
+    <span style="font-size:13px;color:var(--muted);font-weight:500" id="pageTitle">Execute</span>
+  </div>
+  <div class="header-stats">
+    <div class="hstat"><div class="hstat-label">VUs</div><div class="hstat-value" id="hVus">—</div></div>
+    <div class="hstat"><div class="hstat-label">Reqs</div><div class="hstat-value" id="hReqs">—</div></div>
+    <div class="hstat"><div class="hstat-label">RPS</div><div class="hstat-value" id="hRps">—</div></div>
+    <div class="hstat"><div class="hstat-label">p95 ms</div><div class="hstat-value" id="hP95">—</div></div>
+    <div class="hstat"><div class="hstat-label">Errors</div><div class="hstat-value" id="hFail">—</div></div>
+    <div class="header-controls">
+      <button class="toggle-btn live" id="toggleBtn" onclick="toggleMode()">
+        <div class="led"></div><span id="toggleLabel">LIVE</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ── Content ── -->
+<div class="content">
+
+<!-- ══ OVERVIEW ══════════════════════════════════════════════════════════════ -->
+<div id="pane-overview" class="pane">
+
+  <!-- Health Hero Banner -->
+  <div class="health-hero" id="healthHero">
+    <div class="health-status-block">
+      <div class="health-badge" id="healthBadge">IDLE</div>
+      <div class="health-sub">System Health</div>
+    </div>
+    <div class="health-divider"></div>
+    <div class="health-kpi">
+      <div class="health-kpi-val" id="herP95Val">—</div>
+      <div class="health-kpi-label">p95 Latency</div>
+    </div>
+    <div class="health-kpi">
+      <div class="health-kpi-val" id="herRpsVal">—</div>
+      <div class="health-kpi-label">Req / sec</div>
+    </div>
+    <div class="health-kpi">
+      <div class="health-kpi-val" id="herVusVal">—</div>
+      <div class="health-kpi-label">Active VUs</div>
+    </div>
+    <div class="health-kpi">
+      <div class="health-kpi-val health-kpi-err" id="herErrVal">—</div>
+      <div class="health-kpi-label">Error Rate</div>
+    </div>
+  </div>
+
+  <!-- Row 1: Core -->
+  <div class="section-divider">Core</div>
+  <div class="cards">
+    <div class="card">
+      <div class="card-label">Total Requests</div>
+      <div class="card-value" id="cReqs">—</div>
+      <div class="card-sub" id="cReqSub">&nbsp;</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Req / sec</div>
+      <div class="card-value" id="cRps">—</div>
+      <div class="card-sub" id="cRpsPeak">peak —</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Active VUs</div>
+      <div class="card-value" id="cVus">—</div>
+      <div class="card-sub" id="cVuSub">&nbsp;</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Iterations</div>
+      <div class="card-value" id="cIter">—</div>
+      <div class="card-sub" id="cIterRate">&nbsp;</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Error Rate</div>
+      <div class="card-value" id="cErr">—</div>
+      <div class="card-sub" id="cErrSub">&nbsp;</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Elapsed</div>
+      <div class="card-value" id="cElapsed">—</div>
+      <div class="card-sub" id="cElapsedSub">&nbsp;</div>
+    </div>
+  </div>
+
+  <!-- Row 2: Percentile Ladder -->
+  <div class="section-divider">Latency Percentiles</div>
+  <div class="cards r2">
+    <div class="card">
+      <div class="card-label">p50 (Median)</div>
+      <div class="card-value blue" id="cMed">—</div>
+      <div class="card-sub">ms</div>
+    </div>
+    <div class="card">
+      <div class="card-label">p75</div>
+      <div class="card-value" id="cP75">—</div>
+      <div class="card-sub">ms</div>
+    </div>
+    <div class="card">
+      <div class="card-label">p90</div>
+      <div class="card-value orange" id="cP90">—</div>
+      <div class="card-sub">ms</div>
+    </div>
+    <div class="card">
+      <div class="card-label">p95</div>
+      <div class="card-value" id="cP95">—</div>
+      <div class="card-sub">ms</div>
+    </div>
+    <div class="card">
+      <div class="card-label">p99</div>
+      <div class="card-value" id="cP99">—</div>
+      <div class="card-sub">ms</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Max</div>
+      <div class="card-value err" id="cMax">—</div>
+      <div class="card-sub">ms</div>
+    </div>
+  </div>
+
+  <!-- Row 3: Data + connections -->
+  <div class="section-divider">Network &amp; Data</div>
+  <div class="cards r2">
+    <div class="card">
+      <div class="card-label">Avg Latency</div>
+      <div class="card-value sm" id="cAvg">—</div>
+      <div class="card-sub">ms</div>
+    </div>
+    <div class="card">
+      <div class="card-label">TTFB avg</div>
+      <div class="card-value sm orange" id="cTtfb">—</div>
+      <div class="card-sub">ms</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Data Sent</div>
+      <div class="card-value sm blue" id="cDsent">—</div>
+      <div class="card-sub">&nbsp;</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Data Received</div>
+      <div class="card-value sm blue" id="cDrecv">—</div>
+      <div class="card-sub">&nbsp;</div>
+    </div>
+    <div class="card">
+      <div class="card-label">TLS Handshake</div>
+      <div class="card-value sm purple" id="cTls">—</div>
+      <div class="card-sub">ms</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Checks Pass</div>
+      <div class="card-value sm" id="cChecks">—</div>
+      <div class="card-sub" id="cChecksSub">&nbsp;</div>
+    </div>
+  </div>
+
+  <!-- Row 4: Diagnosis — Apdex, status codes, conn reuse, efficiency -->
+  <div class="section-divider">Diagnosis</div>
+  <div class="cards r2">
+    <div class="card">
+      <div class="card-label">Apdex Score</div>
+      <div class="card-value" id="cApdex">—</div>
+      <div class="apdex-detail" id="cApdexSub">&nbsp;</div>
+    </div>
+    <div class="card">
+      <div class="card-label">2xx Successes</div>
+      <div class="card-value" id="cS2xx">—</div>
+      <div class="card-sub">ok responses</div>
+    </div>
+    <div class="card">
+      <div class="card-label">4xx Client Err</div>
+      <div class="card-value warn" id="cS4xx">—</div>
+      <div class="card-sub">client errors</div>
+    </div>
+    <div class="card">
+      <div class="card-label">5xx Server Err</div>
+      <div class="card-value err" id="cS5xx">—</div>
+      <div class="card-sub">server errors</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Conn Reuse</div>
+      <div class="card-value purple" id="cConnReuse">—</div>
+      <div class="card-sub">% TCP reused</div>
+    </div>
+    <div class="card">
+      <div class="card-label">RPS / VU</div>
+      <div class="card-value orange" id="cEfficiency">—</div>
+      <div class="card-sub">throughput efficiency</div>
+    </div>
+  </div>
+
+  <!-- Timing waterfall -->
+  <div class="section-divider">Request Timing Breakdown</div>
+  <div class="waterfall">
+    <div class="wf-row">
+      <span class="wf-label">DNS lookup</span>
+      <div class="wf-track"><div class="wf-fill" id="wf-dns" style="background:#cc88ff"></div></div>
+      <span class="wf-val" id="wfv-dns" style="color:#cc88ff">—</span>
+    </div>
+    <div class="wf-row">
+      <span class="wf-label">TCP connecting</span>
+      <div class="wf-track"><div class="wf-fill" id="wf-conn" style="background:#cc88ff"></div></div>
+      <span class="wf-val" id="wfv-conn" style="color:#cc88ff">—</span>
+    </div>
+    <div class="wf-row">
+      <span class="wf-label">TLS handshake</span>
+      <div class="wf-track"><div class="wf-fill" id="wf-tls" style="background:#00aaff"></div></div>
+      <span class="wf-val" id="wfv-tls" style="color:#00aaff">—</span>
+    </div>
+    <div class="wf-row">
+      <span class="wf-label">Sending</span>
+      <div class="wf-track"><div class="wf-fill" id="wf-send" style="background:#ffe000"></div></div>
+      <span class="wf-val" id="wfv-send" style="color:#ffe000">—</span>
+    </div>
+    <div class="wf-row">
+      <span class="wf-label">Waiting (TTFB)</span>
+      <div class="wf-track"><div class="wf-fill" id="wf-wait" style="background:#ff8800"></div></div>
+      <span class="wf-val" id="wfv-wait" style="color:#ff8800">—</span>
+    </div>
+    <div class="wf-row">
+      <span class="wf-label">Receiving</span>
+      <div class="wf-track"><div class="wf-fill" id="wf-recv" style="background:var(--accent)"></div></div>
+      <span class="wf-val" id="wfv-recv" style="color:var(--accent)">—</span>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="section-divider">Time Series</div>
+  <div class="charts-row-live">
+    <div class="chart-card">
+      <div class="chart-title">Requests / sec <span class="cv" id="rpsVal">0.0</span></div>
+      <canvas id="rpsChart" height="72"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Latency p50 · p95 · p99 <span class="cv" id="latSpan">&nbsp;</span></div>
+      <canvas id="latChart" height="72"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Active VUs <span class="cv" id="vuSpan">&nbsp;</span></div>
+      <canvas id="vuChart" height="72"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">VU vs p95 ms <span class="cv" id="concurSpan">&nbsp;</span></div>
+      <canvas id="concurChart" height="72"></canvas>
+    </div>
+  </div>
+
+  <!-- Latency Heatmap -->
+  <div class="section-divider">Latency Heatmap (90d)</div>
+  <div style="margin-bottom:10px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <select class="field-input" id="heatmapMetric" style="width:140px" onchange="loadHeatmap()">
+        <option value="p95_ms">p95 latency</option>
+        <option value="p99_ms">p99 latency</option>
+        <option value="avg_ms">avg latency</option>
+        <option value="error_rate">error rate</option>
+        <option value="apdex_score">apdex score</option>
+      </select>
+      <span style="font-size:9px;color:var(--muted)">hover for details</span>
+    </div>
+    <div id="heatmapWrap" style="overflow-x:auto">
+      <div id="heatmapGrid" style="display:flex;flex-wrap:wrap;gap:2px;min-height:24px">
+        <span style="color:var(--muted);font-size:10px">No run data yet</span>
+      </div>
+      <div id="heatmapTooltip" style="display:none;position:fixed;background:var(--surface2);border:1px solid var(--border2);border-radius:2px;padding:6px 10px;font-size:10px;z-index:500;pointer-events:none"></div>
+    </div>
+  </div>
+
+  <!-- Slowest Ops Leaderboard -->
+  <div class="section-divider">Slowest Operations (live)</div>
+  <div id="slowestOps" class="leaderboard">
+    <div class="lb-row"><span style="color:var(--muted);font-size:10px;padding:4px 0">Waiting for endpoint data…</span></div>
+  </div>
+
+  <!-- Thresholds -->
+  <div class="section-divider">Thresholds</div>
+  <div class="checks-grid">
+    <div class="check-row ok" id="tRow0"><div class="check-icon"></div><div class="check-name">http_req_failed &lt; 1%</div><div class="check-val" id="tV0">—</div></div>
+    <div class="check-row ok" id="tRow1"><div class="check-icon"></div><div class="check-name">http_req_duration p(95) &lt; 5 000 ms</div><div class="check-val" id="tV1">—</div></div>
+    <div class="check-row ok" id="tRow2"><div class="check-icon"></div><div class="check-name">http_req_duration avg &lt; 2 000 ms</div><div class="check-val" id="tV2">—</div></div>
+    <div class="check-row ok" id="tRow3"><div class="check-icon"></div><div class="check-name">http_req_connecting avg &lt; 500 ms</div><div class="check-val" id="tV3">—</div></div>
+    <div class="check-row ok" id="tRow4"><div class="check-icon"></div><div class="check-name">http_req_waiting (TTFB) p(95) &lt; 4 000 ms</div><div class="check-val" id="tV4">—</div></div>
+    <div class="check-row ok" id="tRow5"><div class="check-icon"></div><div class="check-name">http_req_duration p(90) &lt; 3 000 ms</div><div class="check-val" id="tV5">—</div></div>
+  </div>
+
+</div>
+
+<!-- ══ ENDPOINTS ═════════════════════════════════════════════════════════════ -->
+<div id="pane-endpoints" class="pane">
+  <div class="group-filter" id="groupFilter">
+    <button class="filter-btn active" onclick="filterGroup('all',this)">All</button>
+  </div>
+  <div class="stitle">Operation Metrics</div>
+  <table>
+    <thead>
+      <tr>
+        <th style="min-width:220px">Operation</th>
+        <th class="r">Reqs</th><th class="r">Errors</th><th class="r">Err%</th>
+        <th class="r">Avg ms</th><th class="r">Min ms</th><th class="r">Max ms</th>
+        <th class="r">p90 ms</th><th style="min-width:180px">p95 Latency</th>
+      </tr>
+    </thead>
+    <tbody id="opsBody">
+      <tr><td colspan="9" style="text-align:center;padding:24px;color:var(--muted)">Waiting for k6…</td></tr>
+    </tbody>
+  </table>
+  <div id="opSparklines" style="margin-top:14px"></div>
+</div>
+
+<!-- ══ HTTP METRICS ══════════════════════════════════════════════════════════ -->
+<div id="pane-http" class="pane">
+  <div class="stitle">Core HTTP Metrics</div>
+  <div class="metrics-grid">
+    <div class="metric-card"><div class="metric-name">http_reqs · counter</div><div class="metric-values">
+      <div class="mp"><div class="mp-label">count</div><div class="mp-val" id="m_reqs_count">—</div></div>
+      <div class="mp"><div class="mp-label">rate/s</div><div class="mp-val" id="m_reqs_rate">—</div></div>
+    </div></div>
+    <div class="metric-card"><div class="metric-name">http_req_duration · trend</div><div class="metric-values">
+      <div class="mp"><div class="mp-label">avg</div><div class="mp-val" id="m_dur_avg">—</div></div>
+      <div class="mp"><div class="mp-label">min</div><div class="mp-val" id="m_dur_min">—</div></div>
+      <div class="mp"><div class="mp-label">med</div><div class="mp-val" id="m_dur_med">—</div></div>
+      <div class="mp"><div class="mp-label">max</div><div class="mp-val" id="m_dur_max">—</div></div>
+      <div class="mp"><div class="mp-label">p(90)</div><div class="mp-val" id="m_dur_p90">—</div></div>
+      <div class="mp"><div class="mp-label">p(95)</div><div class="mp-val" id="m_dur_p95">—</div></div>
+    </div></div>
+    <div class="metric-card"><div class="metric-name">http_req_failed · rate</div><div class="metric-values">
+      <div class="mp"><div class="mp-label">rate</div><div class="mp-val" id="m_fail_rate">—</div></div>
+      <div class="mp"><div class="mp-label">passes</div><div class="mp-val" id="m_fail_pass">—</div></div>
+      <div class="mp"><div class="mp-label">fails</div><div class="mp-val" id="m_fail_fail">—</div></div>
+    </div></div>
+    <div class="metric-card"><div class="metric-name">http_req_connecting · trend</div><div class="metric-values">
+      <div class="mp"><div class="mp-label">avg</div><div class="mp-val" id="m_conn_avg">—</div></div>
+      <div class="mp"><div class="mp-label">p(95)</div><div class="mp-val" id="m_conn_p95">—</div></div>
+      <div class="mp"><div class="mp-label">max</div><div class="mp-val" id="m_conn_max">—</div></div>
+    </div></div>
+    <div class="metric-card"><div class="metric-name">http_req_waiting · TTFB</div><div class="metric-values">
+      <div class="mp"><div class="mp-label">avg</div><div class="mp-val" id="m_wait_avg">—</div></div>
+      <div class="mp"><div class="mp-label">med</div><div class="mp-val" id="m_wait_med">—</div></div>
+      <div class="mp"><div class="mp-label">p(95)</div><div class="mp-val" id="m_wait_p95">—</div></div>
+      <div class="mp"><div class="mp-label">max</div><div class="mp-val" id="m_wait_max">—</div></div>
+    </div></div>
+    <div class="metric-card"><div class="metric-name">http_req_receiving · trend</div><div class="metric-values">
+      <div class="mp"><div class="mp-label">avg</div><div class="mp-val" id="m_recv_avg">—</div></div>
+      <div class="mp"><div class="mp-label">max</div><div class="mp-val" id="m_recv_max">—</div></div>
+    </div></div>
+    <div class="metric-card"><div class="metric-name">http_req_sending · trend</div><div class="metric-values">
+      <div class="mp"><div class="mp-label">avg</div><div class="mp-val" id="m_send_avg">—</div></div>
+      <div class="mp"><div class="mp-label">max</div><div class="mp-val" id="m_send_max">—</div></div>
+    </div></div>
+    <div class="metric-card"><div class="metric-name">http_req_tls_handshaking · trend</div><div class="metric-values">
+      <div class="mp"><div class="mp-label">avg</div><div class="mp-val" id="m_tls_avg">—</div></div>
+      <div class="mp"><div class="mp-label">max</div><div class="mp-val" id="m_tls_max">—</div></div>
+    </div></div>
+    <div class="metric-card"><div class="metric-name">data transferred</div><div class="metric-values">
+      <div class="mp"><div class="mp-label">sent</div><div class="mp-val" id="m_dsent">—</div></div>
+      <div class="mp"><div class="mp-label">received</div><div class="mp-val" id="m_drecv">—</div></div>
+    </div></div>
+  </div>
+</div>
+
+<!-- ══ LOG ═══════════════════════════════════════════════════════════════════ -->
+<div id="pane-log" class="pane">
+  <div class="stitle">Event Stream</div>
+  <div class="log-stream" id="logStream">
+    <div class="log-line"><span class="ts">--:--:--</span><span class="msg">Waiting for k6…</span></div>
+  </div>
+</div>
+
+<!-- ══ HISTORY ═══════════════════════════════════════════════════════════════ -->
+<div id="pane-history" class="pane">
+
+  <!-- List view -->
+  <div id="historyList">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div class="stitle" style="margin:0">Run History</div>
+      <button class="toggle-btn" onclick="loadHistory()" style="font-size:9px;padding:4px 10px">↺ REFRESH</button>
+    </div>
+
+    <!-- Chart.js p95 trend bar chart -->
+    <div class="chartjs-wrap" id="histTrendWrap">
+      <div class="chartjs-title">
+        p95 Latency Trend — last runs
+        <span class="cv" id="histTrendBest"></span>
+      </div>
+      <canvas id="histTrendChart" height="80"></canvas>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>#</th><th>Started</th><th>Profile</th>
+          <th class="r">VUs</th><th class="r">Duration</th><th class="r">Requests</th>
+          <th class="r">Fail%</th><th class="r">p95 ms</th><th class="r">Avg ms</th>
+          <th>Status</th><th></th>
+        </tr>
+      </thead>
+      <tbody id="runsBody">
+        <tr><td colspan="11" style="text-align:center;padding:24px;color:var(--muted)">Loading…</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Detail view (hidden until a run is clicked) -->
+  <div id="historyDetail" class="detail-hidden">
+    <button class="back-btn" onclick="backToList()">← All Runs</button>
+    <div class="run-meta-bar" id="detailMeta">&nbsp;</div>
+
+    <!-- Verdict -->
+    <div id="detailVerdict"></div>
+
+    <!-- Row 1: Core summary -->
+    <div class="cards" id="detailCards">
+      <div class="card"><div class="card-label">Total Requests</div><div class="card-value" id="d_reqs">—</div><div class="card-sub" id="d_reqs_sub">&nbsp;</div></div>
+      <div class="card"><div class="card-label">Max VUs</div><div class="card-value" id="d_vus">—</div></div>
+      <div class="card"><div class="card-label">Duration</div><div class="card-value" id="d_dur">—</div></div>
+      <div class="card"><div class="card-label">Peak RPS</div><div class="card-value" id="d_peak_rps">—</div><div class="card-sub" id="d_avg_rps_sub">&nbsp;</div></div>
+      <div class="card"><div class="card-label">Error Rate</div><div class="card-value" id="d_err">—</div><div class="card-sub" id="d_err_sub">&nbsp;</div></div>
+      <div class="card"><div class="card-label">Checks Pass</div><div class="card-value" id="d_checks">—</div></div>
+    </div>
+
+    <!-- Row 2: Latency percentile ladder -->
+    <div class="cards" style="margin-top:8px">
+      <div class="card"><div class="card-label">p50 (Median)</div><div class="card-value blue" id="d_med">—</div><div class="card-sub">ms</div></div>
+      <div class="card"><div class="card-label">p75</div><div class="card-value" id="d_p75">—</div><div class="card-sub">ms</div></div>
+      <div class="card"><div class="card-label">p90</div><div class="card-value orange" id="d_p90">—</div><div class="card-sub">ms</div></div>
+      <div class="card"><div class="card-label">p95</div><div class="card-value" id="d_p95">—</div><div class="card-sub">ms</div></div>
+      <div class="card"><div class="card-label">p99</div><div class="card-value" id="d_p99">—</div><div class="card-sub">ms</div></div>
+      <div class="card"><div class="card-label">TTFB avg</div><div class="card-value orange" id="d_ttfb">—</div><div class="card-sub">ms</div></div>
+    </div>
+
+    <!-- Row 3: Diagnosis — Apdex + status breakdown -->
+    <div class="cards" style="margin-top:8px">
+      <div class="card"><div class="card-label">Apdex Score</div><div class="card-value" id="d_apdex">—</div><div class="apdex-detail" id="d_apdex_sub">&nbsp;</div></div>
+      <div class="card"><div class="card-label">2xx OK</div><div class="card-value" id="d_s2xx">—</div><div class="card-sub">successes</div></div>
+      <div class="card"><div class="card-label">3xx Redirect</div><div class="card-value blue" id="d_s3xx">—</div><div class="card-sub">redirects</div></div>
+      <div class="card"><div class="card-label">4xx Client</div><div class="card-value warn" id="d_s4xx">—</div><div class="card-sub">client errors</div></div>
+      <div class="card"><div class="card-label">5xx Server</div><div class="card-value err" id="d_s5xx">—</div><div class="card-sub">server errors</div></div>
+      <div class="card"><div class="card-label">Conn Reuse</div><div class="card-value purple" id="d_conn_reuse">—</div><div class="card-sub">% TCP reused</div></div>
+    </div>
+
+    <!-- Latency distribution -->
+    <div class="section-divider" style="margin-top:10px">Latency Distribution</div>
+    <div id="detailLatDist"></div>
+
+    <!-- Latency Histogram -->
+    <div class="section-divider">Latency Histogram</div>
+    <div id="detailHistogram"></div>
+
+    <!-- Thresholds -->
+    <div class="section-divider">Threshold Evaluation</div>
+    <div class="checks-grid" id="detailThresholds"></div>
+
+    <!-- Data transfer -->
+    <div class="section-divider">Data Transfer</div>
+    <div id="detailTransfer"></div>
+
+    <!-- Time Series -->
+    <div class="section-divider">Time Series</div>
+    <div class="charts-row-4">
+      <div class="chart-card">
+        <div class="chart-title">Requests / sec <span class="cv" id="d_rpsVal">&nbsp;</span></div>
+        <canvas id="d_rpsChart" height="72"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">p50 · p95 · p99 ms <span class="cv" id="d_p95Val">&nbsp;</span></div>
+        <canvas id="d_p95Chart" height="72"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Active VUs <span class="cv" id="d_vuVal">&nbsp;</span></div>
+        <canvas id="d_vuChart" height="72"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Cumulative Requests <span class="cv" id="d_cumVal">&nbsp;</span></div>
+        <canvas id="d_cumChart" height="72"></canvas>
+      </div>
+    </div>
+
+    <!-- Group distribution -->
+    <div class="section-divider">Group Distribution</div>
+    <div id="detailGroupDist"></div>
+
+    <!-- Operations -->
+    <div class="section-divider">Operations</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Operation</th><th>Group</th>
+          <th class="r">Reqs</th><th class="r">Err%</th>
+          <th class="r">Avg ms</th><th class="r">Min ms</th><th class="r">Max ms</th>
+          <th class="r">p90 ms</th><th class="r">p99 ms</th><th style="min-width:160px">p95</th>
+        </tr>
+      </thead>
+      <tbody id="detailOpsBody"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- ══ DISCOVER ══════════════════════════════════════════════════════════════ -->
+<div id="pane-discover" class="pane">
+
+  <div class="stitle">Discovery Source</div>
+  <div class="disc-sources">
+
+    <!-- Postman -->
+    <div class="disc-card">
+      <div class="disc-card-title">📂 Postman Import</div>
+      <button class="disc-btn" id="discPostmanRepoBtn" onclick="discoverPostmanFromRepo()">Load from repo</button>
+      <div class="disc-drop-zone" id="discDropZone">
+        Drop Postman collection .json here<br>or click to browse
+        <input type="file" id="discFileInput" accept=".json" style="display:none" onchange="discoverPostmanFromFile(this)">
+      </div>
+    </div>
+
+    <!-- URL Scan -->
+    <div class="disc-card">
+      <div class="disc-card-title">🔍 Scan URL</div>
+      <div class="field-group" style="margin-bottom:6px">
+        <div class="field-label">Service Base URL</div>
+        <input class="field-input" id="discUrl" type="url" placeholder="https://api.example.com"/>
+      </div>
+      <div class="field-group" style="margin-bottom:6px">
+        <div class="field-label">Bearer Token (optional)</div>
+        <input class="field-input" id="discToken" type="password" placeholder="eyJ…"/>
+      </div>
+      <button class="disc-btn" id="discScanBtn" onclick="discoverUrl()">Scan</button>
+    </div>
+
+    <!-- Manual Add -->
+    <div class="disc-card">
+      <div class="disc-card-title">✏️ Manual Add</div>
+      <div class="field-group" style="margin-bottom:4px">
+        <div class="field-label">Name</div>
+        <input class="field-input" id="discManualName" type="text" placeholder="GetUsers"/>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:4px">
+        <div class="field-group">
+          <div class="field-label">Path</div>
+          <input class="field-input" id="discManualPath" type="text" placeholder="/api/users"/>
+        </div>
+        <div class="field-group">
+          <div class="field-label">Type</div>
+          <select class="field-input" id="discManualType">
+            <option value="rest">REST</option>
+            <option value="graphql">GraphQL</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px">
+        <div class="field-group">
+          <div class="field-label">Group</div>
+          <input class="field-input" id="discManualGroup" type="text" placeholder="api"/>
+        </div>
+        <div class="field-group">
+          <div class="field-label">Weight</div>
+          <input class="field-input" id="discManualWeight" type="number" placeholder="1" min="1" value="1"/>
+        </div>
+      </div>
+      <button class="disc-btn" onclick="discoverManualAdd()">Add to Preview</button>
+    </div>
+  </div>
+
+  <!-- Preview Table -->
+  <div class="disc-preview-header">
+    <div class="stitle" style="margin-bottom:0">Discovered Endpoints</div>
+    <div class="disc-count" id="discCount">0 endpoints</div>
+  </div>
+  <div id="discTableWrap">
+    <div class="disc-empty" id="discEmpty">No endpoints yet — use one of the discovery methods above</div>
+    <table class="disc-preview-table" id="discTable" style="display:none">
+      <thead>
+        <tr>
+          <th style="width:28px"><input type="checkbox" id="discSelectAll" title="Select all" onchange="discToggleAll(this.checked)"/></th>
+          <th>Name</th>
+          <th>Path</th>
+          <th>Type</th>
+          <th>Method</th>
+          <th>Group</th>
+          <th style="width:60px">Weight</th>
+          <th style="width:32px"></th>
+        </tr>
+      </thead>
+      <tbody id="discTableBody"></tbody>
+    </table>
+  </div>
+
+  <!-- Save Bar -->
+  <div class="disc-save-bar" style="margin-top:10px">
+    <div class="disc-mode-toggle">
+      <label><input type="radio" name="discMode" value="replace" checked> Replace all</label>
+      <label><input type="radio" name="discMode" value="merge"> Merge with existing</label>
+    </div>
+    <span id="discMsg" class="disc-msg" style="display:none"></span>
+    <button class="disc-save-btn" id="discSaveBtn" onclick="saveDiscoveredEndpoints()" disabled>Save endpoints.json</button>
+  </div>
+
+  <!-- Webhooks -->
+  <div style="margin-top:20px">
+    <div class="stitle">Webhooks <span style="font-size:9px;color:var(--muted);letter-spacing:0;text-transform:none">— notify external services on run events</span></div>
+    <div id="webhookList" style="margin-bottom:8px"></div>
+    <div class="disc-card" style="margin-top:8px">
+      <div class="disc-card-title">Add Webhook</div>
+      <div class="field-group" style="margin-bottom:4px">
+        <div class="field-label">Name</div>
+        <input class="field-input" id="whName" type="text" placeholder="slack-alerts"/>
+      </div>
+      <div class="field-group" style="margin-bottom:4px">
+        <div class="field-label">URL</div>
+        <input class="field-input" id="whUrl" type="url" placeholder="https://hooks.slack.com/…"/>
+      </div>
+      <div class="field-group" style="margin-bottom:6px">
+        <div class="field-label">Events</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;font-size:10px">
+          <label><input type="checkbox" id="whEvtFinished" checked> run.finished</label>
+          <label><input type="checkbox" id="whEvtFailed" checked> run.failed</label>
+          <label><input type="checkbox" id="whEvtSlo"> slo.breached</label>
+        </div>
+      </div>
+      <div class="field-group" style="margin-bottom:6px">
+        <div class="field-label">Secret (HMAC-SHA256, optional)</div>
+        <input class="field-input" id="whSecret" type="password" placeholder="my-secret"/>
+      </div>
+      <button class="disc-btn" onclick="addWebhook()">Add</button>
+    </div>
+  </div>
+
+  <!-- Data Files -->
+  <div style="margin-top:20px">
+    <div class="stitle">Data Files <span style="font-size:9px;color:var(--muted);letter-spacing:0;text-transform:none">— CSV files for data-driven load injection</span></div>
+    <div id="dataFileList" style="margin-bottom:8px"></div>
+    <div class="disc-card" style="margin-top:8px">
+      <div class="disc-card-title">Upload CSV</div>
+      <div class="field-group" style="margin-bottom:4px">
+        <div class="field-label">Name (used as data_file key in endpoints.json)</div>
+        <input class="field-input" id="dataFileName" type="text" placeholder="users"/>
+      </div>
+      <div class="disc-drop-zone" id="dataDropZone" style="margin-top:6px">
+        Drop CSV file here or click to browse
+        <input type="file" id="dataFileInput" accept=".csv" style="display:none" onchange="uploadDataFile(this)">
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ RUN ═════════════════════════════════════════════════════════════════ -->
+<div id="pane-run" class="pane active">
+
+  <!-- Profile picker -->
+  <div class="run-section">
+    <div class="stitle">Load Profile</div>
+    <div class="profile-picker">
+      <button class="profile-btn active" id="profileBtnSmoke" onclick="setProfile('smoke')">
+        SMOKE<br><span style="font-size:9px;letter-spacing:0;color:var(--muted)">2 VUs · 30s sanity</span>
+      </button>
+      <button class="profile-btn" id="profileBtnRamp" onclick="setProfile('ramp')">
+        RAMP<br><span style="font-size:9px;letter-spacing:0;color:var(--muted)">0→N VUs ramp · hold · down</span>
+      </button>
+      <button class="profile-btn" id="profileBtnSoak" onclick="setProfile('soak')">
+        SOAK<br><span style="font-size:9px;letter-spacing:0;color:var(--muted)">sustained load endurance</span>
+      </button>
+      <button class="profile-btn" id="profileBtnStress" onclick="setProfile('stress')">
+        STRESS<br><span style="font-size:9px;letter-spacing:0;color:var(--muted)">step-up to breaking point</span>
+      </button>
+      <button class="profile-btn" id="profileBtnSpike" onclick="setProfile('spike')">
+        SPIKE<br><span style="font-size:9px;letter-spacing:0;color:var(--muted)">instant burst resilience</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Profiles -->
+  <div class="run-section">
+    <div class="stitle">Environment Profile <span style="font-size:9px;color:var(--muted);letter-spacing:0;text-transform:none">— save &amp; load named configs</span></div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px">
+      <select class="field-input" id="profileSelect" style="flex:1;min-width:140px" onchange="loadProfile(this.value)">
+        <option value="">— select profile —</option>
+      </select>
+      <button class="disc-btn" onclick="saveCurrentProfile()">Save as…</button>
+      <button class="disc-btn" onclick="deleteCurrentProfile()" id="profileDeleteBtn" style="display:none">Delete</button>
+    </div>
+  </div>
+
+  <!-- SLO Thresholds -->
+  <div class="run-section">
+    <div class="stitle" style="cursor:pointer" onclick="toggleSloPanel()">
+      SLO Thresholds <span style="font-size:9px;color:var(--muted);letter-spacing:0;text-transform:none">— pass/fail criteria for each run</span>
+      <span id="sloPanelToggle" style="float:right;font-size:10px;color:var(--accent)">▸ expand</span>
+    </div>
+    <div id="sloPanel" style="display:none">
+      <div class="run-cfg-grid" style="margin-top:8px">
+        <div class="field-group">
+          <div class="field-label">p95 ms ≤</div>
+          <input class="field-input" id="sloP95" type="number" placeholder="500"/>
+        </div>
+        <div class="field-group">
+          <div class="field-label">p99 ms ≤</div>
+          <input class="field-input" id="sloP99" type="number" placeholder="2000"/>
+        </div>
+        <div class="field-group">
+          <div class="field-label">Error rate ≤</div>
+          <input class="field-input" id="sloErrRate" type="number" placeholder="0.01" step="0.001"/>
+        </div>
+        <div class="field-group">
+          <div class="field-label">Checks rate ≥</div>
+          <input class="field-input" id="sloChecks" type="number" placeholder="0.99" step="0.001"/>
+        </div>
+        <div class="field-group">
+          <div class="field-label">Apdex ≥</div>
+          <input class="field-input" id="sloApdex" type="number" placeholder="0.85" step="0.01"/>
+        </div>
+      </div>
+      <button class="disc-btn" style="margin-top:8px" onclick="saveSloConfig()">Save SLO Config</button>
+      <span id="sloSaveMsg" style="font-size:10px;color:var(--accent);margin-left:10px;display:none">Saved ✓</span>
+    </div>
+  </div>
+
+  <!-- Target -->
+  <div class="run-section">
+    <div class="stitle">Target</div>
+    <div class="run-cfg-grid full">
+      <div class="field-group">
+        <div class="field-label">Base URL</div>
+        <input class="field-input" id="cfgBaseUrl" type="url" placeholder="https://ai-beta-us-east-2.devo.cloud"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- Auth -->
+  <div class="run-section">
+    <div class="stitle">Authentication <span style="font-size:9px;color:var(--muted);letter-spacing:0;text-transform:none">— fill only the fields for your chosen auth mode</span></div>
+    <div class="run-cfg-grid">
+      <div class="field-group" style="grid-column:1/-1">
+        <div class="field-label">Bearer Token (AUTH_TOKEN)</div>
+        <input class="field-input" id="cfgAuthToken" type="password" placeholder="eyJ…  — use this OR one of the modes below"/>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Basic Auth User (AUTH_BASIC_USER)</div>
+        <input class="field-input" id="cfgAuthBasicUser" type="text" placeholder="username"/>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Basic Auth Password (AUTH_BASIC_PASS)</div>
+        <input class="field-input" id="cfgAuthBasicPass" type="password" placeholder="password"/>
+      </div>
+      <div class="field-group">
+        <div class="field-label">API Key (AUTH_API_KEY)</div>
+        <input class="field-input" id="cfgAuthApiKey" type="password" placeholder="my-api-key"/>
+      </div>
+      <div class="field-group">
+        <div class="field-label">API Key Header (AUTH_API_KEY_HEADER)</div>
+        <input class="field-input" id="cfgAuthApiKeyHeader" type="text" placeholder="X-API-Key"/>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Auth Host — Keycloak (AUTH_HOST)</div>
+        <input class="field-input" id="cfgAuthHost" type="url" placeholder="https://auth.example.com"/>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Realm (AUTH_REALM)</div>
+        <input class="field-input" id="cfgAuthRealm" type="text" placeholder="master"/>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Client ID (AUTH_CLIENT_ID)</div>
+        <input class="field-input" id="cfgAuthClientId" type="text" placeholder="my-client"/>
+      </div>
+      <div class="field-group" style="grid-column:1/-1">
+        <div class="field-label">Client Secret (AUTH_CLIENT_SECRET)</div>
+        <input class="field-input" id="cfgAuthClientSecret" type="password" placeholder="••••••••"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- Load config — fields shown conditionally per profile -->
+  <div class="run-section">
+    <div class="stitle">Load Configuration</div>
+    <div class="run-cfg-grid ramp-cfg" id="rampCfgFields">
+      <div class="field-group">
+        <div class="field-label">Max VUs</div>
+        <input class="field-input" id="cfgVus" type="number" min="1" max="500" placeholder="10"/>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Hold Duration</div>
+        <input class="field-input" id="cfgDuration" type="text" placeholder="60s"/>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Ramp Duration</div>
+        <input class="field-input" id="cfgRampDuration" type="text" placeholder="30s"/>
+      </div>
+    </div>
+    <div id="profileNote" style="font-size:10px;color:var(--muted);padding:6px 0">Smoke uses fixed 2 VUs · 30s — no load config needed.</div>
+  </div>
+
+  <!-- Actions -->
+  <div class="run-actions">
+    <button class="run-btn start" id="startBtn" onclick="startRun()">▶ START RUN</button>
+    <button class="run-btn stop"  id="stopBtn"  onclick="stopRun()" disabled>■ STOP</button>
+  </div>
+
+  <!-- Status banner -->
+  <div class="run-status-banner idle" id="runBanner">
+    <div class="dot" id="runBannerDot"></div>
+    <span id="runBannerText">No run active — configure above and click START RUN</span>
+  </div>
+
+</div>
+
+</div><!-- /.content -->
+
+<footer>
+  <span style="display:flex;align-items:center;gap:8px">
+    <span style="color:var(--accent);font-weight:700">M PERF</span>
+    <span>k6 :6565 · InfluxDB :8086</span>
+  </span>
+  <span style="font-variant-numeric:tabular-nums" id="ticker">&nbsp;</span>
+  <span style="display:flex;gap:16px;align-items:center">
+    <span style="opacity:.4">1–7: tabs · T: theme · L: live</span>
+    <span id="lastUpdated">&nbsp;</span>
+  </span>
+</footer>
+
+</div><!-- /.main-area -->
+</div><!-- /#app -->
+
+<script>
+/* ══════════════════════════════════════════════════════════════════
+   DIGITAL RAIN — 2D Canvas
+   ══════════════════════════════════════════════════════════════════ */
+(function(){
+  const cv=document.getElementById('rain'),ctx=cv.getContext('2d');
+  const CH='アイウエオカキクケコサシスセソナニヌネノハヒフヘホマミムメモABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&<>/|\\';
+  const FS=14;let cols,drops;
+  function resize(){
+    cv.width=innerWidth;cv.height=innerHeight;
+    cols=Math.floor(cv.width/FS);
+    drops=Array.from({length:cols},()=>Math.random()*-100);
+  }
+  addEventListener('resize',resize);resize();
+  function rainColor(){
+    const s=getComputedStyle(document.documentElement);
+    return`rgb(${s.getPropertyValue('--rain-r').trim()||0},${s.getPropertyValue('--rain-g').trim()||255},${s.getPropertyValue('--rain-b').trim()||65})`;
+  }
+  function fadeFill(){
+    const s=getComputedStyle(document.documentElement);
+    return`rgba(${s.getPropertyValue('--rain-fade-r').trim()||2},${s.getPropertyValue('--rain-fade-g').trim()||12},${s.getPropertyValue('--rain-fade-b').trim()||2},0.042)`;
+  }
+  setInterval(()=>{
+    ctx.fillStyle=fadeFill();
+    ctx.fillRect(0,0,cv.width,cv.height);
+    ctx.font=`bold ${FS}px 'Courier New',monospace`;
+    ctx.fillStyle=rainColor();
+    for(let i=0;i<cols;i++){
+      const ch=CH[Math.floor(Math.random()*CH.length)];
+      ctx.fillText(ch,i*FS,drops[i]*FS);
+      if(drops[i]*FS>cv.height&&Math.random()>.975)drops[i]=0;
+      drops[i]++;
+    }
+  },50);
+})();
+
+/* ══════════════════════════════════════════════════════════════════
+   HEALTH HERO BANNER
+   ══════════════════════════════════════════════════════════════════ */
+window.updateGauge=function(p95,rps,vus,run){
+  const fmtP95=v=>v>0?(v<1000?Math.round(v)+' ms':((v/1000).toFixed(1))+' s'):'—';
+  const ep=document.getElementById('herP95Val');
+  const er=document.getElementById('herRpsVal');
+  const ev=document.getElementById('herVusVal');
+  const ee=document.getElementById('herErrVal');
+  const eb=document.getElementById('healthBadge');
+  if(ep)ep.textContent=fmtP95(p95);
+  if(er)er.textContent=rps>0?rps.toFixed(1)+'/s':'—';
+  if(ev)ev.textContent=vus||'—';
+  if(eb){
+    if(!run){eb.textContent='IDLE';eb.className='health-badge';}
+    else if(p95<=0){eb.textContent='LOADING';eb.className='health-badge loading';}
+    else if(p95<300){eb.textContent='NOMINAL';eb.className='health-badge nominal';}
+    else if(p95<700){eb.textContent='DEGRADED';eb.className='health-badge degraded';}
+    else{eb.textContent='CRITICAL';eb.className='health-badge critical';}
+  }
+};
+window.updateOrb=window.updateGauge;
+
+/* ══════════════════════════════════════════════════════════════════
+   TAB ROUTING
+   ══════════════════════════════════════════════════════════════════ */
+const TAB_NAMES=['run','overview','endpoints','http','log','history','discover'];
+const TAB_LABELS={run:'Execute',overview:'Overview',endpoints:'Endpoints',http:'HTTP Metrics',log:'Log',history:'History',discover:'Discover'};
+function showTab(name){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',TAB_NAMES[i]===name));
+  document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('active',p.id==='pane-'+name));
+  const pt=document.getElementById('pageTitle');if(pt)pt.textContent=TAB_LABELS[name]||name;
+  if(name==='history')  loadHistory();
+  if(name==='run')      loadRunConfig();
+  if(name==='overview') loadHeatmap();
+  if(name==='endpoints')loadOpSparklines();
+  if(name==='discover') { loadWebhooks(); loadDataFiles(); }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   SPARKLINE ENGINE
+   ══════════════════════════════════════════════════════════════════ */
+const POINTS=80;
+const S={rps:{d:[],c:'var(--accent)',fill:true},lat:{d:[],c:'#ffe000',fill:false},p95:{d:[],c:'#ff8800',fill:false},p99:{d:[],c:'#ff4422',fill:false},p50:{d:[],c:'#00cc66',fill:false},vu:{d:[],c:'var(--accent2)',fill:true}};
+function push(k,v){S[k].d.push(v);if(S[k].d.length>POINTS)S[k].d.shift()}
+
+function drawLine(canvasId,datasets,nPts){
+  const cv=document.getElementById(canvasId);if(!cv)return;
+  const W=cv.offsetWidth||400,H=cv.offsetHeight||72;
+  cv.width=W*devicePixelRatio;cv.height=H*devicePixelRatio;
+  const ctx=cv.getContext('2d');ctx.scale(devicePixelRatio,devicePixelRatio);
+  ctx.clearRect(0,0,W,H);
+  const _cs2=getComputedStyle(document.documentElement);
+  const _gr=_cs2.getPropertyValue('--rain-r').trim()||'0';
+  const _gg=_cs2.getPropertyValue('--rain-g').trim()||'200';
+  const _gb=_cs2.getPropertyValue('--rain-b').trim()||'100';
+  ctx.strokeStyle=`rgba(${_gr},${_gg},${_gb},0.06)`;ctx.lineWidth=1;
+  for(let i=1;i<4;i++){ctx.beginPath();ctx.moveTo(0,H/4*i);ctx.lineTo(W,H/4*i);ctx.stroke()}
+  for(const {d,c,fill} of datasets){
+    if(d.length<2)continue;
+    const n=nPts??d.length;
+    const mx=Math.max(...d,1);
+    const pts=d.map((v,i)=>({x:(i/(n-1))*W,y:H-(v/mx)*(H-6)-3}));
+    ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);
+    for(let i=1;i<pts.length;i++){const cx=(pts[i-1].x+pts[i].x)/2;ctx.bezierCurveTo(cx,pts[i-1].y,cx,pts[i].y,pts[i].x,pts[i].y)}
+    if(fill){
+      ctx.save();const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,c+'44');g.addColorStop(1,c+'00');
+      const fp=new Path2D();fp.moveTo(pts[0].x,H);pts.forEach(p=>fp.lineTo(p.x,p.y));fp.lineTo(pts[pts.length-1].x,H);fp.closePath();
+      ctx.fillStyle=g;ctx.fill(fp);ctx.restore();
+    }
+    ctx.strokeStyle=c;ctx.lineWidth=1.5;ctx.shadowColor=c;ctx.shadowBlur=4;ctx.stroke();ctx.shadowBlur=0;
+    const l=pts[pts.length-1];ctx.beginPath();ctx.arc(l.x,l.y,2.5,0,Math.PI*2);ctx.fillStyle=c;ctx.shadowColor=c;ctx.shadowBlur=6;ctx.fill();ctx.shadowBlur=0;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   LIVE / 5s TOGGLE
+   ══════════════════════════════════════════════════════════════════ */
+let liveMode=true,pollTimer=null;
+function toggleMode(){
+  liveMode=!liveMode;
+  document.getElementById('toggleBtn').classList.toggle('live',liveMode);
+  document.getElementById('toggleLabel').textContent=liveMode?'LIVE':'5s';
+  restartPoller();
+}
+function restartPoller(){clearInterval(pollTimer);pollTimer=setInterval(poll,liveMode?1500:5000)}
+
+/* ══════════════════════════════════════════════════════════════════
+   THEME SYSTEM
+   ══════════════════════════════════════════════════════════════════ */
+const THEMES=['matrix','cyberpunk','midnight','amber','aurora','arctic'];
+
+function setTheme(name,notify){
+  document.documentElement.setAttribute('data-theme',name);
+  localStorage.setItem('perf-theme',name);
+  document.querySelectorAll('.theme-swatch').forEach(s=>
+    s.classList.toggle('active',s.dataset.theme===name)
+  );
+  const lbl=document.getElementById('themeLabel');
+  if(lbl)lbl.textContent=name;
+  _updateRainOpacity();
+  if(notify)toast(name.toUpperCase(),'info',1800);
+}
+
+function _updateRainOpacity(){
+  const s=getComputedStyle(document.documentElement);
+  const op=parseFloat(s.getPropertyValue('--rain-op').trim())||0;
+  document.getElementById('rain').style.opacity=op;
+}
+
+document.querySelectorAll('.theme-swatch').forEach(s=>
+  s.addEventListener('click',()=>setTheme(s.dataset.theme,true))
+);
+
+/* ══════════════════════════════════════════════════════════════════
+   TOAST NOTIFICATIONS
+   ══════════════════════════════════════════════════════════════════ */
+function toast(msg,type='ok',duration=3000){
+  const el=document.createElement('div');
+  const colors={ok:'var(--accent)',err:'var(--err)',warn:'var(--warn)',info:'var(--muted)'};
+  const c=colors[type]||colors.ok;
+  el.style.cssText=`padding:8px 14px;background:var(--surface2);border:1px solid ${c};color:${c};font-size:11px;letter-spacing:1px;border-radius:2px;opacity:0;transition:opacity .3s;pointer-events:none;font-family:'Courier New',monospace;box-shadow:0 4px 20px rgba(0,0,0,.4)`;
+  el.textContent=msg;
+  document.getElementById('toastContainer').appendChild(el);
+  requestAnimationFrame(()=>{el.style.opacity='1';});
+  setTimeout(()=>{el.style.opacity='0';setTimeout(()=>el.remove(),300);},duration);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   KEYBOARD SHORTCUTS
+   ══════════════════════════════════════════════════════════════════ */
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
+  const tabs=['run','overview','endpoints','http','log','history','discover'];
+  if(e.key>='1'&&e.key<='7'){showTab(tabs[+e.key-1]);return;}
+  if(e.key==='t'||e.key==='T'){
+    const idx=THEMES.indexOf(document.documentElement.getAttribute('data-theme')||'matrix');
+    setTheme(THEMES[(idx+1)%THEMES.length],true);
+    return;
+  }
+  if(e.key==='l'||e.key==='L'){toggleMode();}
+});
+
+/* ══════════════════════════════════════════════════════════════════
+   OP METADATA  — loaded dynamically from /config/endpoints
+   ══════════════════════════════════════════════════════════════════ */
+// These are populated at startup by loadEndpointConfig(); code that
+// references them must run after DOMContentLoaded.
+let OP_GROUP={};
+let ALL_OPS=[];
+
+// Color palette for groups — cycles through predefined colors then generates
+const _GC_PALETTE=['#00ff41','#ffe000','#00cc33','#00aaff','#ff8800','#cc88ff','#44ffaa','#ff4444','#00ddff','#ffaa00','#ff66cc','#66ff99'];
+const _GC_ASSIGNED={};
+let _GC_NEXT=0;
+function groupColor(g){
+  if(!_GC_ASSIGNED[g]){_GC_ASSIGNED[g]=_GC_PALETTE[_GC_NEXT%_GC_PALETTE.length];_GC_NEXT++;}
+  return _GC_ASSIGNED[g];
+}
+// Legacy GC object — kept for backwards compat, proxy to groupColor
+const GC=new Proxy({},{get:(_,g)=>groupColor(g)});
+
+async function loadEndpointConfig(){
+  try{
+    const cfg=await fj('/config/endpoints');
+    const all_sections=[...(cfg.endpoints||[]),...(cfg.setup||[]),...(cfg.teardown||[])];
+    OP_GROUP={};
+    for(const ep of all_sections){if(ep.name)OP_GROUP[ep.name]=ep.group||ep.name;}
+    ALL_OPS=Object.keys(OP_GROUP);
+    // Pre-assign colors in stable order (groups from endpoints section)
+    const groups=[...new Set(all_sections.map(e=>e.group||e.name).filter(Boolean))];
+    groups.forEach(groupColor);
+  }catch{/* endpoints.json absent or server not ready — ops tab will be empty */}
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   STATE
+   ══════════════════════════════════════════════════════════════════ */
+let prevReqCount=null,prevTs=null,peakRps=0;
+let maxP95=100,opTrends={},activeGroupFilter='all';
+let _debugLogged=false,__ENV_PROFILE='—';
+const logLines=[];
+const tickChars='01アイウエオ力ナニヌ';let tickIdx=0;
+let runStartTs=null; // epoch ms when run started (from first successful status poll)
+
+function addLog(msg,cls=''){
+  const ts=new Date().toLocaleTimeString('en-GB',{hour12:false});
+  logLines.push({ts,msg,cls});if(logLines.length>300)logLines.shift();
+  const el=document.getElementById('logStream');
+  el.innerHTML=logLines.slice(-80).map(l=>`<div class="log-line ${l.cls}"><span class="ts">${l.ts}</span><span class="msg">${l.msg}</span></div>`).join('');
+  el.scrollTop=el.scrollHeight;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   FETCH
+   ══════════════════════════════════════════════════════════════════ */
+async function fj(path){const r=await fetch(path);if(!r.ok)throw new Error(r.status);return r.json()}
+
+async function poll(){
+  try{
+    const[sd,md]=await Promise.all([fj('/k6/v1/status'),fj('/k6/v1/metrics')]);
+    if(!_debugLogged&&md?.data?.length){
+      const s=md.data.find(d=>d.id==='http_reqs')??md.data[0];
+      console.log('[k6-dash] shape:',JSON.stringify(s,null,2));_debugLogged=true;
+    }
+    renderStatus(sd);renderMetrics(md);renderHTTPTab(md);renderEndpointsTab(md);updateCharts();
+    document.getElementById('lastUpdated').textContent='SYNC '+new Date().toLocaleTimeString('en-GB',{hour12:false});
+  }catch{setDot('waiting','CONNECTING')}
+  document.getElementById('ticker').textContent=tickChars[tickIdx++%tickChars.length];
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   STATUS
+   ══════════════════════════════════════════════════════════════════ */
+function renderStatus(data){
+  const s=data?.data?.attributes;if(!s)return;
+  const running=s.running,paused=s.paused;
+  setDot(running&&!paused?'running':running?'waiting':'finished',
+         !running?'FINISHED':paused?'PAUSED':'RUNNING');
+  if(running&&!runStartTs)runStartTs=Date.now();
+  set('hVus',s.vus??'—');set('cVus',s.vus??'—');
+  set('cVuSub',s['vus-max']?`max ${s['vus-max']}`:' ');
+  set('cIter',fmt(s.iterations??0));
+  set('cIterRate',(s['iteration-duration']??null)?`${fmtMs(s['iteration-duration'])} ms/iter`:' ');
+  if(runStartTs){const e=Math.floor((Date.now()-runStartTs)/1000);set('cElapsed',fmtDur(e));set('cElapsedSub',' ')}
+  push('vu',s.vus??0);set('vuSpan',s.vus??'—');
+}
+
+async function detectProfile(){
+  try{const d=await fj('/k6/v1/status');__ENV_PROFILE=d?.data?.attributes?.['script-options']?.env?.LOAD_PROFILE??'—';set('profileChip',`[${__ENV_PROFILE}]`)}catch{}
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   METRICS → OVERVIEW
+   ══════════════════════════════════════════════════════════════════ */
+function renderMetrics(data){
+  const m=idx(data);
+  const dur   =m['http_req_duration']?.sample??{};
+  const reqs  =m['http_reqs']?.sample??{};
+  const fail  =m['http_req_failed']?.sample??{};
+  const conn  =m['http_req_connecting']?.sample??{};
+  const wait  =m['http_req_waiting']?.sample??{};
+  const send  =m['http_req_sending']?.sample??{};
+  const recv  =m['http_req_receiving']?.sample??{};
+  const tls   =m['http_req_tls_handshaking']?.sample??{};
+  const dns   =m['http_req_blocked']?.sample??{};  // blocked ≈ DNS+queue
+  const dsent =m['data_sent']?.sample??{};
+  const drecv =m['data_received']?.sample??{};
+  const checks=m['checks']?.sample??{};
+
+  const totalReqs=+(reqs.count??0);
+  const failRate =+(fail.rate??0);
+  const avgMs    =+(dur.avg??0);
+  const p50Ms    =+(dur.med??0);
+  const p75Ms    =+(dur['p(75)']??0);
+  const p90Ms    =+(dur['p(90)']??0);
+  const p95Ms    =+(dur['p(95)']??0);
+  const p99Ms    =+(dur['p(99)']??0);
+  const minMs    =+(dur.min??0);
+  const medMs    =+(dur.med??0);
+  const maxMs    =+(dur.max??0);
+
+  // ── Header
+  set('hReqs',fmt(totalReqs));
+  set('hP95',fmtMs(p95Ms));
+  set('hFail',(failRate*100).toFixed(1)+'%');
+  setClass('hFail','hstat-value'+(failRate>0.01?' err':''));
+
+  // ── Core cards
+  set('cReqs',fmt(totalReqs));set('cReqSub',`${totalReqs} total`);
+  set('cErr',(failRate*100).toFixed(2)+'%');
+  const failN=Math.round(totalReqs*failRate);
+  set('cErrSub',failN?`${failN} failed`:'all passing');
+  setClass('cErr','card-value'+(failN?' err':''));
+
+  // RPS
+  const now=Date.now();
+  if(prevReqCount!==null){
+    const dt=(now-prevTs)/1000,rps=dt>0?Math.max(0,(totalReqs-prevReqCount)/dt):0;
+    push('rps',rps);if(rps>peakRps)peakRps=rps;
+    set('hRps',rps.toFixed(1));set('cRps',rps.toFixed(1));set('cRpsPeak',`peak ${peakRps.toFixed(1)}`);
+    set('rpsVal',rps.toFixed(1)+' /s');
+  }
+  prevReqCount=totalReqs;prevTs=now;
+
+  // ── Percentile ladder cards
+  set('cMed',fmtMs(p50Ms));set('cP75',fmtMs(p75Ms));
+  set('cP90',fmtMs(p90Ms));set('cP95',fmtMs(p95Ms));set('cP99',fmtMs(p99Ms));set('cMax',fmtMs(maxMs));
+  setLatClass('cP75',p75Ms);setLatClass('cP90',p90Ms);setLatClass('cP95',p95Ms);setLatClass('cP99',p99Ms,1000,3000);setLatClass('cMax',maxMs);
+  set('latSpan',`p50 ${fmtMs(p50Ms)} · p95 ${fmtMs(p95Ms)} · p99 ${fmtMs(p99Ms)}`);
+  push('lat',p50Ms);push('p95',p95Ms);push('p99',p99Ms);push('p50',p50Ms);
+
+  // ── Network cards
+  set('cAvg',fmtMs(avgMs));
+  set('cDsent',fmtBytes(dsent.count));set('cDrecv',fmtBytes(drecv.count));
+  set('cTtfb',fmtMs(wait.avg));setLatClass('cTtfb',wait.avg,300,1000);
+  set('cConn',fmtMs(conn.avg));set('cTls',fmtMs(tls.avg));
+  if(checks.rate!=null){
+    const pct=(checks.rate*100).toFixed(1);set('cChecks',pct+'%');
+    set('cChecksSub',`passes/total`);
+    setClass('cChecks','card-value sm'+(checks.rate<0.99?' warn':''));
+  }
+
+  // ── Diagnosis cards
+  // Apdex (computed from custom counters)
+  const apdexS=+(m['apdex_satisfied']?.sample?.count??0);
+  const apdexT=+(m['apdex_tolerating']?.sample?.count??0);
+  const apdexF=+(m['apdex_frustrated']?.sample?.count??0);
+  const apdexN=apdexS+apdexT+apdexF;
+  if(apdexN>0){
+    const score=(apdexS+apdexT*0.5)/apdexN;
+    set('cApdex',score.toFixed(3));
+    setClass('cApdex','card-value'+(score>=0.94?'':score>=0.85?' warn':' err'));
+    set('cApdexSub',`${apdexS}s ${apdexT}t ${apdexF}f`);
+  }
+  // Status codes
+  const s2xx=+(m['http_status_2xx']?.sample?.count??0);
+  const s4xx=+(m['http_status_4xx']?.sample?.count??0);
+  const s5xx=+(m['http_status_5xx']?.sample?.count??0);
+  set('cS2xx',fmt(s2xx));
+  set('cS4xx',fmt(s4xx));setClass('cS4xx','card-value warn'+(s4xx>0?'':' '));
+  set('cS5xx',fmt(s5xx));setClass('cS5xx','card-value err'+(s5xx>0?'':' '));
+  // Connection reuse rate
+  const connReuse=+(m['connection_reused']?.sample?.rate??null);
+  if(connReuse!=null){set('cConnReuse',(connReuse*100).toFixed(0)+'%')}
+  // RPS/VU efficiency
+  const liveVus=(S.vu.d.slice(-1)[0]??0)||1;
+  const liveRps=S.rps.d.slice(-1)[0]??0;
+  set('cEfficiency',liveVus>0&&liveRps>0?(liveRps/liveVus).toFixed(2):'—');
+
+  // ── Waterfall breakdown
+  const wfMax=Math.max(+(dns.avg??0),+(conn.avg??0),+(tls.avg??0),+(send.avg??0),+(wait.avg??0),+(recv.avg??0),1);
+  wf('dns', dns.avg,  wfMax);
+  wf('conn',conn.avg, wfMax);
+  wf('tls', tls.avg,  wfMax);
+  wf('send',send.avg, wfMax);
+  wf('wait',wait.avg, wfMax);
+  wf('recv',recv.avg, wfMax);
+
+  // ── Thresholds
+  thresh(0,failRate*100,     1,   v=>v.toFixed(2)+'%');
+  thresh(1,p95Ms,           5000, v=>fmtMs(v)+' ms');
+  thresh(2,avgMs,           2000, v=>fmtMs(v)+' ms');
+  thresh(3,+(conn.avg??0),  500,  v=>fmtMs(v)+' ms');
+  thresh(4,+(wait['p(95)']??0),4000,v=>fmtMs(v)+' ms');
+  thresh(5,p90Ms,           3000, v=>fmtMs(v)+' ms');
+
+  addLog(`reqs=${fmt(totalReqs)} rps=${(S.rps.d.slice(-1)[0]??0).toFixed(1)} p95=${fmtMs(p95Ms)}ms avg=${fmtMs(avgMs)}ms fail=${(failRate*100).toFixed(1)}%`,
+    failRate>0.01?'err':'ok');
+
+  // Update health hero banner
+  const ee=document.getElementById('herErrVal');
+  if(ee){ee.textContent=failRate>0?(failRate*100).toFixed(1)+'%':'—';ee.style.color=failRate>0.01?'var(--err)':'inherit';}
+  if(window.updateGauge)updateGauge(p95Ms, S.rps.d.slice(-1)[0]??0, S.vu.d.slice(-1)[0]??0, (S.vu.d.slice(-1)[0]??0)>0||(S.rps.d.slice(-1)[0]??0)>0);
+}
+
+function wf(key,val,max){
+  const pct=max>0?Math.min(100,(+(val??0)/max)*100):0;
+  const el=document.getElementById('wf-'+key);if(el)el.style.width=pct.toFixed(1)+'%';
+  set('wfv-'+key,fmtMs(val??0)+' ms');
+}
+function thresh(i,val,limit,fmt2){
+  const ok=val<=limit;
+  set('tV'+i,fmt2(val));
+  const row=document.getElementById('tRow'+i);if(row)row.className='check-row '+(ok?'ok':'fail');
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   HTTP TAB
+   ══════════════════════════════════════════════════════════════════ */
+function renderHTTPTab(data){
+  const m=idx(data);
+  const dur =m['http_req_duration']?.sample??{};
+  const conn=m['http_req_connecting']?.sample??{};
+  const wait=m['http_req_waiting']?.sample??{};
+  const recv=m['http_req_receiving']?.sample??{};
+  const send=m['http_req_sending']?.sample??{};
+  const tls =m['http_req_tls_handshaking']?.sample??{};
+  const reqs=m['http_reqs']?.sample??{};
+  const fail=m['http_req_failed']?.sample??{};
+  const dsent=m['data_sent']?.sample??{};
+  const drecv=m['data_received']?.sample??{};
+  const totalReqs=+(reqs.count??0);
+  const failRate=+(fail.rate??0),failN=Math.round(totalReqs*failRate);
+  set('m_reqs_count',fmt(totalReqs));set('m_reqs_rate',(+(reqs.rate??0)).toFixed(2));
+  set('m_dur_avg',fmtMs(dur.avg));set('m_dur_min',fmtMs(dur.min));set('m_dur_med',fmtMs(dur.med));
+  set('m_dur_max',fmtMs(dur.max));set('m_dur_p90',fmtMs(dur['p(90)']));set('m_dur_p95',fmtMs(dur['p(95)']));
+  set('m_fail_rate',(failRate*100).toFixed(2)+'%');set('m_fail_pass',fmt(totalReqs-failN));set('m_fail_fail',failN||'0');
+  set('m_conn_avg',fmtMs(conn.avg));set('m_conn_p95',fmtMs(conn['p(95)']));set('m_conn_max',fmtMs(conn.max));
+  set('m_wait_avg',fmtMs(wait.avg));set('m_wait_med',fmtMs(wait.med));set('m_wait_p95',fmtMs(wait['p(95)']));set('m_wait_max',fmtMs(wait.max));
+  set('m_recv_avg',fmtMs(recv.avg));set('m_recv_max',fmtMs(recv.max));
+  set('m_send_avg',fmtMs(send.avg));set('m_send_max',fmtMs(send.max));
+  set('m_tls_avg',fmtMs(tls.avg));set('m_tls_max',fmtMs(tls.max));
+  set('m_dsent',fmtBytes(dsent.count));set('m_drecv',fmtBytes(drecv.count));
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   ENDPOINTS TAB
+   ══════════════════════════════════════════════════════════════════ */
+function renderEndpointsTab(data){
+  const m=idx(data);
+
+  // Discover op names from live metric names (op_*_reqs) — works even before
+  // endpoints.json is loaded, and catches any op not in the config.
+  const liveOps=new Set(
+    Object.keys(m)
+      .filter(k=>k.startsWith('op_')&&k.endsWith('_reqs'))
+      .map(k=>k.slice(3,-5))
+  );
+  // Merge: config ops first (stable order), then any live ops not in config
+  const allOpNames=[...new Set([...ALL_OPS,...liveOps])];
+
+  const ops=allOpNames.map(op=>({
+    op,group:OP_GROUP[op]??'other',
+    reqs:+(m[`op_${op}_reqs`]?.sample?.count??0),
+    errs:+(m[`op_${op}_errs`]?.sample?.count??0),
+    avg: +(m[`op_${op}_ms`]?.sample?.avg??0),
+    min: +(m[`op_${op}_ms`]?.sample?.min??0),
+    max: +(m[`op_${op}_ms`]?.sample?.max??0),
+    p90: +(m[`op_${op}_ms`]?.sample?.['p(90)']??0),
+    p95: +(m[`op_${op}_ms`]?.sample?.['p(95)']??0),
+  })).filter(r=>r.reqs>0||r.avg>0);
+
+  ops.forEach(r=>{if(!opTrends[r.op])opTrends[r.op]=[];opTrends[r.op].push(r.p95);if(opTrends[r.op].length>20)opTrends[r.op].shift()});
+
+  const fEl=document.getElementById('groupFilter');
+  const have=new Set([...fEl.querySelectorAll('.filter-btn')].map(b=>b.dataset.g));
+  [...new Set(ops.map(r=>r.group))].forEach(g=>{
+    if(!have.has(g)){const b=document.createElement('button');b.className='filter-btn';b.dataset.g=g;b.textContent=g;b.onclick=()=>filterGroup(g,b);b.style.cssText=`color:${groupColor(g)};border-color:${groupColor(g)}44`;fEl.appendChild(b)}
+  });
+
+  const fil=activeGroupFilter==='all'?ops:ops.filter(r=>r.group===activeGroupFilter);
+  const mxP=Math.max(...fil.map(r=>r.p95),1);
+  const most=fil.length?fil.reduce((a,b)=>b.reqs>a.reqs?b:a,fil[0]).op:null;
+  // Sort by group (order from OP_GROUP), then alphabetically within group
+  const gord=[...new Set(allOpNames.map(op=>OP_GROUP[op]??'other'))];
+  fil.sort((a,b)=>{const ga=gord.indexOf(a.group),gb=gord.indexOf(b.group);return ga!==gb?ga-gb:a.op.localeCompare(b.op)});
+
+  renderSlowestOps(ops);
+  if(!fil.length){document.getElementById('opsBody').innerHTML=`<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--muted)">No op data yet…</td></tr>`;return}
+  document.getElementById('opsBody').innerHTML=fil.map(r=>{
+    const c=groupColor(r.group),bPct=mxP>0?Math.min(100,(r.p95/mxP)*100):0,bClr=latClr(r.p95);
+    const errPct=r.reqs>0?((r.errs/r.reqs)*100).toFixed(1):'0.0';
+    const spark=miniSpark(opTrends[r.op]??[],c);
+    return`<tr class="${r.op===most?'active-row':''}">
+      <td><span class="op-name">${r.op}</span><span class="group-chip" style="color:${c};background:${c}18;border:1px solid ${c}33">${r.group}</span>${spark}</td>
+      <td class="r">${fmt(r.reqs)}</td>
+      <td class="r" style="color:${r.errs?'var(--err)':'var(--muted)'}">${r.errs}</td>
+      <td class="r" style="color:${parseFloat(errPct)?'var(--err)':'var(--muted)'}">${errPct}%</td>
+      <td class="r">${fmtMs(r.avg)}</td>
+      <td class="r" style="color:var(--muted)">${fmtMs(r.min)}</td>
+      <td class="r" style="color:${latClr(r.max)}">${fmtMs(r.max)}</td>
+      <td class="r">${fmtMs(r.p90)}</td>
+      <td><div class="bar-wrap"><span class="bar-val" style="color:${bClr}">${fmtMs(r.p95)}</span><div class="bar-track"><div class="bar-fill" style="width:${bPct.toFixed(1)}%;background:${bClr};box-shadow:0 0 4px ${bClr}88"></div></div></div></td>
+    </tr>`;
+  }).join('');
+}
+
+function miniSpark(data,color){
+  if(data.length<2)return'';
+  const W=40,H=16,mx=Math.max(...data,1);
+  const pts=data.map((v,i)=>[(i/(data.length-1))*W,H-(v/mx)*(H-2)-1]);
+  return`<svg width="${W}" height="${H}" style="margin-left:8px;vertical-align:middle;opacity:.8"><polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+
+function filterGroup(g,btn){activeGroupFilter=g;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active')}
+
+function renderSlowestOps(ops){
+  const el=document.getElementById('slowestOps');if(!el)return;
+  const sorted=ops.filter(r=>r.p95>0).sort((a,b)=>b.p95-a.p95).slice(0,5);
+  if(!sorted.length){el.innerHTML='<div class="lb-row"><span style="color:var(--muted);font-size:10px">No endpoint data yet…</span></div>';return}
+  const mx=sorted[0].p95||1;
+  el.innerHTML=sorted.map((r,i)=>{
+    const c=groupColor(r.group),bClr=latClr(r.p95),pct=(r.p95/mx*100).toFixed(0);
+    return`<div class="lb-row">
+      <span class="lb-rank">#${i+1}</span>
+      <span class="lb-name">${r.op}</span>
+      <span class="lb-group" style="color:${c};background:${c}18;border:1px solid ${c}33">${r.group}</span>
+      <div class="lb-bar-track"><div class="lb-bar-fill" style="width:${pct}%;background:${bClr}"></div></div>
+      <span class="lb-val" style="color:${bClr}">${fmtMs(r.p95)}</span>
+    </div>`;
+  }).join('');
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   CHARTS
+   ══════════════════════════════════════════════════════════════════ */
+function updateCharts(){
+  const ac=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#00ff41';
+  const ac2=getComputedStyle(document.documentElement).getPropertyValue('--accent2').trim()||'#00cc33';
+  drawLine('rpsChart',[{d:S.rps.d,c:ac,fill:true}]);
+  drawLine('latChart',[{d:S.p50.d,c:'#00cc66',fill:false},{d:S.p95.d,c:'#ff8800',fill:false},{d:S.p99.d,c:'#ff4422',fill:false}]);
+  drawLine('vuChart',[{d:S.vu.d,c:ac2,fill:true}]);
+  // Concurrency vs latency: normalize both VU and p95 to 0–1 range so they share a canvas
+  const vuMax=Math.max(...S.vu.d,1),p95Max=Math.max(...S.p95.d,1);
+  const vuN=S.vu.d.map(v=>v/vuMax*p95Max);
+  drawLine('concurChart',[{d:vuN,c:ac2,fill:false},{d:S.p95.d,c:'#ff8800',fill:false}]);
+  set('concurSpan',`vu=${S.vu.d.slice(-1)[0]??0} p95=${fmtMs(S.p95.d.slice(-1)[0]??0)}`);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   HISTORY TAB
+   ══════════════════════════════════════════════════════════════════ */
+let allRuns=[];
+
+async function loadHistory(){
+  try{
+    const data=await fj('/runs');
+    allRuns=data.runs??[];
+    renderRunList();
+  }catch{
+    document.getElementById('runsBody').innerHTML=`<tr><td colspan="11" style="text-align:center;padding:24px;color:var(--err)">Could not load run history</td></tr>`;
+  }
+}
+
+function renderRunList(){
+  if(!allRuns.length){
+    document.getElementById('runsBody').innerHTML=`<tr><td colspan="11" style="text-align:center;padding:24px;color:var(--muted)">No runs recorded yet</td></tr>`;
+    return;
+  }
+  document.getElementById('runsBody').innerHTML=allRuns.map(r=>{
+    const failPct=r.error_rate!=null?(r.error_rate*100).toFixed(2)+'%':'—';
+    const failColor=r.error_rate>0.01?'var(--err)':r.error_rate>0?'var(--warn)':'var(--muted)';
+    const shortId=r.run_id?r.run_id.slice(0,8):'—';
+    // shortId is also used for baselineBtn id below
+    return`<tr class="run-row" onclick="selectRun('${r.run_id}')">
+      <td style="color:var(--muted);font-size:10px">${shortId}</td>
+      <td style="color:var(--text)">${fmtDate(r.started_at)}</td>
+      <td style="color:var(--accent);text-transform:uppercase;letter-spacing:1px">${r.profile||'—'}</td>
+      <td class="r">${r.vus_max??'—'}</td>
+      <td class="r">${r.duration_s!=null?fmtDur(r.duration_s):'—'}</td>
+      <td class="r">${r.total_reqs!=null?fmt(r.total_reqs):'—'}</td>
+      <td class="r" style="color:${failColor}">${failPct}</td>
+      <td class="r" style="color:${latClr(r.p95_ms)}">${fmtMs(r.p95_ms)}</td>
+      <td class="r">${fmtMs(r.avg_ms)}</td>
+      <td><span class="run-status ${r.status}">${r.status}</span></td>
+      <td><button onclick="event.stopPropagation();setBaseline('${r.run_id}')" title="Set as baseline" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;padding:0 4px" id="baselineBtn-${shortId}">⭐</button></td>
+    </tr>`;
+  }).join('');
+  _highlightBaseline();
+  _renderHistTrendChart();
+}
+
+/* ── Chart.js history trend chart ─────────────────────────────────────────── */
+let _histTrendChart = null;
+function _renderHistTrendChart(){
+  const wrap = document.getElementById('histTrendWrap');
+  if(!wrap) return;
+  // Only show for runs that have p95 data
+  const runs = (allRuns||[]).filter(r=>r.p95_ms!=null&&r.status==='finished').slice(0,20).reverse();
+  if(runs.length < 2){ wrap.style.display='none'; return; }
+  wrap.style.display='block';
+
+  const cs = getComputedStyle(document.documentElement);
+  const acColor  = cs.getPropertyValue('--accent').trim()  || '#00ff41';
+  const warnColor= cs.getPropertyValue('--warn').trim()    || '#ffe000';
+  const errColor = cs.getPropertyValue('--err').trim()     || '#ff2222';
+  const mutColor = cs.getPropertyValue('--muted').trim()   || '#3a7a3a';
+  const textColor= cs.getPropertyValue('--text').trim()    || '#b8ffb8';
+  const bgColor  = cs.getPropertyValue('--surface').trim() || '#061806';
+
+  const labels = runs.map(r=>r.run_id?r.run_id.slice(0,8):'?');
+  const p95vals = runs.map(r=>r.p95_ms);
+  const avgvals = runs.map(r=>r.avg_ms??null);
+
+  // Color each bar based on value relative to the median
+  const sorted = [...p95vals].sort((a,b)=>a-b);
+  const median = sorted[Math.floor(sorted.length/2)];
+  const barColors = p95vals.map(v=>v>median*1.5?errColor:v>median*1.15?warnColor:acColor+'cc');
+
+  const best = Math.min(...p95vals);
+  const bestEl = document.getElementById('histTrendBest');
+  if(bestEl) bestEl.textContent = `best ${best.toFixed(0)} ms`;
+
+  const canvas = document.getElementById('histTrendChart');
+  if(!canvas) return;
+
+  if(_histTrendChart){ _histTrendChart.destroy(); _histTrendChart=null; }
+
+  _histTrendChart = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'p95 ms',
+          data: p95vals,
+          backgroundColor: barColors,
+          borderRadius: 2,
+          order: 2,
+        },
+        {
+          label: 'avg ms',
+          data: avgvals,
+          type: 'line',
+          borderColor: acColor+'88',
+          backgroundColor: 'transparent',
+          borderWidth: 1.5,
+          pointRadius: 2,
+          pointBackgroundColor: acColor,
+          tension: 0.3,
+          order: 1,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 300 },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: bgColor,
+          borderColor: acColor+'44',
+          borderWidth: 1,
+          titleColor: textColor,
+          bodyColor: mutColor,
+          callbacks: {
+            label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y!=null?ctx.parsed.y.toFixed(1):'-'} ms`,
+          },
+        },
+      },
+      scales: {
+        x: {
+          ticks: { color: mutColor, font: { size: 9, family: 'Courier New, monospace' }, maxRotation: 0 },
+          grid:  { color: 'rgba(128,128,128,0.07)' },
+        },
+        y: {
+          ticks: { color: mutColor, font: { size: 9, family: 'Courier New, monospace' }, callback: v => v + ' ms' },
+          grid:  { color: 'rgba(128,128,128,0.07)' },
+          beginAtZero: true,
+        },
+      },
+    },
+  });
+}
+
+let _currentDetailRunId = null;
+
+async function selectRun(id){
+  _currentDetailRunId = id;
+  document.getElementById('historyList').style.display='none';
+  document.getElementById('historyDetail').classList.remove('detail-hidden');
+  document.getElementById('detailOpsBody').innerHTML=`<tr><td colspan="10" style="text-align:center;padding:16px;color:var(--muted)">Loading…</td></tr>`;
+
+  try{
+    const[snapsData,opsData]=await Promise.all([fj(`/runs/${id}/snapshots`),fj(`/runs/${id}/ops`)]);
+    const run=allRuns.find(r=>r.run_id===id);
+    renderRunDetail(run??{run_id:id},snapsData.snapshots??[],opsData.ops??[]);
+    // Export buttons
+    let exportEl=document.getElementById('detailExportBar');
+    if(!exportEl){exportEl=document.createElement('div');exportEl.id='detailExportBar';document.getElementById('historyDetail').querySelector('.back-btn').after(exportEl);}
+    exportEl.innerHTML=`<div style="display:flex;gap:8px;margin-bottom:10px">
+      <a href="/runs/${id}/report" target="_blank" class="disc-btn" style="text-decoration:none">HTML Report</a>
+      <a href="/runs/${id}/csv" download class="disc-btn" style="text-decoration:none">Download CSV</a>
+      <a href="/runs/${id}/badge" target="_blank" class="disc-btn" style="text-decoration:none">SVG Badge</a>
+      ${_baselineRunId && _baselineRunId !== id ? `<button class="disc-btn" onclick="openDiff('${_baselineRunId}','${id}')">Compare with Baseline</button>` : ''}
+    </div>`;
+    // SLO verdict
+    try{const slo=await fj(`/runs/${id}/slo`);renderSloVerdict(slo);}catch{}
+  }catch(e){
+    document.getElementById('detailOpsBody').innerHTML=`<tr><td colspan="10" style="text-align:center;padding:16px;color:var(--err)">Error loading run data</td></tr>`;
+  }
+}
+
+function renderRunDetail(run,snaps,ops){
+  const shortId=run.run_id?run.run_id.slice(0,8):'—';
+
+  // ── Meta bar ──
+  document.getElementById('detailMeta').innerHTML=
+    `<span class="profile">${run.profile||'—'}</span>`+
+    `<span style="font-size:10px;color:var(--muted)">ID: ${shortId}</span>`+
+    `<span><span class="mk">Started</span><span class="mv">${fmtDate(run.started_at)}</span></span>`+
+    (run.duration_s!=null?`<span><span class="mk">Duration</span><span class="mv">${fmtDur(run.duration_s)}</span></span>`:'')+
+    (run.base_url?`<span style="color:var(--muted);font-size:10px;overflow:hidden;text-overflow:ellipsis;max-width:260px">${run.base_url}</span>`:'')+
+    `<span class="run-status ${run.status}" style="margin-left:auto">${run.status}</span>`;
+
+  // ── Threshold definitions (used by verdict + threshold section) ──
+  const threshDefs=[
+    {label:'http_req_failed &lt; 1%',           val:run.error_rate!=null?run.error_rate*100:null, limit:1,    fmt:v=>v.toFixed(2)+'%'},
+    {label:'http_req_duration p95 &lt; 5 000 ms',val:run.p95_ms,  limit:5000, fmt:v=>fmtMs(v)+' ms'},
+    {label:'http_req_duration avg &lt; 2 000 ms',val:run.avg_ms,  limit:2000, fmt:v=>fmtMs(v)+' ms'},
+    {label:'http_req_duration p90 &lt; 3 000 ms',val:run.p90_ms,  limit:3000, fmt:v=>fmtMs(v)+' ms'},
+    {label:'TTFB avg &lt; 1 500 ms',             val:run.ttfb_avg,limit:1500, fmt:v=>fmtMs(v)+' ms'},
+  ];
+  const defined=threshDefs.filter(t=>t.val!=null);
+  const passed=defined.filter(t=>t.val<=t.limit).length;
+  const allPass=defined.length>0&&passed===defined.length;
+  const score=defined.length?Math.round(passed/defined.length*100):null;
+
+  // ── Verdict banner ──
+  const peakRps=snaps.length?Math.max(...snaps.map(s=>+(s.rps??0))):null;
+  const avgRps=snaps.length?(snaps.reduce((a,s)=>a+(+(s.rps??0)),0)/snaps.length):null;
+  const failN=run.total_reqs&&run.error_rate?Math.round(run.total_reqs*run.error_rate):0;
+  document.getElementById('detailVerdict').innerHTML=score!=null?`
+    <div class="verdict-banner ${allPass?'verdict-pass':'verdict-fail'}">
+      <div class="verdict-grade">${allPass?'PASS':'FAIL'}</div>
+      <div class="verdict-body">
+        <div class="verdict-title">${allPass?'All thresholds met — run healthy':passed+'/'+defined.length+' thresholds passed'}</div>
+        <div class="verdict-facts">
+          ${run.total_reqs!=null?`<span>${fmt(run.total_reqs)} requests</span>`:''}
+          ${failN?`<span style="color:var(--err)">${failN} errors (${(run.error_rate*100).toFixed(2)}%)</span>`:'<span style="color:var(--accent)">zero errors</span>'}
+          ${peakRps!=null?`<span>peak <span>${peakRps.toFixed(1)} rps</span></span>`:''}
+          ${avgRps!=null?`<span>avg <span>${avgRps.toFixed(1)} rps</span></span>`:''}
+          ${run.checks_rate!=null?`<span>checks <span>${(run.checks_rate*100).toFixed(1)}%</span></span>`:''}
+        </div>
+      </div>
+      ${score!=null?`<div class="verdict-score">${score}<span style="font-size:12px;color:var(--muted)">%</span></div>`:''}
+    </div>`:'';
+
+  // ── Row 1: core cards ──
+  set('d_reqs',    run.total_reqs!=null?fmt(run.total_reqs):'—');
+  set('d_reqs_sub',failN?`${failN} failed`:'all passing');
+  set('d_vus',     run.vus_max??'—');
+  set('d_dur',     run.duration_s!=null?fmtDur(run.duration_s):'—');
+  set('d_peak_rps',peakRps!=null?peakRps.toFixed(1)+' /s':'—');
+  set('d_avg_rps_sub',avgRps!=null?`avg ${avgRps.toFixed(1)} /s`:'');
+  set('d_err',     run.error_rate!=null?(run.error_rate*100).toFixed(2)+'%':'—');
+  set('d_err_sub', failN?`${failN} failed reqs`:'');
+  setClass('d_err','card-value'+(run.error_rate>0.01?' err':run.error_rate>0?' warn':''));
+  if(run.checks_rate!=null){
+    set('d_checks',(run.checks_rate*100).toFixed(1)+'%');
+    setClass('d_checks','card-value'+(run.checks_rate<0.99?' warn':''));
+  }else{set('d_checks','—')}
+
+  // ── Row 2: latency percentile ladder ──
+  set('d_med',  fmtMs(run.p50_ms??run.med_ms));
+  set('d_p75',  fmtMs(run.p75_ms));
+  set('d_p90',  fmtMs(run.p90_ms));
+  set('d_p95',  fmtMs(run.p95_ms));
+  set('d_p99',  fmtMs(run.p99_ms));
+  set('d_ttfb', fmtMs(run.ttfb_avg));
+  setLatClass('d_p75',+(run.p75_ms??0));setLatClass('d_p90',+(run.p90_ms??0));
+  setLatClass('d_p95',+(run.p95_ms??0));setLatClass('d_p99',+(run.p99_ms??0),1000,3000);
+
+  // ── Row 3: diagnosis ──
+  if(run.apdex_score!=null){
+    const as=run.apdex_score;
+    set('d_apdex',as.toFixed(3));
+    setClass('d_apdex','card-value'+(as>=0.94?'':as>=0.85?' warn':' err'));
+    const apdexLabel=as>=0.94?'Excellent':as>=0.85?'Good':as>=0.70?'Fair':'Poor';
+    set('d_apdex_sub',apdexLabel);
+  }else{set('d_apdex','—')}
+  set('d_s2xx', run.s2xx!=null?fmt(run.s2xx):'—');
+  set('d_s3xx', run.s3xx!=null?fmt(run.s3xx):'—');
+  set('d_s4xx', run.s4xx!=null?fmt(run.s4xx):'—');
+  set('d_s5xx', run.s5xx!=null?fmt(run.s5xx):'—');
+  if(run.conn_reuse_rate!=null){set('d_conn_reuse',(run.conn_reuse_rate*100).toFixed(0)+'%')}else{set('d_conn_reuse','—')}
+
+  // ── Latency distribution strip ──
+  const pts=[
+    {label:'min',val:run.min_ms,c:'#00aaff'},
+    {label:'avg',val:run.avg_ms,c:'#ffe000'},
+    {label:'med',val:run.med_ms,c:'#00cc33'},
+    {label:'p90',val:run.p90_ms,c:'#ff8800'},
+    {label:'p95',val:run.p95_ms,c:'#ff4422'},
+  ].filter(p=>p.val!=null);
+  const distMax=pts.length?Math.max(...pts.map(p=>p.val),1):1;
+  const minVal=run.min_ms??0,maxVal=run.p95_ms??distMax;
+  const rangeLeft=(minVal/distMax*100).toFixed(1);
+  const rangeWidth=((maxVal-minVal)/distMax*100).toFixed(1);
+  const pips=pts.map(p=>`<div class="lat-dist-pip" style="left:${(p.val/distMax*100).toFixed(1)}%;background:${p.c}" title="${p.label}: ${fmtMs(p.val)} ms"></div>`).join('');
+  const labels=pts.map(p=>`<span style="color:${p.c}">${p.label} <b>${fmtMs(p.val)}</b></span>`).join('');
+  document.getElementById('detailLatDist').innerHTML=`
+    <div class="lat-dist">
+      <div class="lat-dist-header"><span>min → p95 spread</span><span style="color:var(--muted)">span: ${fmtMs((run.p95_ms??0)-(run.min_ms??0))} ms</span></div>
+      <div class="lat-dist-track">
+        <div class="lat-dist-range" style="left:${rangeLeft}%;width:${rangeWidth}%"></div>
+        ${pips}
+      </div>
+      <div class="lat-dist-labels">${labels}</div>
+    </div>`;
+
+  // ── Latency Histogram ──
+  const histBuckets=[
+    {label:'≤50ms',  val:run.lat_b50??0,  c:'#00cc66'},
+    {label:'≤200ms', val:run.lat_b200??0, c:'#00ff41'},
+    {label:'≤500ms', val:run.lat_b500??0, c:'#ffe000'},
+    {label:'≤1s',    val:run.lat_b1000??0,c:'#ff8800'},
+    {label:'≤2s',    val:run.lat_b2000??0,c:'#ff5500'},
+    {label:'≤5s',    val:run.lat_b5000??0,c:'#ff2222'},
+    {label:'>5s',    val:run.lat_binf??0, c:'#aa0000'},
+  ];
+  const histTotal=histBuckets.reduce((a,b)=>a+b.val,0)||1;
+  const histMax=Math.max(...histBuckets.map(b=>b.val),1);
+  document.getElementById('detailHistogram').innerHTML=histTotal>1?`
+    <div class="hist-wrap">
+      <div class="hist-bars">
+        ${histBuckets.map(b=>{
+          const h=Math.max(2,Math.round((b.val/histMax)*56));
+          const pct=(b.val/histTotal*100).toFixed(1);
+          return`<div class="hist-bar-col" title="${b.label}: ${fmt(b.val)} (${pct}%)">
+            <div class="hist-pct">${pct}%</div>
+            <div class="hist-bar" style="height:${h}px;background:${b.c};box-shadow:0 0 4px ${b.c}66"></div>
+            <div class="hist-label">${b.label}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`:'<span style="color:var(--muted);font-size:11px">No histogram data (requires custom k6 metrics)</span>';
+
+  // ── Thresholds ──
+  document.getElementById('detailThresholds').innerHTML=threshDefs.map(t=>{
+    if(t.val==null)return`<div class="check-row"><div class="check-icon"></div><div class="check-name">${t.label}</div><div class="check-val" style="color:var(--muted)">—</div></div>`;
+    const ok=t.val<=t.limit;
+    const pct=Math.min(100,t.val/t.limit*100);
+    return`<div class="check-row ${ok?'ok':'fail'}">
+      <div class="check-icon"></div>
+      <div class="check-name" style="flex:1">${t.label}</div>
+      <div style="width:80px;margin:0 10px"><div style="height:3px;background:var(--surface2);border-radius:2px;overflow:hidden"><div style="height:100%;width:${pct.toFixed(0)}%;background:${ok?'var(--accent3)':'var(--err)'};border-radius:2px"></div></div></div>
+      <div class="check-val">${t.fmt(t.val)}</div>
+    </div>`;
+  }).join('');
+
+  // ── Data transfer ──
+  let transferHtml='';
+  if(run.data_sent!=null||run.data_received!=null){
+    const total=(run.data_sent??0)+(run.data_received??0);
+    const sentPct=total>0?(run.data_sent??0)/total*100:50;
+    transferHtml=`<div class="cards" style="grid-template-columns:repeat(3,1fr)">
+      <div class="card"><div class="card-label">Data Sent</div><div class="card-value sm blue">${fmtBytes(run.data_sent)}</div>${run.duration_s?`<div class="card-sub">${fmtBytes((run.data_sent??0)/run.duration_s)}/s</div>`:'<div class="card-sub">&nbsp;</div>'}</div>
+      <div class="card"><div class="card-label">Data Received</div><div class="card-value sm blue">${fmtBytes(run.data_received)}</div>${run.duration_s?`<div class="card-sub">${fmtBytes((run.data_received??0)/run.duration_s)}/s</div>`:'<div class="card-sub">&nbsp;</div>'}</div>
+      <div class="card"><div class="card-label">Total Transferred</div><div class="card-value sm">${fmtBytes(total)}</div>
+        <div style="margin-top:5px;height:4px;background:var(--surface2);border-radius:2px;overflow:hidden">
+          <div style="height:100%;width:${sentPct.toFixed(0)}%;background:var(--blue);border-radius:2px"></div>
+        </div>
+        <div class="card-sub" style="display:flex;justify-content:space-between"><span style="color:var(--blue)">↑sent</span><span style="color:var(--accent)">↓recv</span></div>
+      </div>
+    </div>`;
+  }else{transferHtml='<span style="color:var(--muted);font-size:11px">No transfer data recorded</span>'}
+  document.getElementById('detailTransfer').innerHTML=transferHtml;
+
+  // ── Time-series charts ──
+  if(snaps.length>=2){
+    const rpsD=snaps.map(s=>+(s.rps??0));
+    const p50D=snaps.map(s=>+(s.p50_ms??s.avg_ms??0));
+    const p95D=snaps.map(s=>+(s.p95_ms??0));
+    const p99D=snaps.map(s=>+(s.p99_ms??0));
+    const vuD =snaps.map(s=>+(s.vus??0));
+    const cumD=snaps.map(s=>+(s.total_reqs??0));
+    const n=snaps.length;
+    set('d_rpsVal',(rpsD[rpsD.length-1]??0).toFixed(1)+' /s');
+    set('d_p95Val',`p50 ${fmtMs(p50D[p50D.length-1])} · p95 ${fmtMs(p95D[p95D.length-1])} · p99 ${fmtMs(p99D[p99D.length-1])}`);
+    set('d_vuVal', vuD[vuD.length-1]);
+    set('d_cumVal',fmt(cumD[cumD.length-1]));
+    requestAnimationFrame(()=>{
+      const ac=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#00ff41';
+      const ac2=getComputedStyle(document.documentElement).getPropertyValue('--accent2').trim()||'#00cc33';
+      drawLine('d_rpsChart',[{d:rpsD,c:ac,fill:true}],n);
+      drawLine('d_p95Chart',[{d:p50D,c:'#00cc66',fill:false},{d:p95D,c:'#ff8800',fill:false},{d:p99D,c:'#ff4422',fill:false}],n);
+      drawLine('d_vuChart',[{d:vuD,c:ac2,fill:true}],n);
+      drawLine('d_cumChart',[{d:cumD,c:'#00aaff',fill:true}],n);
+    });
+  }
+
+  // ── Group distribution ──
+  if(ops.length){
+    const groups={};
+    // Build group order dynamically from ops data (stable insertion order)
+    const gord=[...new Set(ops.map(o=>o.op_group||'other'))];
+    ops.forEach(o=>{
+      const g=o.op_group||'other';
+      if(!groups[g])groups[g]={reqs:0,errors:0,p95Max:0,avgSum:0,cnt:0};
+      groups[g].reqs+=o.reqs||0;groups[g].errors+=o.errors||0;
+      if(o.avg_ms){groups[g].avgSum+=o.avg_ms;groups[g].cnt++;}
+      if((o.p95_ms??0)>groups[g].p95Max)groups[g].p95Max=o.p95_ms??0;
+    });
+    const totalReqs=Object.values(groups).reduce((a,g)=>a+g.reqs,0)||1;
+    const sortedGroups=Object.entries(groups).sort((a,b)=>gord.indexOf(a[0])-gord.indexOf(b[0]));
+    document.getElementById('detailGroupDist').innerHTML=`<div class="group-dist">`+
+      sortedGroups.map(([g,d])=>{
+        const c=GC[g]??'#aaa',pct=d.reqs/totalReqs*100,avg=d.cnt?d.avgSum/d.cnt:0;
+        const errPct=d.reqs?((d.errors/d.reqs)*100).toFixed(1)+'%':'0%';
+        return`<div class="group-dist-row">
+          <div class="group-dist-label"><span class="group-chip" style="color:${c};background:${c}18;border:1px solid ${c}33">${g}</span></div>
+          <div class="group-dist-track"><div class="group-dist-fill" style="width:${pct.toFixed(1)}%;background:${c};box-shadow:0 0 4px ${c}55"></div></div>
+          <div class="group-dist-meta">${fmt(d.reqs)} reqs · ${pct.toFixed(0)}% · avg ${fmtMs(avg)} · p95 <span style="color:${latClr(d.p95Max)}">${fmtMs(d.p95Max)}</span> · err <span style="color:${d.errors?'var(--err)':'var(--muted)'}">${errPct}</span></div>
+        </div>`;
+      }).join('')+`</div>`;
+  }else{
+    document.getElementById('detailGroupDist').innerHTML='<span style="color:var(--muted);font-size:11px">No group data</span>';
+  }
+
+  // ── Ops table ──
+  if(!ops.length){
+    document.getElementById('detailOpsBody').innerHTML=`<tr><td colspan="9" style="text-align:center;padding:16px;color:var(--muted)">No per-op data recorded</td></tr>`;
+    return;
+  }
+  const mxP=Math.max(...ops.map(o=>+(o.p95_ms??0)),1);
+  const slowestP95=Math.max(...ops.map(o=>+(o.p95_ms??0)));
+  const highestErr=Math.max(...ops.map(o=>o.reqs>0?o.errors/o.reqs:0));
+  document.getElementById('detailOpsBody').innerHTML=ops.map(o=>{
+    const c=GC[o.op_group]??'#aaa',bPct=Math.min(100,(+(o.p95_ms??0)/mxP)*100),bClr=latClr(+(o.p95_ms??0));
+    const errRate=o.reqs>0?o.errors/o.reqs:0;
+    const errPct=(errRate*100).toFixed(1);
+    const isSlowest=(+(o.p95_ms??0))===slowestP95&&slowestP95>0;
+    const hasErr=errRate>0&&errRate===highestErr&&errRate>0.01;
+    const health=+(o.p95_ms??0)>=1500?'slow':+(o.p95_ms??0)>=500?'warn':'ok';
+    const rowCls=hasErr?'ops-err':isSlowest?'ops-slowest':'';
+    return`<tr class="${rowCls}">
+      <td><span class="op-name">${o.op_name}</span><span class="op-health ${health}">${health}</span>${isSlowest?'<span style="font-size:9px;color:var(--orange);margin-left:5px;letter-spacing:1px">SLOWEST</span>':''}</td>
+      <td><span class="group-chip" style="color:${c};background:${c}18;border:1px solid ${c}33">${o.op_group}</span></td>
+      <td class="r">${fmt(o.reqs)}</td>
+      <td class="r" style="color:${errRate>0.01?'var(--err)':errRate>0?'var(--warn)':'var(--muted)'}">${errPct}%${o.errors?` <span style="color:var(--muted)">(${o.errors})</span>`:''}</td>
+      <td class="r">${fmtMs(o.avg_ms)}</td>
+      <td class="r" style="color:var(--blue)">${fmtMs(o.min_ms)}</td>
+      <td class="r" style="color:${latClr(+(o.max_ms??0))}">${fmtMs(o.max_ms)}</td>
+      <td class="r" style="color:${latClr(+(o.p90_ms??0))}">${fmtMs(o.p90_ms)}</td>
+      <td class="r" style="color:${latClr(+(o.p99_ms??0))}">${fmtMs(o.p99_ms)}</td>
+      <td><div class="bar-wrap"><span class="bar-val" style="color:${bClr}">${fmtMs(o.p95_ms)}</span><div class="bar-track"><div class="bar-fill" style="width:${bPct.toFixed(1)}%;background:${bClr};box-shadow:0 0 4px ${bClr}88"></div></div></div></td>
+    </tr>`;
+  }).join('');
+}
+
+function backToList(){
+  document.getElementById('historyList').style.display='';
+  document.getElementById('historyDetail').classList.add('detail-hidden');
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   HELPERS
+   ══════════════════════════════════════════════════════════════════ */
+function idx(data){const m={};(data?.data??[]).forEach(e=>{m[e.id]=e.attributes});return m}
+function set(id,v){const e=document.getElementById(id);if(e)e.textContent=v??'—'}
+function setClass(id,c){const e=document.getElementById(id);if(e)e.className=c}
+function setDot(s,l){document.getElementById('statusDot').className='dot '+s;document.getElementById('statusLabel').textContent=l}
+function setLatClass(id,ms,lo=500,hi=1500){const c=ms>=hi?'err':ms>=lo?'warn':'';setClass(id,`card-value${c?' '+c:''}`)}
+function fmt(n){if(n==null||isNaN(n))return'—';return n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(1)+'k':String(Math.round(n))}
+function fmtMs(n){if(n==null||isNaN(n)||+n===0)return'—';return(+n<1000)?(+n).toFixed(0):(+n/1000).toFixed(2)+'k'}
+function fmtBytes(n){if(!n||+n===0)return'—';const v=+n;if(v>=1e9)return(v/1e9).toFixed(2)+' GB';if(v>=1e6)return(v/1e6).toFixed(2)+' MB';if(v>=1e3)return(v/1e3).toFixed(2)+' KB';return v+' B'}
+function fmtDur(s){return s>=60?`${Math.floor(s/60)}m${String(s%60).padStart(2,'0')}s`:`${s}s`}
+function fmtDate(iso){if(!iso)return'—';try{const d=new Date(iso);return d.toLocaleString('en-GB',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false})}catch{return iso}}
+function latClr(ms){const v=+(ms??0);if(v>=1500)return'var(--err)';if(v>=500)return'var(--warn)';return'var(--accent)'}
+
+/* ══════════════════════════════════════════════════════════════════
+   RUN TAB
+   ══════════════════════════════════════════════════════════════════ */
+let _runProfile='smoke',_runPollTimer=null;
+
+const _PROFILE_NOTES={
+  smoke: 'Smoke uses fixed 2 VUs · 30s — no load config needed.',
+  ramp:  'Ramp: 0 → Max VUs over Ramp Duration, hold for Hold Duration, ramp back.',
+  soak:  'Soak: sustained load at Max VUs for Hold Duration (endurance / memory leak test). Set SOAK_DURATION env var.',
+  stress:'Stress: steps up to STRESS_VUS (default 50) in 4 stages to find the breaking point.',
+  spike: 'Spike: instant burst to SPIKE_VUS (default 100) for Spike Duration — resilience test.',
+};
+const _PROFILE_SHOW_CFG=new Set(['ramp','soak','stress','spike']);
+
+function setProfile(p){
+  _runProfile=p;
+  ['Smoke','Ramp','Soak','Stress','Spike'].forEach(n=>{
+    const btn=document.getElementById('profileBtn'+n);
+    if(btn)btn.classList.toggle('active',p===n.toLowerCase());
+  });
+  const rampFields=document.getElementById('rampCfgFields');
+  const noteEl=document.getElementById('profileNote');
+  if(_PROFILE_SHOW_CFG.has(p)){rampFields.classList.add('visible');noteEl.style.display='none'}
+  else{rampFields.classList.remove('visible');noteEl.style.display='';noteEl.textContent=_PROFILE_NOTES[p]??''}
+}
+
+async function loadRunConfig(){
+  try{
+    const cfg=await fj('/run/config');
+    const v=(id,val)=>{const e=document.getElementById(id);if(e&&val)e.value=val};
+    v('cfgBaseUrl',          cfg.base_url);
+    v('cfgAuthToken',        cfg.auth_token);
+    v('cfgAuthBasicUser',    cfg.auth_basic_user);
+    v('cfgAuthApiKey',       cfg.auth_api_key);
+    v('cfgAuthApiKeyHeader', cfg.auth_api_key_header);
+    v('cfgAuthHost',         cfg.auth_host);
+    v('cfgAuthRealm',        cfg.auth_realm);
+    v('cfgAuthClientId',     cfg.auth_client_id);
+    v('cfgAuthClientSecret', cfg.auth_client_secret);
+    v('cfgVus',              cfg.vus);
+    v('cfgDuration',         cfg.duration);
+    v('cfgRampDuration',     cfg.ramp_duration);
+  }catch{/* server may not yet have the endpoint — ignore */}
+  // also refresh current status
+  await refreshRunStatus();
+}
+
+async function startRun(){
+  const startBtn=document.getElementById('startBtn');
+  startBtn.disabled=true;  // prevent double-click while POST is in-flight
+  const cfg={
+    base_url:            document.getElementById('cfgBaseUrl').value.trim(),
+    auth_token:          document.getElementById('cfgAuthToken').value.trim(),
+    auth_basic_user:     document.getElementById('cfgAuthBasicUser')?.value.trim()||'',
+    auth_basic_pass:     document.getElementById('cfgAuthBasicPass')?.value.trim()||'',
+    auth_api_key:        document.getElementById('cfgAuthApiKey')?.value.trim()||'',
+    auth_api_key_header: document.getElementById('cfgAuthApiKeyHeader')?.value.trim()||'',
+    auth_host:           document.getElementById('cfgAuthHost').value.trim(),
+    auth_realm:          document.getElementById('cfgAuthRealm').value.trim(),
+    auth_client_id:      document.getElementById('cfgAuthClientId').value.trim(),
+    auth_client_secret:  document.getElementById('cfgAuthClientSecret').value.trim(),
+    vus:                 document.getElementById('cfgVus').value.trim()||'10',
+    duration:            document.getElementById('cfgDuration').value.trim()||'60s',
+    ramp_duration:       document.getElementById('cfgRampDuration').value.trim()||'30s',
+  };
+  try{
+    const r=await fetch('/run/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({profile:_runProfile,...cfg})});
+    const j=await r.json();
+    if(!r.ok)throw new Error(j.error||r.status);
+    addLog(`Run started — profile=${_runProfile} id=${(j.run_id||'').slice(0,8)}`,'ok');
+    toast(`Run started · ${_runProfile}`,'ok');
+    startRunPoll();
+    showTab('overview');  // jump to live metrics immediately
+  }catch(e){
+    startBtn.disabled=false;  // re-enable on failure so user can retry
+    addLog('Failed to start run: '+e.message,'err');toast('Failed: '+e.message,'err');setBanner('idle','Failed to start: '+e.message);
+  }
+}
+
+async function stopRun(){
+  try{
+    await fetch('/run/stop',{method:'POST'});
+    addLog('Stop signal sent','ok');toast('Stop signal sent','warn');
+  }catch(e){addLog('Stop failed: '+e.message,'err');toast('Stop failed: '+e.message,'err')}
+}
+
+function startRunPoll(){
+  clearInterval(_runPollTimer);
+  _runPollTimer=setInterval(refreshRunStatus,2000);
+}
+
+async function refreshRunStatus(){
+  try{
+    const s=await fj('/run/status');
+    applyRunStatus(s);
+  }catch{/* server starting */}
+}
+
+function applyRunStatus(s){
+  const status=s.status||'idle';
+  const runId=(s.run_id||'').slice(0,8);
+  const profile=s.profile||'';
+  const startBtn=document.getElementById('startBtn');
+  const stopBtn=document.getElementById('stopBtn');
+  const dot=document.getElementById('runBannerDot');
+
+  const active=(status==='running'||status==='starting');
+  startBtn.disabled=active;
+  stopBtn.disabled =(status==='idle'||status==='stopping');
+  // disable the Execute tab while a run is in progress so it can't be accessed
+  document.querySelector('.tab[onclick="showTab(\'run\')"]')
+    ?.classList.toggle('disabled', active);
+
+  const msgs={
+    idle:     'No run active — configure above and click START RUN',
+    starting: `Starting ${profile} run…`,
+    running:  `Running ${profile} · run_id=${runId} · streaming to dashboard`,
+    stopping: 'Stopping — waiting for k6 to finish…',
+    finished: `Finished — profile=${profile} id=${runId}`,
+  };
+
+  setBanner(status, msgs[status]??status);
+  dot.className='dot'+(status==='running'?' running':status==='starting'?' waiting':'');
+
+  // stop polling when no longer active
+  if(status!=='running'&&status!=='starting'){clearInterval(_runPollTimer)}
+}
+
+function setBanner(cls,msg){
+  const el=document.getElementById('runBanner');
+  el.className='run-status-banner '+cls;
+  document.getElementById('runBannerText').textContent=msg;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   DISCOVER TAB
+   ══════════════════════════════════════════════════════════════════ */
+let _discoveredEps=[];
+
+function _discSetBusy(btnId,busy){
+  const b=document.getElementById(btnId);
+  if(b)b.disabled=busy;
+}
+
+function showDiscoverMsg(msg,type){
+  const el=document.getElementById('discMsg');
+  el.textContent=msg;
+  el.className='disc-msg '+(type||'ok');
+  el.style.display='';
+  clearTimeout(el._t);
+  el._t=setTimeout(()=>{el.style.display='none'},6000);
+}
+
+function renderDiscoveryTable(eps){
+  _discoveredEps=eps;
+  const countEl=document.getElementById('discCount');
+  const empty=document.getElementById('discEmpty');
+  const table=document.getElementById('discTable');
+  const tbody=document.getElementById('discTableBody');
+  const saveBtn=document.getElementById('discSaveBtn');
+  const selectAll=document.getElementById('discSelectAll');
+
+  countEl.textContent=eps.length+' endpoint'+(eps.length===1?'':'s');
+
+  if(!eps.length){
+    empty.style.display='';
+    table.style.display='none';
+    saveBtn.disabled=true;
+    return;
+  }
+  empty.style.display='none';
+  table.style.display='';
+  saveBtn.disabled=false;
+  selectAll.checked=true;
+
+  tbody.innerHTML=eps.map((ep,i)=>{
+    const typeClass=ep.type==='graphql'?'disc-type-graphql':'disc-type-rest';
+    const method=ep.method||'POST';
+    return `<tr id="disc-row-${i}">
+      <td><input type="checkbox" class="disc-chk" data-idx="${i}" checked></td>
+      <td style="font-weight:bold;color:var(--text)">${_esc(ep.name)}</td>
+      <td style="color:var(--muted);font-size:10px">${_esc(ep.path)}</td>
+      <td><span class="disc-type-chip ${typeClass}">${ep.type}</span></td>
+      <td style="font-size:10px;color:var(--muted)">${ep.type==='rest'?_esc(method):'—'}</td>
+      <td><input type="text" value="${_esc(ep.group||'')}" data-field="group" data-idx="${i}" onchange="discUpdateField(${i},'group',this.value)"></td>
+      <td><input type="number" value="${ep.weight||1}" min="1" data-field="weight" data-idx="${i}" onchange="discUpdateField(${i},'weight',+this.value)"></td>
+      <td><button class="disc-remove-btn" onclick="discRemove(${i})" title="Remove">✕</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function _esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+function discUpdateField(idx,field,val){
+  if(_discoveredEps[idx])_discoveredEps[idx][field]=val;
+}
+
+function discRemove(idx){
+  _discoveredEps.splice(idx,1);
+  renderDiscoveryTable(_discoveredEps);
+}
+
+function discToggleAll(checked){
+  document.querySelectorAll('.disc-chk').forEach(c=>c.checked=checked);
+}
+
+async function discoverPostmanFromRepo(){
+  _discSetBusy('discPostmanRepoBtn',true);
+  try{
+    const col=await fj('/discover/postman-collection');
+    if(col.error){showDiscoverMsg(col.error,'error');return;}
+    const res=await fetch('/discover/postman',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({collection:col})});
+    const data=await res.json();
+    _discoveredEps=data.endpoints||[];
+    renderDiscoveryTable(_discoveredEps);
+    showDiscoverMsg(`Loaded ${_discoveredEps.length} endpoints from Postman collection`,'ok');
+  }catch(err){
+    showDiscoverMsg('Error: '+err.message,'error');
+  }finally{
+    _discSetBusy('discPostmanRepoBtn',false);
+  }
+}
+
+function discoverPostmanFromFile(input){
+  const file=input.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=async e=>{
+    try{
+      const col=JSON.parse(e.target.result);
+      const res=await fetch('/discover/postman',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({collection:col})});
+      const data=await res.json();
+      _discoveredEps=data.endpoints||[];
+      renderDiscoveryTable(_discoveredEps);
+      showDiscoverMsg(`Loaded ${_discoveredEps.length} endpoints from ${file.name}`,'ok');
+    }catch(err){
+      showDiscoverMsg('Parse error: '+err.message,'error');
+    }
+  };
+  reader.readAsText(file);
+}
+
+// Drag-and-drop on the drop zone
+(function(){
+  const zone=document.getElementById('discDropZone');
+  if(!zone)return;
+  zone.addEventListener('click',()=>document.getElementById('discFileInput').click());
+  zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('drag-over')});
+  zone.addEventListener('dragleave',()=>zone.classList.remove('drag-over'));
+  zone.addEventListener('drop',e=>{
+    e.preventDefault();zone.classList.remove('drag-over');
+    const file=e.dataTransfer.files[0];
+    if(file){const dt=new DataTransfer();dt.items.add(file);document.getElementById('discFileInput').files=dt.files;discoverPostmanFromFile(document.getElementById('discFileInput'));}
+  });
+})();
+
+async function discoverUrl(){
+  const url=document.getElementById('discUrl').value.trim();
+  const token=document.getElementById('discToken').value.trim();
+  if(!url){showDiscoverMsg('Enter a base URL first','error');return;}
+  _discSetBusy('discScanBtn',true);
+  try{
+    const res=await fj(`/discover/url?url=${encodeURIComponent(url)}&token=${encodeURIComponent(token)}`);
+    if(res.error&&!res.endpoints?.length){showDiscoverMsg(res.error,'error');return;}
+    _discoveredEps=res.endpoints||[];
+    renderDiscoveryTable(_discoveredEps);
+    showDiscoverMsg(`Found ${_discoveredEps.length} endpoints via ${res.source} (${res.source_url||url})`,'ok');
+  }catch(err){
+    showDiscoverMsg('Scan error: '+err.message,'error');
+  }finally{
+    _discSetBusy('discScanBtn',false);
+  }
+}
+
+function discoverManualAdd(){
+  const name=(document.getElementById('discManualName').value||'').trim();
+  const path=(document.getElementById('discManualPath').value||'').trim();
+  const type=document.getElementById('discManualType').value;
+  const group=(document.getElementById('discManualGroup').value||'default').trim();
+  const weight=parseInt(document.getElementById('discManualWeight').value)||1;
+  if(!name||!path){showDiscoverMsg('Name and Path are required','error');return;}
+  const ep=type==='graphql'
+    ?{name,group,type:'graphql',path,weight,query:'',variables:{},checks:{status:200,no_graphql_errors:true,has_data:true}}
+    :{name,group,type:'rest',method:'GET',path,weight,body:null,checks:{status:200}};
+  _discoveredEps=[..._discoveredEps,ep];
+  renderDiscoveryTable(_discoveredEps);
+  // clear form
+  ['discManualName','discManualPath','discManualGroup'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('discManualWeight').value='1';
+  showDiscoverMsg(`Added "${name}" to preview`,'ok');
+}
+
+async function saveDiscoveredEndpoints(){
+  const checked=[...document.querySelectorAll('.disc-chk:checked')].map(c=>+c.dataset.idx);
+  const selected=checked.map(i=>_discoveredEps[i]).filter(Boolean);
+  if(!selected.length){showDiscoverMsg('Select at least one endpoint','error');return;}
+  const mode=document.querySelector('input[name="discMode"]:checked')?.value||'replace';
+  _discSetBusy('discSaveBtn',true);
+  try{
+    let config;
+    if(mode==='merge'){
+      const existing=await fj('/config/endpoints');
+      config={...existing,endpoints:[...(existing.endpoints||[]),...selected]};
+    }else{
+      config={service:'Discovered',endpoints:selected,setup:[],teardown:[]};
+    }
+    const r=await fetch('/endpoints/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(config)});
+    const data=await r.json();
+    if(data.ok){
+      showDiscoverMsg(`Saved ${selected.length} endpoints to endpoints.json`,'ok');
+      loadEndpointConfig();
+    }else{
+      showDiscoverMsg('Save failed','error');
+    }
+  }catch(err){
+    showDiscoverMsg('Save error: '+err.message,'error');
+  }finally{
+    _discSetBusy('discSaveBtn',false);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   ENVIRONMENT PROFILES (Feature 1)
+   ══════════════════════════════════════════════════════════════════ */
+let _profiles = {};
+let _activeProfileName = '';
+
+async function loadProfiles() {
+  try {
+    _profiles = await fj('/profiles');
+    const sel = document.getElementById('profileSelect');
+    if (!sel) return;
+    sel.innerHTML = '<option value="">— select profile —</option>';
+    Object.keys(_profiles).forEach(name => {
+      const opt = document.createElement('option');
+      opt.value = name; opt.textContent = name;
+      sel.appendChild(opt);
+    });
+  } catch {}
+}
+
+async function loadProfile(name) {
+  if (!name) { document.getElementById('profileDeleteBtn').style.display='none'; return; }
+  const p = _profiles[name];
+  if (!p) return;
+  _activeProfileName = name;
+  document.getElementById('profileDeleteBtn').style.display='';
+  const v = (id, val) => { const e = document.getElementById(id); if(e && val != null) e.value = val; };
+  v('cfgBaseUrl', p.base_url); v('cfgAuthToken', p.auth_token);
+  v('cfgAuthBasicUser', p.auth_basic_user); v('cfgVus', p.vus);
+  v('cfgDuration', p.duration); v('cfgRampDuration', p.ramp_duration);
+  v('cfgAuthHost', p.auth_host); v('cfgAuthRealm', p.auth_realm);
+  v('cfgAuthClientId', p.auth_client_id);
+}
+
+async function saveCurrentProfile() {
+  const name = prompt('Profile name:', _activeProfileName || 'staging');
+  if (!name) return;
+  const body = {
+    name,
+    base_url:       document.getElementById('cfgBaseUrl')?.value.trim(),
+    auth_token:     document.getElementById('cfgAuthToken')?.value.trim(),
+    auth_basic_user:document.getElementById('cfgAuthBasicUser')?.value.trim(),
+    auth_host:      document.getElementById('cfgAuthHost')?.value.trim(),
+    auth_realm:     document.getElementById('cfgAuthRealm')?.value.trim(),
+    auth_client_id: document.getElementById('cfgAuthClientId')?.value.trim(),
+    vus:            document.getElementById('cfgVus')?.value.trim(),
+    duration:       document.getElementById('cfgDuration')?.value.trim(),
+    ramp_duration:  document.getElementById('cfgRampDuration')?.value.trim(),
+  };
+  await fetch('/profiles', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+  _activeProfileName = name;
+  await loadProfiles();
+  document.getElementById('profileSelect').value = name;
+  document.getElementById('profileDeleteBtn').style.display='';
+}
+
+async function deleteCurrentProfile() {
+  if (!_activeProfileName || !confirm(`Delete profile "${_activeProfileName}"?`)) return;
+  await fetch(`/profiles/${encodeURIComponent(_activeProfileName)}`, { method:'DELETE' });
+  _activeProfileName = '';
+  document.getElementById('profileDeleteBtn').style.display='none';
+  await loadProfiles();
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   SLO CONFIG (Feature 2)
+   ══════════════════════════════════════════════════════════════════ */
+function toggleSloPanel() {
+  const p = document.getElementById('sloPanel');
+  const t = document.getElementById('sloPanelToggle');
+  const open = p.style.display === '';
+  p.style.display = open ? 'none' : '';
+  t.textContent = open ? '▸ expand' : '▾ collapse';
+}
+
+async function loadSloConfig() {
+  try {
+    const cfg = await fj('/slo/config');
+    const v = (id, val) => { const e = document.getElementById(id); if(e && val != null) e.value = val; };
+    v('sloP95', cfg.p95_ms); v('sloP99', cfg.p99_ms);
+    v('sloErrRate', cfg.error_rate); v('sloChecks', cfg.checks_rate);
+    v('sloApdex', cfg.apdex_score);
+  } catch {}
+}
+
+async function saveSloConfig() {
+  const g = id => { const e = document.getElementById(id); return e && e.value ? +e.value : undefined; };
+  const body = {};
+  const p95 = g('sloP95'); if(p95 != null) body.p95_ms = p95;
+  const p99 = g('sloP99'); if(p99 != null) body.p99_ms = p99;
+  const err = g('sloErrRate'); if(err != null) body.error_rate = err;
+  const chk = g('sloChecks'); if(chk != null) body.checks_rate = chk;
+  const apx = g('sloApdex'); if(apx != null) body.apdex_score = apx;
+  await fetch('/slo/config', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+  const msg = document.getElementById('sloSaveMsg');
+  msg.style.display=''; setTimeout(()=>msg.style.display='none', 2000);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   BASELINE PINNING (Feature 3)
+   ══════════════════════════════════════════════════════════════════ */
+let _baselineRunId = null;
+let _baselineData  = null;
+
+async function loadBaseline() {
+  try {
+    const b = await fj('/runs/baseline');
+    _baselineRunId = b.baseline_run_id || null;
+    _highlightBaseline();
+  } catch {}
+}
+
+function _highlightBaseline() {
+  document.querySelectorAll('[id^="baselineBtn-"]').forEach(btn => {
+    btn.style.color = 'var(--muted)';
+    btn.title = 'Set as baseline';
+  });
+  if (_baselineRunId) {
+    const btn = document.getElementById('baselineBtn-' + _baselineRunId.slice(0,8));
+    if (btn) { btn.style.color = 'var(--warn)'; btn.title = 'Current baseline (click to clear)'; }
+  }
+}
+
+async function setBaseline(runId) {
+  if (_baselineRunId === runId) {
+    await fetch('/runs/baseline', { method:'DELETE' });
+    _baselineRunId = null; _baselineData = null;
+  } else {
+    await fetch(`/runs/${runId}/baseline`, { method:'POST' });
+    _baselineRunId = runId;
+    _baselineData = null;
+  }
+  _highlightBaseline();
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   RUN DIFF MODAL (Feature 4)
+   ══════════════════════════════════════════════════════════════════ */
+async function openDiff(idA, idB) {
+  const modal = document.getElementById('diffModal');
+  modal.style.display = 'flex';
+  document.getElementById('diffContent').innerHTML = 'Loading…';
+  try {
+    const d = await fj(`/runs/diff?a=${idA}&b=${idB}`);
+    const metrics = ['total_reqs','p50_ms','p95_ms','p99_ms','avg_ms','error_rate','apdex_score','checks_rate','duration_s'];
+    const fmt2 = (k,v) => {
+      if (v == null) return '—';
+      if (k.includes('rate') || k === 'apdex_score' || k === 'checks_rate') return (v*100).toFixed(1)+'%';
+      if (k.includes('_ms')) return v.toFixed(0)+'ms';
+      return v.toLocaleString();
+    };
+    const rows = metrics.map(m => {
+      const diff = d.diff?.[m];
+      if (!diff) return '';
+      const pct = diff.pct != null ? diff.pct.toFixed(1) : '—';
+      const better = ['total_reqs','apdex_score','checks_rate'].includes(m) ? diff.delta > 0 : diff.delta < 0;
+      const cls = diff.delta === 0 ? '' : (better ? 'delta-better' : 'delta-worse');
+      const arrow = diff.delta === 0 ? '' : (diff.delta > 0 ? '▲' : '▼');
+      return `<tr>
+        <td style="color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.5px">${m}</td>
+        <td style="text-align:right">${fmt2(m,diff.a)}</td>
+        <td style="text-align:right">${fmt2(m,diff.b)}</td>
+        <td class="delta-chip ${cls}" style="text-align:right">${arrow}${Math.abs(diff.delta||0).toFixed(1)} (${pct}%)</td>
+      </tr>`;
+    }).join('');
+    document.getElementById('diffContent').innerHTML = `
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr>
+          <th style="text-align:left;font-size:9px;color:var(--muted);padding:6px 8px;text-transform:uppercase;letter-spacing:1px">Metric</th>
+          <th style="text-align:right;font-size:9px;color:var(--muted);padding:6px 8px;text-transform:uppercase">Run A</th>
+          <th style="text-align:right;font-size:9px;color:var(--muted);padding:6px 8px;text-transform:uppercase">Run B</th>
+          <th style="text-align:right;font-size:9px;color:var(--muted);padding:6px 8px;text-transform:uppercase">Delta</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  } catch(e) {
+    document.getElementById('diffContent').innerHTML = `<span style="color:var(--err)">Error: ${e.message}</span>`;
+  }
+}
+
+function closeDiffModal() {
+  document.getElementById('diffModal').style.display='none';
+}
+
+// Close diff modal on backdrop click
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('diffModal')?.addEventListener('click', e => {
+    if(e.target === e.currentTarget) closeDiffModal();
+  });
+});
+
+/* ══════════════════════════════════════════════════════════════════
+   SLO VERDICT BANNER (Feature 6)
+   ══════════════════════════════════════════════════════════════════ */
+function renderSloVerdict(slo) {
+  let el = document.getElementById('sloVerdictBanner');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'sloVerdictBanner';
+    const detailPane = document.getElementById('historyDetail');
+    if (detailPane) {
+      const backBtn = detailPane.querySelector('.back-btn');
+      if (backBtn) backBtn.after(el); else detailPane.prepend(el);
+    }
+  }
+  if (!slo || !slo.verdict) { el.innerHTML=''; return; }
+  const pass = slo.verdict === 'pass';
+  const checks = Object.entries(slo.checks || {}).map(([k, c]) => {
+    const icon = c.pass ? '✓' : '✗';
+    const cls  = c.pass ? 'color:var(--accent)' : 'color:var(--err)';
+    const fmtV = v => k.includes('_ms') ? v.toFixed(0)+'ms' : (k==='error_rate'||k==='checks_rate'||k==='apdex_score') ? (v*100).toFixed(1)+'%' : v;
+    return `<span style="${cls};margin-right:12px;font-size:10px">${icon} ${k}: ${fmtV(c.value)} / ${fmtV(c.threshold)}</span>`;
+  }).join('');
+  el.innerHTML = `<div style="padding:8px 14px;border-radius:2px;border:1px solid ${pass?'var(--accent3)':'var(--err)'};background:rgba(${pass?'0,255,65':'255,34,34'},.04);margin-bottom:10px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+    <span style="font-size:12px;font-weight:bold;color:${pass?'var(--accent)':'var(--err)'};letter-spacing:2px">SLO ${pass?'PASS':'FAIL'}</span>
+    ${checks}
+  </div>`;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   LATENCY HEATMAP (Feature 7)
+   ══════════════════════════════════════════════════════════════════ */
+async function loadHeatmap() {
+  const metric = document.getElementById('heatmapMetric')?.value || 'p95_ms';
+  try {
+    const data = await fj(`/heatmap?metric=${metric}&days=90`);
+    renderHeatmap(data);
+  } catch {}
+}
+
+function renderHeatmap(data) {
+  const grid = document.getElementById('heatmapGrid');
+  if (!grid) return;
+  const days = data.data || [];
+  if (!days.length) {
+    grid.innerHTML = '<span style="color:var(--muted);font-size:10px">No run data yet</span>';
+    return;
+  }
+  const vals = days.map(d => d.value).filter(v => v != null);
+  const maxVal = Math.max(...vals, 1);
+  const minVal = Math.min(...vals, 0);
+  grid.innerHTML = days.map(d => {
+    const norm = maxVal > minVal ? (d.value - minVal) / (maxVal - minVal) : 0;
+    const alpha = 0.15 + norm * 0.85;
+    const fmtV = v => data.metric?.includes('_ms') ? v.toFixed(0)+'ms' : (v*100).toFixed(1)+'%';
+    return `<div style="width:10px;height:20px;border-radius:1px;background:rgba(var(--rain-r),var(--rain-g),var(--rain-b),${alpha.toFixed(2)});cursor:default;flex-shrink:0"
+      data-date="${d.date}" data-val="${fmtV(d.value)}" data-runs="${d.run_count}"
+      onmouseenter="showHeatTip(event,this)" onmouseleave="hideHeatTip()"></div>`;
+  }).join('');
+}
+
+function showHeatTip(e, el) {
+  const tip = document.getElementById('heatmapTooltip');
+  tip.innerHTML = `${el.dataset.date}<br>${el.dataset.val} · ${el.dataset.runs} run(s)`;
+  tip.style.display='';
+  tip.style.left = (e.clientX+10)+'px';
+  tip.style.top  = (e.clientY-10)+'px';
+}
+function hideHeatTip() {
+  document.getElementById('heatmapTooltip').style.display='none';
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   OP SPARKLINES (Feature 8)
+   ══════════════════════════════════════════════════════════════════ */
+let _sparklineData = {};
+
+async function loadOpSparklines() {
+  const ops = ALL_OPS.slice(0, 8);
+  if (!ops.length) return;
+  const results = await Promise.allSettled(ops.map(op => fj(`/ops/${op}/trend?runs=10`)));
+  _sparklineData = {};
+  results.forEach((r, i) => {
+    if (r.status === 'fulfilled') _sparklineData[ops[i]] = r.value.trend || [];
+  });
+  renderOpSparklines();
+}
+
+function renderOpSparklines() {
+  const wrap = document.getElementById('opSparklines');
+  if (!wrap || !Object.keys(_sparklineData).length) return;
+  const rows = Object.entries(_sparklineData).map(([op, trend]) => {
+    if (!trend.length) return '';
+    const vals = trend.map(t => t.p95_ms || 0).filter(v => v > 0);
+    if (!vals.length) return '';
+    const mx = Math.max(...vals, 1);
+    const xOf = i => (i / (vals.length - 1 || 1) * 60);
+    const pts = vals.map((v,i) => `${xOf(i).toFixed(1)},${(16-(v/mx)*14).toFixed(1)}`).join(' ');
+    const last = vals[vals.length-1];
+    const prev = vals[vals.length-2] ?? last;
+    const trend_dir = last > prev*1.05 ? 'var(--err)' : last < prev*0.95 ? 'var(--accent)' : 'var(--warn)';
+    const lastX = xOf(vals.length - 1);
+    return `<tr>
+      <td style="font-size:10px;color:var(--text);white-space:nowrap;padding:4px 8px">${op}</td>
+      <td style="padding:4px 8px">
+        <svg width="60" height="18" viewBox="0 0 60 18">
+          <polyline points="${pts}" fill="none" stroke="${trend_dir}" stroke-width="1.5"/>
+          <circle cx="${lastX.toFixed(1)}" cy="${(16-(last/mx)*14).toFixed(1)}" r="2" fill="${trend_dir}"/>
+        </svg>
+      </td>
+      <td style="text-align:right;font-size:10px;color:${trend_dir};padding:4px 8px;font-weight:bold">${last.toFixed(0)}ms</td>
+    </tr>`;
+  }).join('');
+  wrap.innerHTML = rows ? `
+    <div class="stitle">p95 Trend (last 10 runs)</div>
+    <table style="background:var(--surface);border:1px solid var(--border);border-radius:2px">
+      <tbody>${rows}</tbody>
+    </table>` : '';
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   WEBHOOKS (Feature 9)
+   ══════════════════════════════════════════════════════════════════ */
+async function loadWebhooks() {
+  try {
+    const hooks = await fj('/webhooks');
+    const list = document.getElementById('webhookList');
+    if (!list) return;
+    if (!hooks.length) { list.innerHTML = '<div style="font-size:10px;color:var(--muted)">No webhooks configured</div>'; return; }
+    list.innerHTML = hooks.map(h => `
+      <div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--surface);border:1px solid var(--border);border-radius:2px;margin-bottom:4px;font-size:10px">
+        <span style="color:var(--accent);font-weight:bold;flex:0 0 auto">${h.name||'webhook'}</span>
+        <span style="color:var(--muted);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${h.url}</span>
+        <span style="color:var(--muted)">${(h.events||[]).join(', ')}</span>
+        <button onclick="testWebhook('${h.id}')" style="background:none;border:1px solid var(--border2);color:var(--muted);font-family:inherit;font-size:9px;padding:2px 6px;cursor:pointer;border-radius:2px">test</button>
+        <button onclick="deleteWebhook('${h.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px">✕</button>
+      </div>`).join('');
+  } catch {}
+}
+
+async function addWebhook() {
+  const name = document.getElementById('whName').value.trim();
+  const url  = document.getElementById('whUrl').value.trim();
+  if (!url) return;
+  const events = [];
+  if (document.getElementById('whEvtFinished').checked) events.push('run.finished');
+  if (document.getElementById('whEvtFailed').checked)   events.push('run.failed');
+  if (document.getElementById('whEvtSlo').checked)      events.push('slo.breached');
+  const secret = document.getElementById('whSecret').value.trim();
+  await fetch('/webhooks', { method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({name, url, events, secret: secret||undefined}) });
+  document.getElementById('whName').value='';
+  document.getElementById('whUrl').value='';
+  document.getElementById('whSecret').value='';
+  await loadWebhooks();
+}
+
+async function deleteWebhook(id) {
+  await fetch(`/webhooks/${id}`, { method:'DELETE' });
+  await loadWebhooks();
+}
+
+async function testWebhook(id) {
+  await fetch(`/webhooks/${id}/test`, { method:'POST' });
+  showDiscoverMsg('Test webhook fired', 'ok');
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   DATA FILES (Feature 10)
+   ══════════════════════════════════════════════════════════════════ */
+async function loadDataFiles() {
+  try {
+    const d = await fj('/data');
+    const list = document.getElementById('dataFileList');
+    if (!list) return;
+    const files = d.files || [];
+    if (!files.length) { list.innerHTML = '<div style="font-size:10px;color:var(--muted)">No data files uploaded</div>'; return; }
+    list.innerHTML = files.map(f => `
+      <div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--surface);border:1px solid var(--border);border-radius:2px;margin-bottom:4px;font-size:10px">
+        <span style="color:var(--accent);font-weight:bold">${f.name}</span>
+        <span style="color:var(--muted)">${f.row_count||'?'} rows</span>
+        <span style="color:var(--muted);flex:1">${(f.columns||[]).join(', ')}</span>
+        <button onclick="deleteDataFile('${f.name}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px">✕</button>
+      </div>`).join('');
+  } catch {}
+}
+
+async function uploadDataFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const name = document.getElementById('dataFileName').value.trim() || file.name.replace('.csv','');
+  const content = await file.text();
+  await fetch('/data/upload', { method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({name, content}) });
+  document.getElementById('dataFileName').value='';
+  await loadDataFiles();
+  showDiscoverMsg(`Uploaded ${file.name} as "${name}"`, 'ok');
+}
+
+async function deleteDataFile(name) {
+  await fetch(`/data/${name}`, { method:'DELETE' });
+  await loadDataFiles();
+}
+
+// Wire up data drop zone
+(function(){
+  const zone = document.getElementById('dataDropZone');
+  if (!zone) return;
+  zone.addEventListener('click', () => document.getElementById('dataFileInput').click());
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file) { const dt = new DataTransfer(); dt.items.add(file); document.getElementById('dataFileInput').files = dt.files; uploadDataFile(document.getElementById('dataFileInput')); }
+  });
+})();
+
+/* ══════════════════════════════════════════════════════════════════
+   BOOT
+   ══════════════════════════════════════════════════════════════════ */
+restartPoller();
+setInterval(detectProfile,8000);
+detectProfile();
+loadEndpointConfig();
+loadRunConfig();   // populate Execute tab form on initial load
+poll();
+loadProfiles();
+loadSloConfig();
+loadBaseline();
+loadHeatmap();
+// Apply saved theme
+(function(){const t=localStorage.getItem('perf-theme')||'matrix';setTheme(t,false);})();
+</script>
+<div id="toastContainer" style="position:fixed;bottom:40px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none"></div>
+
+<!-- Run Diff Modal -->
+<div id="diffModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9000;align-items:center;justify-content:center">
+  <div style="background:var(--surface);border:1px solid var(--border2);border-radius:4px;max-width:900px;width:94%;max-height:88vh;overflow-y:auto;padding:20px;position:relative">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <div style="font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--accent)">Run Comparison</div>
+      <button onclick="closeDiffModal()" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer">✕</button>
+    </div>
+    <div id="diffContent">Loading…</div>
+  </div>
+</div>
+<script>
+(function(){
+  function connect(){
+    var es = new EventSource('/livereload');
+    es.addEventListener('reload', function(){ location.reload(); });
+    es.onerror = function(){ es.close(); setTimeout(connect, 3000); };
+  }
+  connect();
+})();
+</script>
+</body>
+</html>
