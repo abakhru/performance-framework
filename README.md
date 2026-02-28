@@ -1,6 +1,6 @@
 # k6 Performance Framework
 
-A self-hosted performance testing framework built on [k6](https://k6.io) with a live dashboard, InfluxDB time-series storage, and a browser UI. Point it at any HTTP/REST/GraphQL service via `endpoints.json` or auto-discover from a Postman collection or OpenAPI spec.
+A self-hosted performance testing framework built on [k6](https://github.com/grafana/k6) (© Grafana Labs, AGPL-3.0) with a live dashboard, InfluxDB time-series storage, and a browser UI. Point it at any HTTP/REST/GraphQL service via `endpoints.json` or auto-discover from a Postman collection or OpenAPI spec.
 
 ---
 
@@ -194,6 +194,15 @@ Other features: environment profiles, webhook notifications on run finish, SVG p
 ├── docker-compose.yml
 └── justfile
 ```
+
+---
+
+## Attribution
+
+- **[k6](https://github.com/grafana/k6)** — load testing engine, © Grafana Labs, [AGPL-3.0](https://github.com/grafana/k6/blob/master/LICENSE.md)
+- **[xk6-output-influxdb](https://github.com/grafana/xk6-output-influxdb)** — InfluxDB v2 output extension
+- **[xk6-dashboard](https://github.com/grafana/xk6-dashboard)** — built-in k6 web dashboard extension
+- **[xk6-faker](https://github.com/grafana/xk6-faker)** — fake data generation for k6 scripts
 
 ---
 
