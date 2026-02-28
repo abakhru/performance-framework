@@ -715,6 +715,47 @@ footer{
 
 /* toast container */
 #toastContainer{position:fixed;bottom:60px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+
+/* Lighthouse */
+.lh-score-ring-wrap{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.lh-score-card{display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 14px;min-width:110px}
+.lh-score-label{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted)}
+.lh-ring{width:72px;height:72px;transform:rotate(-90deg)}
+.lh-ring-bg{fill:none;stroke:rgba(255,255,255,.08);stroke-width:6}
+.lh-ring-fg{fill:none;stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset .6s ease}
+.lh-ring-val{font-size:18px;font-weight:800;fill:var(--text)}
+.lh-good .lh-ring-fg{stroke:#0CCE6B}
+.lh-good .lh-ring-val{fill:#0CCE6B}
+.lh-average .lh-ring-fg{stroke:#FFA400}
+.lh-average .lh-ring-val{fill:#FFA400}
+.lh-poor .lh-ring-fg{stroke:#FF4E42}
+.lh-poor .lh-ring-val{fill:#FF4E42}
+.lh-metrics-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+@media(max-width:700px){.lh-metrics-grid{grid-template-columns:repeat(2,1fr)}}
+.lh-metric-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px}
+.lh-metric-label{font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.lh-metric-val{font-size:20px;font-weight:800;color:var(--text)}
+.lh-metric-sub{font-size:10px;color:var(--muted);margin-top:2px}
+.lh-opp-table{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:20px}
+.lh-opp-table th{text-align:left;padding:6px 10px;font-size:9px;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
+.lh-opp-table td{padding:7px 10px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:top}
+.lh-opp-table tr:last-child td{border-bottom:none}
+.lh-savings{font-size:10px;font-weight:700;color:var(--accent);white-space:nowrap}
+.lh-hist-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer;border:1px solid transparent;margin-bottom:5px;transition:background .15s}
+.lh-hist-row:hover{background:rgba(245,166,35,.06);border-color:rgba(245,166,35,.15)}
+.lh-hist-info{flex:1;min-width:0}
+.lh-hist-url{font-size:11px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lh-hist-ts{font-size:10px;color:var(--muted);margin-top:1px}
+.lh-hist-scores{display:flex;gap:6px}
+.lh-hist-score{font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px}
+.lh-hist-score.good{background:rgba(12,206,107,.12);color:#0CCE6B}
+.lh-hist-score.average{background:rgba(255,164,0,.12);color:#FFA400}
+.lh-hist-score.poor{background:rgba(255,78,66,.12);color:#FF4E42}
+.lh-device-toggle{display:flex;gap:6px;margin-bottom:12px}
+.lh-device-btn{padding:5px 14px;font-size:10px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;border:1px solid var(--border);background:none;color:var(--muted);border-radius:20px;cursor:pointer;font-family:inherit;transition:all .2s}
+.lh-device-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(245,166,35,.08)}
+.lh-spinner-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;padding:40px;color:var(--muted);font-size:12px}
+.lh-audit-progress{font-size:11px;color:var(--muted);text-align:center;margin-top:4px}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 </head>
@@ -761,6 +802,10 @@ footer{
     <div class="tab" onclick="showTab('discover')">
       <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <span>Discover</span><div class="tab-dot"></div>
+    </div>
+    <div class="tab" onclick="showTab('lighthouse')">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      <span>Lighthouse</span><div class="tab-dot"></div>
     </div>
   </nav>
   <div class="sidebar-footer" style="font-size:10px;color:var(--muted)">
@@ -1785,6 +1830,83 @@ footer{
 
 </div>
 
+<!-- ══ LIGHTHOUSE ════════════════════════════════════════════════════════ -->
+<div id="pane-lighthouse" class="pane">
+  <div style="display:flex;gap:16px;height:100%;min-height:0">
+
+    <!-- Main area -->
+    <div style="flex:1;min-width:0;overflow-y:auto">
+
+      <!-- Audit setup card -->
+      <div class="run-section">
+        <div class="stitle">UI Performance Audit</div>
+        <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px">
+          <div class="field-group" style="flex:1;min-width:220px;margin-bottom:0">
+            <div class="field-label">URL</div>
+            <input class="field-input" id="lhUrl" type="url" placeholder="https://example.com"/>
+          </div>
+          <button class="wiz-run-btn" id="lhRunBtn" onclick="lhRun()">Run Audit</button>
+        </div>
+        <div class="lh-device-toggle">
+          <button class="lh-device-btn active" id="lhDevDesktop" onclick="lhSetDevice('desktop',this)">Desktop</button>
+          <button class="lh-device-btn" id="lhDevMobile" onclick="lhSetDevice('mobile',this)">Mobile</button>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);cursor:pointer"><input type="checkbox" id="lhCatPerf" checked style="accent-color:var(--accent)"> Performance</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);cursor:pointer"><input type="checkbox" id="lhCatA11y" checked style="accent-color:var(--accent)"> Accessibility</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);cursor:pointer"><input type="checkbox" id="lhCatBP" checked style="accent-color:var(--accent)"> Best Practices</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);cursor:pointer"><input type="checkbox" id="lhCatSeo" checked style="accent-color:var(--accent)"> SEO</label>
+        </div>
+      </div>
+
+      <!-- Progress -->
+      <div id="lhProgress" style="display:none">
+        <div class="lh-spinner-wrap">
+          <span class="wiz-spinner" style="width:28px;height:28px;border-width:3px"></span>
+          <div>Running Lighthouse audit&hellip;</div>
+          <div class="lh-audit-progress" id="lhProgressText">This may take 30&ndash;60 seconds</div>
+        </div>
+      </div>
+
+      <!-- Error -->
+      <div id="lhError" style="display:none;padding:16px;background:rgba(255,78,66,.08);border:1px solid rgba(255,78,66,.3);border-radius:12px;font-size:12px;color:#FF4E42;margin-bottom:16px"></div>
+
+      <!-- Results -->
+      <div id="lhResults" style="display:none">
+        <div class="stitle" style="margin-bottom:12px">Scores <span id="lhResultUrl" style="font-size:10px;font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted)"></span></div>
+        <div class="lh-score-ring-wrap" id="lhScoreRings"></div>
+
+        <div class="stitle" style="margin-bottom:10px">Core Web Vitals</div>
+        <div class="lh-metrics-grid" id="lhMetricsGrid"></div>
+
+        <div id="lhOppsSection">
+          <div class="stitle" style="margin-bottom:10px">Opportunities</div>
+          <table class="lh-opp-table" id="lhOppsTable">
+            <thead><tr><th>Audit</th><th>Potential Savings</th></tr></thead>
+            <tbody id="lhOppsBody"></tbody>
+          </table>
+        </div>
+
+        <div id="lhDiagsSection">
+          <div class="stitle" style="margin-bottom:10px">Diagnostics</div>
+          <table class="lh-opp-table" id="lhDiagsTable">
+            <thead><tr><th>Issue</th><th>Value</th></tr></thead>
+            <tbody id="lhDiagsBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /main -->
+
+    <!-- History sidebar -->
+    <div style="width:240px;flex-shrink:0;overflow-y:auto">
+      <div class="stitle" style="margin-bottom:10px">History</div>
+      <div id="lhHistory"><div style="font-size:11px;color:var(--muted)">No audits yet</div></div>
+    </div>
+
+  </div>
+</div>
+
 <!-- ══ RUN ═════════════════════════════════════════════════════════════════ -->
 <div id="pane-run" class="pane active">
 
@@ -2189,7 +2311,7 @@ function renderOffendersView(ops){
 /* ══════════════════════════════════════════════════════════════════
    TAB ROUTING
    ══════════════════════════════════════════════════════════════════ */
-const TAB_NAMES=['run','overview','endpoints','http','log','history','discover'];
+const TAB_NAMES=['run','overview','endpoints','http','log','history','discover','lighthouse'];
 const TAB_LABELS={run:'Execute',overview:'Overview',endpoints:'Endpoints',http:'HTTP Metrics',log:'Log',history:'History',discover:'Discover'};
 function showTab(name){
   document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',TAB_NAMES[i]===name));
@@ -2296,8 +2418,8 @@ function toast(msg,type='ok',duration=3000){
    ══════════════════════════════════════════════════════════════════ */
 document.addEventListener('keydown',e=>{
   if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
-  const tabs=['run','overview','endpoints','http','log','history','discover'];
-  if(e.key>='1'&&e.key<='7'){showTab(tabs[+e.key-1]);return;}
+  const tabs=['run','overview','endpoints','http','log','history','discover','lighthouse'];
+  if(e.key>='1'&&e.key<='8'){showTab(tabs[+e.key-1]);return;}
   if(e.key==='t'||e.key==='T'){
     const idx=THEMES.indexOf(document.documentElement.getAttribute('data-theme')||'matrix');
     setTheme(THEMES[(idx+1)%THEMES.length],true);
@@ -4544,6 +4666,211 @@ loadBaseline();
 loadHeatmap();
 // Apply saved theme
 (function(){const t=localStorage.getItem('perf-theme')||'matrix';setTheme(t,false);})();
+
+/* ══════════════════════════════════════════════════════════════════
+   LIGHTHOUSE
+   ══════════════════════════════════════════════════════════════════ */
+let _lhDevice = 'desktop';
+let _lhPollTimer = null;
+
+function lhSetDevice(d, btn) {
+  _lhDevice = d;
+  document.querySelectorAll('.lh-device-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function _lhScoreClass(s) {
+  if (s === null || s === undefined) return 'average';
+  return s >= 90 ? 'good' : s >= 50 ? 'average' : 'poor';
+}
+
+function _lhRingSvg(score, label) {
+  const cls = _lhScoreClass(score);
+  const r = 30, c = 36, circ = 2 * Math.PI * r;
+  const pct = score != null ? score / 100 : 0;
+  const offset = circ * (1 - pct);
+  const display = score != null ? score : '\u2014';
+  return `<div class="lh-score-card lh-${cls}">
+    <svg class="lh-ring" viewBox="0 0 72 72">
+      <circle class="lh-ring-bg" cx="${c}" cy="${c}" r="${r}"/>
+      <circle class="lh-ring-fg" cx="${c}" cy="${c}" r="${r}"
+        stroke-dasharray="${circ}" stroke-dashoffset="${offset}"/>
+      <text class="lh-ring-val" x="36" y="36" dominant-baseline="central" text-anchor="middle"
+        transform="rotate(90,36,36)">${display}</text>
+    </svg>
+    <div class="lh-score-label">${label}</div>
+  </div>`;
+}
+
+function _lhMetricCard(label, metric) {
+  const cls = metric.score != null ? _lhScoreClass(Math.round(metric.score * 100)) : '';
+  const color = cls === 'good' ? '#0CCE6B' : cls === 'average' ? '#FFA400' : cls === 'poor' ? '#FF4E42' : 'var(--text)';
+  return `<div class="lh-metric-card">
+    <div class="lh-metric-label">${label}</div>
+    <div class="lh-metric-val" style="color:${color}">${metric.display || '\u2014'}</div>
+  </div>`;
+}
+
+function _lhRenderResult(data) {
+  document.getElementById('lhResultUrl').textContent = data.url || '';
+  const cats = data.categories || {};
+  document.getElementById('lhScoreRings').innerHTML =
+    _lhRingSvg(cats.performance,    'Performance') +
+    _lhRingSvg(cats.accessibility,  'Accessibility') +
+    _lhRingSvg(cats.best_practices, 'Best Practices') +
+    _lhRingSvg(cats.seo,            'SEO');
+
+  const m = data.metrics || {};
+  document.getElementById('lhMetricsGrid').innerHTML =
+    _lhMetricCard('First Contentful Paint',   m.fcp || {}) +
+    _lhMetricCard('Largest Contentful Paint', m.lcp || {}) +
+    _lhMetricCard('Total Blocking Time',      m.tbt || {}) +
+    _lhMetricCard('Cumulative Layout Shift',  m.cls || {}) +
+    _lhMetricCard('Time to Interactive',      m.tti || {}) +
+    _lhMetricCard('Speed Index',              m.si  || {});
+
+  const opps = data.opportunities || [];
+  const obody = document.getElementById('lhOppsBody');
+  if (opps.length) {
+    obody.innerHTML = opps.map(o => `<tr>
+      <td><div style="font-weight:600;color:var(--text)">${_esc(o.title)}</div>
+          <div style="font-size:10px;color:var(--muted)">${_esc(o.display)}</div></td>
+      <td><span class="lh-savings">${o.savings_ms > 0 ? o.savings_ms + ' ms' : '\u2014'}</span></td>
+    </tr>`).join('');
+    document.getElementById('lhOppsSection').style.display = '';
+  } else {
+    document.getElementById('lhOppsSection').style.display = 'none';
+  }
+
+  const diags = data.diagnostics || [];
+  const dbody = document.getElementById('lhDiagsBody');
+  if (diags.length) {
+    dbody.innerHTML = diags.map(d => `<tr>
+      <td style="font-weight:600;color:var(--text)">${_esc(d.title)}</td>
+      <td style="color:var(--muted)">${_esc(d.display)}</td>
+    </tr>`).join('');
+    document.getElementById('lhDiagsSection').style.display = '';
+  } else {
+    document.getElementById('lhDiagsSection').style.display = 'none';
+  }
+
+  document.getElementById('lhProgress').style.display = 'none';
+  document.getElementById('lhResults').style.display = '';
+  document.getElementById('lhError').style.display = 'none';
+}
+
+async function lhRun() {
+  const url = (document.getElementById('lhUrl').value || '').trim();
+  if (!url) { document.getElementById('lhUrl').focus(); return; }
+
+  const cats = [];
+  if (document.getElementById('lhCatPerf').checked) cats.push('performance');
+  if (document.getElementById('lhCatA11y').checked) cats.push('accessibility');
+  if (document.getElementById('lhCatBP').checked) cats.push('best-practices');
+  if (document.getElementById('lhCatSeo').checked) cats.push('seo');
+  if (!cats.length) cats.push('performance');
+
+  // Reset UI
+  document.getElementById('lhResults').style.display = 'none';
+  document.getElementById('lhError').style.display = 'none';
+  document.getElementById('lhProgress').style.display = '';
+  document.getElementById('lhProgressText').textContent = 'Starting audit\u2026';
+  document.getElementById('lhRunBtn').disabled = true;
+  if (_lhPollTimer) clearInterval(_lhPollTimer);
+
+  let elapsed = 0;
+  const tick = setInterval(() => {
+    elapsed += 2;
+    document.getElementById('lhProgressText').textContent = `Auditing\u2026 ${elapsed}s elapsed (typically 30\u201360s)`;
+  }, 2000);
+
+  try {
+    const resp = await fetch('/lighthouse/run', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({url, device: _lhDevice, categories: cats}),
+    });
+    if (!resp.ok) throw new Error(resp.status);
+    const r = await resp.json();
+    const run_id = r.run_id;
+
+    // Poll for completion
+    _lhPollTimer = setInterval(async () => {
+      try {
+        const st = await fj('/lighthouse/status/' + run_id);
+        if (st.status === 'done') {
+          clearInterval(_lhPollTimer); clearInterval(tick);
+          const result = await fj('/lighthouse/result/' + run_id);
+          _lhRenderResult(result);
+          document.getElementById('lhRunBtn').disabled = false;
+          lhLoadHistory();
+        } else if (st.status === 'error') {
+          clearInterval(_lhPollTimer); clearInterval(tick);
+          document.getElementById('lhProgress').style.display = 'none';
+          document.getElementById('lhError').textContent = 'Audit failed: ' + (st.error || 'unknown error');
+          document.getElementById('lhError').style.display = '';
+          document.getElementById('lhRunBtn').disabled = false;
+        }
+      } catch(pollErr) {
+        // keep polling on transient fetch errors
+      }
+    }, 2000);
+  } catch(e) {
+    clearInterval(tick);
+    document.getElementById('lhProgress').style.display = 'none';
+    document.getElementById('lhError').textContent = 'Error: ' + e.message;
+    document.getElementById('lhError').style.display = '';
+    document.getElementById('lhRunBtn').disabled = false;
+  }
+}
+
+async function lhLoadHistory() {
+  try {
+    const hist = await fj('/lighthouse/history');
+    const el = document.getElementById('lhHistory');
+    if (!hist.length) { el.innerHTML = '<div style="font-size:11px;color:var(--muted)">No audits yet</div>'; return; }
+    el.innerHTML = hist.map(h => {
+      const sc = h.scores || {};
+      const ts = h.ran_at ? new Date(h.ran_at).toLocaleString() : '';
+      const badges = ['performance','accessibility','best_practices','seo']
+        .map(k => sc[k] != null ? `<span class="lh-hist-score ${_lhScoreClass(sc[k])}">${sc[k]}</span>` : '')
+        .join('');
+      return `<div class="lh-hist-row" onclick="lhLoadRun('${_esc(h.run_id)}','${_esc(h.url)}')">
+        <div class="lh-hist-info">
+          <div class="lh-hist-url">${_esc(h.url)}</div>
+          <div class="lh-hist-ts">${_esc(ts)}</div>
+          <div class="lh-hist-scores" style="margin-top:4px">${badges}</div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {}
+}
+
+async function lhLoadRun(run_id, url) {
+  document.getElementById('lhUrl').value = url || '';
+  document.getElementById('lhResults').style.display = 'none';
+  document.getElementById('lhError').style.display = 'none';
+  document.getElementById('lhProgress').style.display = '';
+  document.getElementById('lhProgressText').textContent = 'Loading result\u2026';
+  try {
+    const result = await fj('/lighthouse/result/' + run_id);
+    _lhRenderResult(result);
+  } catch(e) {
+    document.getElementById('lhProgress').style.display = 'none';
+    document.getElementById('lhError').textContent = 'Could not load: ' + e.message;
+    document.getElementById('lhError').style.display = '';
+  }
+}
+
+// Load history when tab becomes visible
+(function(){
+  const _lhPane = document.getElementById('pane-lighthouse');
+  if (_lhPane) {
+    new MutationObserver(() => {
+      if (_lhPane.classList.contains('active')) lhLoadHistory();
+    }).observe(_lhPane, {attributes: true, attributeFilter: ['class']});
+  }
+})();
 </script>
 <div id="toastContainer" style="position:fixed;bottom:40px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none"></div>
 
