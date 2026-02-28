@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Luna — Testing as a Service</title>
+<meta name="description" content="Luna delivers performance testing, load analysis, and API quality assurance as a managed service — for engineering teams and autonomous AI agents."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=Cormorant+SC:wght@300;400;500;600&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+/* ─── TOKENS ─────────────────────────────────────────────── */
+:root {
+  --obsidian:   #05070D;
+  --midnight:   #080C18;
+  --surface:    #0C1020;
+  --surface2:   #111628;
+  --surface3:   #161D30;
+  --gold:       #C8A84B;
+  --gold2:      #E4C86A;
+  --gold3:      #8C6E28;
+  --gold4:      #3A2C0E;
+  --gold-glow:  rgba(200,168,75,.18);
+  --silver:     #A4B4CC;
+  --silver2:    #6A7E9A;
+  --white:      #EAF0FA;
+  --muted:      #3E4D66;
+  --blue:       #0F1A38;
+  --accent-dim: rgba(200,168,75,.06);
+  --border:     rgba(200,168,75,.12);
+  --border2:    rgba(200,168,75,.22);
+  --r:          6px;
+  --r-lg:       12px;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-sc:    'Cormorant SC', Georgia, serif;
+  --font-body:  'DM Sans', system-ui, sans-serif;
+  --font-mono:  'Fira Code', monospace;
+  --ease-out:   cubic-bezier(.16,1,.3,1);
+  --ease-spring:cubic-bezier(.34,1.56,.64,1);
+}
+
+/* ─── RESET & BASE ───────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{
+  background:var(--obsidian);
+  color:var(--white);
+  font-family:var(--font-body);
+  font-size:16px;
+  line-height:1.6;
+  overflow-x:hidden;
+}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+button{cursor:pointer;font-family:inherit}
+
+/* ─── NOISE OVERLAY ──────────────────────────────────────── */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity:.025;
+  pointer-events:none;
+  z-index:999;
+}
+
+/* ─── STARS BACKGROUND ───────────────────────────────────── */
+.stars{
+  position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0;
+}
+.star{
+  position:absolute;
+  border-radius:50%;
+  background:var(--white);
+  animation:twinkle var(--dur,4s) ease-in-out infinite;
+  animation-delay:var(--del,0s);
+  opacity:var(--op,.5);
+}
+@keyframes twinkle{
+  0%,100%{opacity:var(--op,.5);transform:scale(1)}
+  50%{opacity:calc(var(--op,.5)*.2);transform:scale(.7)}
+}
+
+/* ─── NAV ────────────────────────────────────────────────── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 5vw;height:72px;
+  background:rgba(5,7,13,.85);
+  backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo{
+  font-family:var(--font-sc);
+  font-size:26px;font-weight:400;letter-spacing:4px;
+  color:var(--gold2);
+  display:flex;align-items:center;gap:10px;
+}
+.nav-logo-mark{
+  width:28px;height:28px;
+  border-radius:50%;
+  background:conic-gradient(from 0deg,var(--gold4) 0%,var(--gold) 30%,var(--gold2) 50%,var(--gold) 70%,var(--gold4) 100%);
+  box-shadow:0 0 12px var(--gold-glow),inset 0 0 8px rgba(0,0,0,.6);
+  flex-shrink:0;
+  position:relative;
+  overflow:hidden;
+}
+.nav-logo-mark::after{
+  content:'';position:absolute;
+  left:-4px;top:50%;transform:translateY(-50%);
+  width:60%;height:100%;
+  background:var(--obsidian);
+  border-radius:50%;
+  box-shadow:4px 0 8px rgba(0,0,0,.8);
+}
+.nav-links{
+  display:flex;align-items:center;gap:36px;
+  font-size:13px;font-weight:400;letter-spacing:.5px;color:var(--silver);
+  list-style:none;
+}
+.nav-links a:hover{color:var(--gold2);transition:color .2s}
+.nav-cta{
+  display:flex;align-items:center;gap:12px;
+}
+.btn-outline{
+  padding:9px 20px;border:1px solid var(--border2);
+  border-radius:var(--r);font-size:13px;font-weight:500;
+  color:var(--silver);letter-spacing:.3px;
+  background:transparent;
+  transition:all .22s var(--ease-out);
+}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold2);background:var(--accent-dim)}
+.btn-primary{
+  padding:9px 22px;
+  background:linear-gradient(135deg,var(--gold3),var(--gold));
+  border:1px solid var(--gold3);
+  border-radius:var(--r);font-size:13px;font-weight:500;
+  color:var(--midnight);letter-spacing:.4px;
+  transition:all .22s var(--ease-out);
+  box-shadow:0 2px 12px rgba(200,168,75,.25);
+}
+.btn-primary:hover{
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  box-shadow:0 4px 20px rgba(200,168,75,.40);
+  transform:translateY(-1px);
+}
+
+/* ─── HERO ───────────────────────────────────────────────── */
+.hero{
+  position:relative;min-height:100svh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:120px 5vw 80px;
+  overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(200,168,75,.08) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 50% at 50% 110%, rgba(15,26,56,.6) 0%, transparent 70%);
+  pointer-events:none;
+}
+
+/* Moon */
+.moon-wrap{
+  position:absolute;top:6%;right:8%;
+  width:min(320px,38vw);
+  aspect-ratio:1;
+}
+.moon{
+  width:100%;height:100%;border-radius:50%;
+  background:
+    radial-gradient(circle at 35% 35%,#D4C27A 0%,#B89A42 25%,#8C6E28 55%,#4A3A18 80%,#1C1508 100%);
+  box-shadow:
+    0 0 0 1px rgba(200,168,75,.15),
+    0 0 40px rgba(200,168,75,.08),
+    0 0 80px rgba(200,168,75,.04),
+    inset -30px -20px 60px rgba(0,0,0,.7),
+    inset 10px 10px 40px rgba(255,255,220,.05);
+  animation:moon-float 8s ease-in-out infinite;
+  position:relative;overflow:hidden;
+}
+.moon::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 30% 30%,rgba(255,255,200,.06) 0%,transparent 60%);
+  border-radius:50%;
+}
+/* moon craters */
+.moon::after{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(circle at 60% 35%, rgba(0,0,0,.25) 0%, transparent 8%),
+    radial-gradient(circle at 40% 65%, rgba(0,0,0,.2) 0%, transparent 6%),
+    radial-gradient(circle at 75% 60%, rgba(0,0,0,.18) 0%, transparent 5%),
+    radial-gradient(circle at 25% 45%, rgba(0,0,0,.15) 0%, transparent 4%),
+    radial-gradient(circle at 55% 75%, rgba(0,0,0,.2) 0%, transparent 5%);
+  border-radius:50%;
+}
+.moon-shadow{
+  position:absolute;inset:0;border-radius:50%;
+  background:rgba(5,7,13,.5);
+  clip-path:ellipse(45% 50% at -15% 50%);
+  animation:moon-shadow 8s ease-in-out infinite;
+}
+@keyframes moon-float{
+  0%,100%{transform:translateY(0) rotate(-2deg)}
+  50%{transform:translateY(-14px) rotate(2deg)}
+}
+@keyframes moon-shadow{
+  0%,100%{clip-path:ellipse(45% 50% at -15% 50%)}
+  50%{clip-path:ellipse(48% 50% at -12% 50%)}
+}
+
+/* Deco ring */
+.moon-ring{
+  position:absolute;inset:-14%;
+  border-radius:50%;
+  border:1px solid rgba(200,168,75,.14);
+  animation:moon-ring-spin 30s linear infinite;
+}
+.moon-ring::before{
+  content:'◆';position:absolute;top:-6px;left:50%;transform:translateX(-50%);
+  font-size:8px;color:var(--gold);
+}
+.moon-ring::after{
+  content:'◆';position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);
+  font-size:8px;color:var(--gold);
+}
+@keyframes moon-ring-spin{
+  to{transform:rotate(360deg)}
+}
+
+/* Deco outer ring */
+.moon-ring2{
+  position:absolute;inset:-28%;
+  border-radius:50%;
+  border:1px solid rgba(200,168,75,.06);
+  animation:moon-ring-spin 60s linear infinite reverse;
+}
+
+/* Art Deco divider */
+.deco-line{
+  display:flex;align-items:center;gap:16px;
+  color:var(--gold3);font-size:10px;letter-spacing:2px;
+  margin-bottom:32px;
+  animation:fade-up .8s var(--ease-out) .1s both;
+}
+.deco-line::before,.deco-line::after{
+  content:'';flex:1;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold3));
+}
+.deco-line::after{background:linear-gradient(90deg,var(--gold3),transparent)}
+
+.hero-eyebrow{
+  font-family:var(--font-sc);font-size:11px;
+  letter-spacing:4px;color:var(--gold3);
+  margin-bottom:8px;
+  animation:fade-up .8s var(--ease-out) .1s both;
+}
+.hero-title{
+  font-family:var(--font-display);
+  font-size:clamp(52px,8vw,100px);
+  font-weight:300;
+  line-height:1.05;
+  letter-spacing:-1px;
+  color:var(--white);
+  margin-bottom:28px;
+  animation:fade-up .9s var(--ease-out) .2s both;
+}
+.hero-title em{
+  font-style:italic;
+  background:linear-gradient(135deg,var(--gold3),var(--gold2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero-title .rule{
+  display:block;
+  font-size:.55em;font-weight:600;letter-spacing:6px;
+  font-family:var(--font-sc);font-style:normal;
+  -webkit-text-fill-color:var(--gold);
+  background:none;
+  margin-top:8px;
+}
+.hero-sub{
+  font-size:clamp(15px,2vw,19px);font-weight:300;
+  color:var(--silver);max-width:600px;
+  margin:0 auto 48px;line-height:1.7;
+  animation:fade-up .9s var(--ease-out) .35s both;
+}
+.hero-sub strong{color:var(--white);font-weight:500}
+.hero-cta{
+  display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;
+  animation:fade-up .9s var(--ease-out) .45s both;
+}
+.btn-hero{
+  padding:15px 36px;
+  background:linear-gradient(135deg,var(--gold3),var(--gold));
+  border:none;border-radius:var(--r);
+  font-size:15px;font-weight:500;letter-spacing:.8px;
+  color:var(--midnight);
+  box-shadow:0 4px 24px rgba(200,168,75,.35);
+  transition:all .25s var(--ease-out);
+  position:relative;overflow:hidden;
+}
+.btn-hero::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,.15) 50%,transparent 60%);
+  transform:translateX(-100%);
+  transition:transform .5s ease;
+}
+.btn-hero:hover::after{transform:translateX(100%)}
+.btn-hero:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 32px rgba(200,168,75,.45);
+}
+.btn-ghost{
+  padding:15px 32px;
+  border:1px solid var(--border2);
+  border-radius:var(--r);
+  font-size:15px;font-weight:400;letter-spacing:.3px;
+  color:var(--silver);background:transparent;
+  transition:all .22s var(--ease-out);
+}
+.btn-ghost:hover{border-color:var(--gold3);color:var(--gold2);background:var(--accent-dim)}
+
+/* scroll indicator */
+.scroll-hint{
+  position:absolute;bottom:36px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  font-size:9px;letter-spacing:3px;color:var(--muted);
+  font-family:var(--font-sc);
+  animation:fade-up .8s var(--ease-out) 1.2s both;
+}
+.scroll-hint-line{
+  width:1px;height:32px;
+  background:linear-gradient(to bottom,var(--gold3),transparent);
+  animation:scroll-pulse 2s ease-in-out infinite;
+}
+@keyframes scroll-pulse{
+  0%,100%{opacity:.3;transform:scaleY(1)}
+  50%{opacity:1;transform:scaleY(1.15)}
+}
+
+/* ─── FADE UP ANIMATION ──────────────────────────────────── */
+@keyframes fade-up{
+  from{opacity:0;transform:translateY(24px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.reveal{
+  opacity:0;transform:translateY(28px);
+  transition:opacity .7s var(--ease-out),transform .7s var(--ease-out);
+}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ─── MARQUEE ────────────────────────────────────────────── */
+.marquee-section{
+  padding:36px 0;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  background:var(--midnight);
+  overflow:hidden;position:relative;
+}
+.marquee-section::before,.marquee-section::after{
+  content:'';position:absolute;top:0;bottom:0;width:120px;z-index:2;
+}
+.marquee-section::before{left:0;background:linear-gradient(to right,var(--midnight),transparent)}
+.marquee-section::after{right:0;background:linear-gradient(to left,var(--midnight),transparent)}
+.marquee-track{
+  display:flex;gap:60px;width:max-content;
+  animation:marquee 28s linear infinite;
+}
+.marquee-track:hover{animation-play-state:paused}
+@keyframes marquee{
+  0%{transform:translateX(0)}
+  100%{transform:translateX(-50%)}
+}
+.marquee-item{
+  display:flex;align-items:center;gap:10px;
+  font-family:var(--font-sc);font-size:13px;letter-spacing:2px;
+  color:var(--muted);white-space:nowrap;
+  transition:color .2s;
+}
+.marquee-item:hover{color:var(--gold)}
+.marquee-dot{width:4px;height:4px;border-radius:50%;background:var(--gold3)}
+
+/* ─── SECTION WRAPPER ────────────────────────────────────── */
+.section{
+  position:relative;padding:110px 5vw;
+  max-width:1280px;margin:0 auto;
+}
+.section-full{padding:100px 5vw}
+
+/* ─── SECTION HEADER ─────────────────────────────────────── */
+.section-eyebrow{
+  font-family:var(--font-sc);font-size:10px;
+  letter-spacing:4px;color:var(--gold3);
+  margin-bottom:16px;display:flex;align-items:center;gap:12px;
+}
+.section-eyebrow::before{
+  content:'';width:32px;height:1px;background:var(--gold3);
+}
+.section-title{
+  font-family:var(--font-display);
+  font-size:clamp(36px,5vw,58px);font-weight:300;
+  line-height:1.1;color:var(--white);
+  margin-bottom:16px;
+}
+.section-title em{
+  font-style:italic;
+  background:linear-gradient(135deg,var(--gold3) 0%,var(--gold2) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.section-sub{
+  font-size:17px;font-weight:300;color:var(--silver);
+  max-width:520px;line-height:1.7;
+  margin-bottom:64px;
+}
+
+/* ─── PROBLEM SECTION ────────────────────────────────────── */
+.problem-section{
+  background:var(--midnight);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.problem-inner{
+  display:grid;grid-template-columns:1fr 1fr;gap:80px;
+  align-items:center;
+  max-width:1280px;margin:0 auto;padding:110px 5vw;
+}
+.problem-stat-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:1px;
+  background:var(--border);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);overflow:hidden;
+}
+.problem-stat{
+  background:var(--surface);
+  padding:36px 28px;
+  position:relative;
+  transition:background .3s;
+}
+.problem-stat:hover{background:var(--surface2)}
+.problem-stat::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold3),transparent);
+  opacity:0;transition:opacity .3s;
+}
+.problem-stat:hover::before{opacity:1}
+.stat-num{
+  font-family:var(--font-display);font-size:clamp(36px,4vw,52px);
+  font-weight:300;
+  background:linear-gradient(135deg,var(--gold3),var(--gold2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  line-height:1;margin-bottom:8px;
+  display:block;
+}
+.stat-label{font-size:13px;color:var(--silver2);font-weight:300;line-height:1.5}
+
+/* ─── FEATURES ───────────────────────────────────────────── */
+.features-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1px;
+  background:var(--border);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  overflow:hidden;
+}
+.feature-card{
+  background:var(--surface);
+  padding:40px 32px;
+  position:relative;
+  transition:background .3s;
+}
+.feature-card:hover{background:var(--surface2)}
+.feature-card::after{
+  content:'';position:absolute;
+  inset:0;border-radius:0;
+  background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(200,168,75,.07) 0%,transparent 60%);
+  opacity:0;transition:opacity .4s;pointer-events:none;
+}
+.feature-card:hover::after{opacity:1}
+.feature-icon{
+  width:44px;height:44px;margin-bottom:24px;
+  border:1px solid var(--border2);border-radius:var(--r);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;
+  background:var(--accent-dim);
+  transition:all .3s;
+}
+.feature-card:hover .feature-icon{border-color:var(--gold);box-shadow:0 0 12px var(--gold-glow)}
+.feature-name{
+  font-family:var(--font-display);font-size:22px;font-weight:500;
+  color:var(--white);margin-bottom:12px;
+}
+.feature-desc{font-size:14px;font-weight:300;color:var(--silver);line-height:1.7}
+
+/* ─── FOR AGENTS ─────────────────────────────────────────── */
+.agents-section{
+  background:
+    radial-gradient(ellipse 100% 80% at 50% 50%, rgba(200,168,75,.04) 0%,transparent 70%),
+    var(--midnight);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.agents-inner{
+  display:grid;grid-template-columns:1fr 1fr;gap:80px;
+  align-items:center;
+  max-width:1280px;margin:0 auto;padding:100px 5vw;
+}
+.agents-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 14px;border:1px solid rgba(200,168,75,.3);
+  border-radius:99px;font-size:11px;letter-spacing:2px;
+  color:var(--gold);font-family:var(--font-sc);
+  margin-bottom:24px;
+}
+.agents-badge-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--gold);
+  animation:pulse-dot 1.8s ease-in-out infinite;
+}
+@keyframes pulse-dot{
+  0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(200,168,75,.4)}
+  50%{opacity:.8;box-shadow:0 0 0 6px rgba(200,168,75,0)}
+}
+.code-block{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  overflow:hidden;
+}
+.code-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;
+  border-bottom:1px solid var(--border);
+  background:var(--surface2);
+}
+.code-dots{display:flex;gap:6px}
+.code-dot{width:10px;height:10px;border-radius:50%}
+.code-dot:nth-child(1){background:#FF5F57}
+.code-dot:nth-child(2){background:#FFBD2E}
+.code-dot:nth-child(3){background:#28CA41}
+.code-lang{font-size:11px;letter-spacing:1px;color:var(--silver2);font-family:var(--font-sc)}
+.code-body{padding:24px;font-family:var(--font-mono);font-size:13px;line-height:1.8;overflow-x:auto}
+.code-body .c-gold{color:var(--gold2)}
+.code-body .c-silver{color:var(--silver)}
+.code-body .c-blue{color:#7AB8F5}
+.code-body .c-green{color:#7EC8A4}
+.code-body .c-muted{color:var(--silver2)}
+.code-body .c-string{color:#B5CEA8}
+
+/* ─── PROFILES ───────────────────────────────────────────── */
+.profiles-grid{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:16px;
+}
+.profile-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:32px 24px 28px;
+  text-align:center;
+  transition:all .3s var(--ease-out);
+  position:relative;overflow:hidden;cursor:pointer;
+}
+.profile-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(160deg,rgba(200,168,75,.06) 0%,transparent 60%);
+  opacity:0;transition:opacity .3s;
+}
+.profile-card:hover{
+  border-color:var(--gold3);
+  transform:translateY(-4px);
+  box-shadow:0 12px 32px rgba(0,0,0,.4),0 0 0 1px var(--gold4);
+}
+.profile-card:hover::before{opacity:1}
+.profile-glyph{
+  font-size:28px;margin-bottom:16px;display:block;
+}
+.profile-name{
+  font-family:var(--font-sc);font-size:13px;letter-spacing:2.5px;
+  color:var(--gold);margin-bottom:8px;
+}
+.profile-caption{
+  font-size:12px;color:var(--silver2);line-height:1.5;font-weight:300;
+}
+.profile-bar{
+  position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--gold4),var(--gold));
+  transform:scaleX(0);transform-origin:left;
+  transition:transform .4s var(--ease-out);
+}
+.profile-card:hover .profile-bar{transform:scaleX(1)}
+
+/* ─── HOW IT WORKS ───────────────────────────────────────── */
+.steps-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:40px;
+  position:relative;
+}
+.steps-grid::before{
+  content:'';position:absolute;
+  top:36px;left:16%;right:16%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold3) 30%,var(--gold3) 70%,transparent);
+}
+.step{text-align:center;position:relative}
+.step-num{
+  width:72px;height:72px;border-radius:50%;
+  border:1px solid var(--gold3);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 28px;
+  font-family:var(--font-display);font-size:26px;font-weight:300;
+  color:var(--gold);
+  background:var(--surface);
+  position:relative;
+  transition:all .3s;
+}
+.step:hover .step-num{
+  background:var(--gold4);
+  box-shadow:0 0 24px var(--gold-glow);
+}
+.step-num::before{
+  content:'';position:absolute;inset:-6px;
+  border-radius:50%;border:1px solid rgba(200,168,75,.12);
+}
+.step-title{
+  font-family:var(--font-display);font-size:22px;font-weight:500;
+  color:var(--white);margin-bottom:12px;
+}
+.step-desc{font-size:14px;color:var(--silver);line-height:1.7;font-weight:300}
+
+/* ─── PRICING ────────────────────────────────────────────── */
+.pricing-section{
+  background:
+    linear-gradient(180deg,var(--obsidian) 0%,var(--midnight) 50%,var(--obsidian) 100%);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.pricing-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:24px;
+}
+.pricing-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:44px 36px 40px;
+  position:relative;transition:all .3s;
+}
+.pricing-card.featured{
+  border-color:var(--gold3);
+  background:var(--surface2);
+  box-shadow:0 0 0 1px var(--gold4),0 20px 60px rgba(0,0,0,.4);
+}
+.pricing-card.featured::before{
+  content:'MOST POPULAR';
+  position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+  padding:4px 16px;
+  background:linear-gradient(135deg,var(--gold3),var(--gold));
+  border-radius:99px;font-size:9px;letter-spacing:2.5px;
+  color:var(--midnight);font-weight:700;font-family:var(--font-sc);
+}
+.pricing-card:hover{transform:translateY(-3px)}
+.pricing-card.featured:hover{transform:translateY(-4px);box-shadow:0 0 0 1px var(--gold3),0 28px 70px rgba(0,0,0,.5)}
+.plan-name{font-family:var(--font-sc);font-size:13px;letter-spacing:3px;color:var(--silver2);margin-bottom:20px}
+.plan-price{
+  font-family:var(--font-display);font-size:clamp(40px,5vw,56px);font-weight:300;
+  color:var(--white);line-height:1;margin-bottom:4px;
+}
+.plan-price sup{font-size:.5em;vertical-align:super;color:var(--gold)}
+.plan-period{font-size:13px;color:var(--silver2);margin-bottom:28px}
+.plan-divider{height:1px;background:var(--border);margin-bottom:28px}
+.plan-features{list-style:none;margin-bottom:36px}
+.plan-features li{
+  display:flex;align-items:start;gap:10px;
+  font-size:14px;color:var(--silver);line-height:1.5;
+  margin-bottom:12px;font-weight:300;
+}
+.plan-features li::before{
+  content:'◆';font-size:7px;color:var(--gold3);
+  flex-shrink:0;margin-top:5px;
+}
+.plan-cta{
+  width:100%;padding:13px;
+  border:1px solid var(--border2);border-radius:var(--r);
+  font-size:14px;font-weight:500;letter-spacing:.4px;
+  color:var(--silver);background:transparent;
+  transition:all .22s;
+}
+.plan-cta:hover{border-color:var(--gold);color:var(--gold2);background:var(--accent-dim)}
+.pricing-card.featured .plan-cta{
+  background:linear-gradient(135deg,var(--gold3),var(--gold));
+  border-color:var(--gold3);color:var(--midnight);
+  box-shadow:0 4px 16px rgba(200,168,75,.3);
+}
+.pricing-card.featured .plan-cta:hover{
+  box-shadow:0 6px 24px rgba(200,168,75,.45);
+  transform:translateY(-1px);
+}
+
+/* ─── TESTIMONIALS ───────────────────────────────────────── */
+.testi-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:24px;
+}
+.testi-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:36px 32px;
+  transition:all .3s;
+}
+.testi-card:hover{border-color:var(--gold3);transform:translateY(-2px)}
+.testi-quote{
+  font-family:var(--font-display);font-size:17px;font-weight:300;font-style:italic;
+  color:var(--white);line-height:1.7;margin-bottom:24px;
+}
+.testi-author{display:flex;align-items:center;gap:14px}
+.testi-avatar{
+  width:40px;height:40px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold4),var(--gold3));
+  border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-sc);font-size:14px;color:var(--gold2);
+}
+.testi-name{font-size:14px;font-weight:500;color:var(--white)}
+.testi-role{font-size:12px;color:var(--silver2)}
+.testi-stars{color:var(--gold3);font-size:11px;margin-bottom:16px;letter-spacing:2px}
+
+/* ─── CTA SECTION ────────────────────────────────────────── */
+.cta-section{
+  text-align:center;
+  background:
+    radial-gradient(ellipse 70% 70% at 50% 0%,rgba(200,168,75,.07) 0%,transparent 70%),
+    var(--midnight);
+  border-top:1px solid var(--border);
+  padding:120px 5vw;
+  position:relative;overflow:hidden;
+}
+.cta-section::before{
+  content:'';position:absolute;
+  top:-1px;left:50%;transform:translateX(-50%);
+  width:200px;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold3),transparent);
+}
+.cta-ornament{
+  font-family:var(--font-display);font-size:80px;font-weight:300;
+  color:rgba(200,168,75,.06);
+  letter-spacing:-4px;line-height:1;
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  user-select:none;pointer-events:none;
+  white-space:nowrap;
+}
+.cta-title{
+  font-family:var(--font-display);font-size:clamp(40px,6vw,72px);
+  font-weight:300;line-height:1.1;
+  color:var(--white);margin-bottom:24px;
+  position:relative;
+}
+.cta-sub{
+  font-size:18px;color:var(--silver);font-weight:300;
+  margin-bottom:48px;position:relative;
+}
+.cta-input-row{
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  flex-wrap:wrap;position:relative;
+  margin-bottom:20px;
+}
+.cta-input{
+  padding:14px 20px;
+  background:var(--surface);
+  border:1px solid var(--border2);border-radius:var(--r);
+  color:var(--white);font-family:var(--font-body);font-size:15px;
+  width:min(320px,90vw);
+  outline:none;
+  transition:border-color .2s,box-shadow .2s;
+}
+.cta-input::placeholder{color:var(--silver2)}
+.cta-input:focus{border-color:var(--gold3);box-shadow:0 0 0 3px rgba(200,168,75,.1)}
+.cta-note{font-size:12px;color:var(--silver2);position:relative}
+
+/* ─── FOOTER ─────────────────────────────────────────────── */
+footer{
+  background:var(--obsidian);
+  border-top:1px solid var(--border);
+  padding:60px 5vw 40px;
+}
+.footer-inner{
+  max-width:1280px;margin:0 auto;
+  display:grid;grid-template-columns:1.5fr repeat(3,1fr);gap:48px;
+  margin-bottom:48px;
+}
+.footer-brand .nav-logo{margin-bottom:16px}
+.footer-desc{font-size:13px;color:var(--silver2);line-height:1.7;font-weight:300;margin-bottom:20px;max-width:260px}
+.footer-col-title{
+  font-family:var(--font-sc);font-size:10px;
+  letter-spacing:3px;color:var(--gold3);
+  margin-bottom:16px;
+}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:10px}
+.footer-links a{font-size:13px;color:var(--silver2);transition:color .2s;font-weight:300}
+.footer-links a:hover{color:var(--gold2)}
+.footer-bottom{
+  display:flex;align-items:center;justify-content:space-between;
+  border-top:1px solid var(--border);padding-top:28px;
+  font-size:12px;color:var(--muted);
+}
+.footer-deco{
+  font-family:var(--font-sc);font-size:9px;letter-spacing:3px;color:var(--gold4);
+}
+
+/* ─── ART DECO SEPARATOR ─────────────────────────────────── */
+.deco-sep{
+  display:flex;align-items:center;gap:0;
+  padding:0 5vw;max-width:1280px;margin:0 auto 64px;
+  color:var(--gold3);font-size:8px;letter-spacing:3px;
+  font-family:var(--font-sc);
+}
+.deco-sep::before,.deco-sep::after{
+  content:'';flex:1;height:1px;background:var(--border);
+}
+.deco-sep-inner{
+  display:flex;align-items:center;gap:12px;padding:0 20px;white-space:nowrap;
+}
+
+/* ─── RESPONSIVE ─────────────────────────────────────────── */
+@media(max-width:1024px){
+  .features-grid{grid-template-columns:repeat(2,1fr)}
+  .profiles-grid{grid-template-columns:repeat(3,1fr)}
+  .agents-inner,.problem-inner{grid-template-columns:1fr;gap:48px}
+  .pricing-grid{grid-template-columns:1fr 1fr}
+  .testi-grid{grid-template-columns:1fr 1fr}
+  .footer-inner{grid-template-columns:1fr 1fr;gap:36px}
+  .steps-grid{grid-template-columns:1fr;gap:24px}
+  .steps-grid::before{display:none}
+  .moon-wrap{display:none}
+}
+@media(max-width:640px){
+  .features-grid{grid-template-columns:1fr}
+  .profiles-grid{grid-template-columns:repeat(2,1fr)}
+  .pricing-grid{grid-template-columns:1fr}
+  .testi-grid{grid-template-columns:1fr}
+  .footer-inner{grid-template-columns:1fr}
+  .nav-links,.btn-outline{display:none}
+  .problem-stat-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- Stars -->
+<div class="stars" id="stars"></div>
+
+<!-- ─── NAV ─────────────────────────────────────────────── -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-mark"></div>
+    LUNA
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#agents">For Agents</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#docs">Docs</a></li>
+  </ul>
+  <div class="nav-cta">
+    <button class="btn-outline" onclick="document.querySelector('.cta-input').focus();document.querySelector('#contact').scrollIntoView({behavior:'smooth'})">Sign In</button>
+    <button class="btn-primary" onclick="document.querySelector('#contact').scrollIntoView({behavior:'smooth'})">Start Free Trial</button>
+  </div>
+</nav>
+
+<!-- ─── HERO ─────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-bg"></div>
+
+  <!-- Animated Moon -->
+  <div class="moon-wrap" aria-hidden="true">
+    <div class="moon-ring2"></div>
+    <div class="moon-ring"></div>
+    <div class="moon">
+      <div class="moon-shadow"></div>
+    </div>
+  </div>
+
+  <div class="deco-line">◆ &nbsp; TESTING AS A SERVICE &nbsp; ◆</div>
+
+  <h1 class="hero-title">
+    <em>Illuminate</em> every<br/>
+    failure before<br/>it reaches<br/>
+    <span class="rule">production</span>
+  </h1>
+
+  <p class="hero-sub">
+    Luna delivers <strong>performance testing, API validation, and SLO enforcement</strong>
+    as a fully managed service — for engineering teams and autonomous AI agents.
+  </p>
+
+  <div class="hero-cta">
+    <button class="btn-hero" onclick="document.querySelector('#contact').scrollIntoView({behavior:'smooth'})">
+      Request Early Access
+    </button>
+    <button class="btn-ghost" onclick="document.querySelector('#features').scrollIntoView({behavior:'smooth'})">
+      See the Platform →
+    </button>
+  </div>
+
+  <div class="scroll-hint" aria-hidden="true">
+    <div class="scroll-hint-line"></div>
+    SCROLL
+  </div>
+</section>
+
+<!-- ─── MARQUEE ──────────────────────────────────────────── -->
+<div class="marquee-section" aria-hidden="true">
+  <div class="marquee-track" id="marqueeTrack">
+    <span class="marquee-item"><span class="marquee-dot"></span>k6 Load Generator</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>InfluxDB Metrics</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>OpenAPI Discovery</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Postman Integration</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>HAR Import</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>GraphQL Testing</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Lighthouse Audits</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>SLO Enforcement</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>AI Agent API</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Real-time Dashboard</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Webhook Alerts</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Bearer · API Key · OAuth2</span>
+    <!-- duplicate for seamless loop -->
+    <span class="marquee-item"><span class="marquee-dot"></span>k6 Load Generator</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>InfluxDB Metrics</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>OpenAPI Discovery</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Postman Integration</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>HAR Import</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>GraphQL Testing</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Lighthouse Audits</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>SLO Enforcement</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>AI Agent API</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Real-time Dashboard</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Webhook Alerts</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Bearer · API Key · OAuth2</span>
+  </div>
+</div>
+
+<!-- ─── PROBLEM ───────────────────────────────────────────── -->
+<div class="problem-section" id="features">
+  <div class="problem-inner">
+    <div>
+      <div class="section-eyebrow reveal">The cost of untested software</div>
+      <h2 class="section-title reveal" style="transition-delay:.1s">
+        Software fails<br/>in the <em>dark.</em>
+      </h2>
+      <p class="section-sub reveal" style="transition-delay:.2s;margin-bottom:0">
+        Performance regressions ship silently. SLO breaches go undetected for hours.
+        AI agents call APIs blindly without knowing if the service is healthy.
+        Luna shines a light on every layer before it reaches your users.
+      </p>
+    </div>
+    <div class="problem-stat-grid reveal" style="transition-delay:.15s">
+      <div class="problem-stat">
+        <span class="stat-num" data-target="68">0</span>
+        <div class="stat-label">of outages are caused by untested performance regressions</div>
+      </div>
+      <div class="problem-stat">
+        <span class="stat-num" data-target="4.5" data-suffix="h">0</span>
+        <div class="stat-label">average time to detect a production SLO breach</div>
+      </div>
+      <div class="problem-stat">
+        <span class="stat-num" data-target="127" data-prefix="$" data-suffix="k">0</span>
+        <div class="stat-label">average cost per hour of high-severity outage</div>
+      </div>
+      <div class="problem-stat">
+        <span class="stat-num" data-target="3.2" data-suffix="×">0</span>
+        <div class="stat-label">faster detection with continuous performance testing</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── FEATURES ──────────────────────────────────────────── -->
+<div class="section" style="max-width:1280px;margin:0 auto">
+  <div class="section-eyebrow reveal">Platform capabilities</div>
+  <h2 class="section-title reveal" style="transition-delay:.1s">
+    Everything you need to<br/><em>test with confidence</em>
+  </h2>
+  <div class="section-sub reveal" style="transition-delay:.2s">
+    A complete testing platform — from endpoint discovery to Lighthouse audits —
+    served as a managed cloud service or self-hosted.
+  </div>
+
+  <div class="features-grid reveal" style="transition-delay:.25s">
+    <div class="feature-card" onmousemove="trackMouse(event,this)">
+      <div class="feature-icon">⚡</div>
+      <div class="feature-name">Live Telemetry</div>
+      <p class="feature-desc">Real-time VUs, RPS, p95 latency, and error rates streamed directly to your dashboard as tests execute — no post-processing lag.</p>
+    </div>
+    <div class="feature-card" onmousemove="trackMouse(event,this)">
+      <div class="feature-icon">🔍</div>
+      <div class="feature-name">Auto-Discovery</div>
+      <p class="feature-desc">Import from Postman collections, OpenAPI / Swagger specs, HAR captures, or let Luna crawl any URL and map every API surface automatically.</p>
+    </div>
+    <div class="feature-card" onmousemove="trackMouse(event,this)">
+      <div class="feature-icon">📐</div>
+      <div class="feature-name">SLO Enforcement</div>
+      <p class="feature-desc">Define latency budgets and error-rate ceilings per endpoint. Tests fail fast when thresholds are crossed — with webhook and Slack alerts.</p>
+    </div>
+    <div class="feature-card" onmousemove="trackMouse(event,this)">
+      <div class="feature-icon">🏗</div>
+      <div class="feature-name">Five Load Profiles</div>
+      <p class="feature-desc">Smoke, Ramp, Soak, Stress, and Spike — purpose-built k6 scripts for every scenario. Configure VUs, duration, and ramp curves with a single click.</p>
+    </div>
+    <div class="feature-card" onmousemove="trackMouse(event,this)">
+      <div class="feature-icon">🔑</div>
+      <div class="feature-name">Universal Auth</div>
+      <p class="feature-desc">Bearer, API key, Basic, OAuth2, HMAC-SHA256, AWS SigV4 — Luna handles credential rotation and scoping without exposing secrets in scripts.</p>
+    </div>
+    <div class="feature-card" onmousemove="trackMouse(event,this)">
+      <div class="feature-icon">💡</div>
+      <div class="feature-name">Lighthouse Audits</div>
+      <p class="feature-desc">Run Core Web Vitals and accessibility audits alongside API load tests. Performance, SEO, and best-practices scores in the same session.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ─── HOW IT WORKS ──────────────────────────────────────── -->
+<div class="section" id="how" style="max-width:1280px;margin:0 auto;padding-top:0">
+  <div class="deco-sep reveal">
+    <div class="deco-sep-inner">◆ &nbsp; HOW IT WORKS &nbsp; ◆</div>
+  </div>
+  <div class="steps-grid">
+    <div class="step reveal">
+      <div class="step-num">I</div>
+      <div class="step-title">Connect & Discover</div>
+      <p class="step-desc">Point Luna at your service. Import an OpenAPI spec, upload a Postman collection, or paste a URL. Luna maps every endpoint in seconds.</p>
+    </div>
+    <div class="step reveal" style="transition-delay:.15s">
+      <div class="step-num">II</div>
+      <div class="step-title">Configure & Execute</div>
+      <p class="step-desc">Choose a load profile and SLO thresholds. Luna orchestrates the k6 load generator, streams metrics to InfluxDB, and renders your dashboard live.</p>
+    </div>
+    <div class="step reveal" style="transition-delay:.3s">
+      <div class="step-num">III</div>
+      <div class="step-title">Analyse & Act</div>
+      <p class="step-desc">Receive an instant report — latency percentiles, error fingerprints, threshold verdicts. Webhook alerts fire the moment an SLO is breached.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ─── FOR AGENTS ────────────────────────────────────────── -->
+<div class="agents-section" id="agents">
+  <div class="agents-inner">
+    <div>
+      <div class="agents-badge reveal">
+        <div class="agents-badge-dot"></div>
+        AI-NATIVE CAPABILITY
+      </div>
+      <h2 class="section-title reveal" style="transition-delay:.1s">
+        Built for the<br/><em>agentic era.</em>
+      </h2>
+      <p style="font-size:17px;color:var(--silver);line-height:1.7;font-weight:300;margin-bottom:28px" class="reveal" style="transition-delay:.2s">
+        AI coding agents, autonomous QA bots, and CI orchestrators can call the Luna API
+        directly — discover endpoints, trigger load runs, read results, and enforce SLOs
+        without human intervention.
+      </p>
+      <ul style="list-style:none;display:flex;flex-direction:column;gap:14px" class="reveal" style="transition-delay:.3s">
+        <li style="display:flex;gap:12px;font-size:14px;color:var(--silver)">
+          <span style="color:var(--gold3);flex-shrink:0">◆</span>
+          MCP (Model Context Protocol) tool server — plug directly into Claude, GPT-4o, or any MCP-compatible agent
+        </li>
+        <li style="display:flex;gap:12px;font-size:14px;color:var(--silver)">
+          <span style="color:var(--gold3);flex-shrink:0">◆</span>
+          REST API with structured JSON responses — machine-readable results, no HTML parsing
+        </li>
+        <li style="display:flex;gap:12px;font-size:14px;color:var(--silver)">
+          <span style="color:var(--gold3);flex-shrink:0">◆</span>
+          Async run triggers with webhook callbacks — fire-and-forget from CI pipelines
+        </li>
+        <li style="display:flex;gap:12px;font-size:14px;color:var(--silver)">
+          <span style="color:var(--gold3);flex-shrink:0">◆</span>
+          Per-agent API tokens with granular scope — isolated access for every autonomous actor
+        </li>
+      </ul>
+    </div>
+    <div class="code-block reveal" style="transition-delay:.2s">
+      <div class="code-header">
+        <div class="code-dots">
+          <div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div>
+        </div>
+        <span class="code-lang">AGENT INTEGRATION · PYTHON</span>
+      </div>
+      <div class="code-body">
+<span class="c-muted"># MCP tool call from an AI agent</span>
+<span class="c-blue">import</span> <span class="c-silver">luna_mcp</span>
+
+<span class="c-muted"># 1. Discover endpoints from OpenAPI spec</span>
+<span class="c-silver">plan</span> = <span class="c-gold">luna_mcp</span>.<span class="c-green">generate_test_plan</span>(
+  url=<span class="c-string">"https://api.myservice.com"</span>,
+  token=<span class="c-string">os.environ["LUNA_TOKEN"]</span>
+)
+
+<span class="c-muted"># 2. Trigger smoke run</span>
+<span class="c-silver">run</span> = <span class="c-gold">luna_mcp</span>.<span class="c-green">run_api_tests</span>(
+  suite=<span class="c-string">"smoke"</span>,
+  base_url=<span class="c-string">"https://api.myservice.com"</span>
+)
+
+<span class="c-muted"># 3. Assert SLOs</span>
+<span class="c-blue">assert</span> run[<span class="c-string">"success"</span>], (
+  <span class="c-string">f"SLO breach: {run['failed']} endpoints failed"</span>
+)
+<span class="c-green">print</span>(<span class="c-string">f"✓ {run['passed']} endpoints passed in "</span>
+      <span class="c-string">f"{run['duration_ms']:.0f}ms"</span>)</div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── LOAD PROFILES ─────────────────────────────────────── -->
+<div class="section" style="max-width:1280px;margin:0 auto">
+  <div class="section-eyebrow reveal">Load profiles</div>
+  <h2 class="section-title reveal" style="transition-delay:.1s">
+    Every test scenario,<br/><em>purpose-built.</em>
+  </h2>
+  <div class="section-sub reveal" style="transition-delay:.2s">
+    Five scientifically-designed load patterns. Choose once; Luna handles the ramp curves,
+    hold phases, and teardown automatically.
+  </div>
+
+  <div class="profiles-grid">
+    <div class="profile-card reveal">
+      <span class="profile-glyph">☁</span>
+      <div class="profile-name">SMOKE</div>
+      <p class="profile-caption">2 VUs · 30 s — rapid sanity check that core flows work before a deployment</p>
+      <div class="profile-bar"></div>
+    </div>
+    <div class="profile-card reveal" style="transition-delay:.08s">
+      <span class="profile-glyph">📈</span>
+      <div class="profile-name">RAMP</div>
+      <p class="profile-caption">Gradual VU ramp → hold → cooldown — finds the load at which latency degrades</p>
+      <div class="profile-bar"></div>
+    </div>
+    <div class="profile-card reveal" style="transition-delay:.16s">
+      <span class="profile-glyph">⏱</span>
+      <div class="profile-name">SOAK</div>
+      <p class="profile-caption">Sustained load for hours — uncovers memory leaks, connection pool exhaustion, and drift</p>
+      <div class="profile-bar"></div>
+    </div>
+    <div class="profile-card reveal" style="transition-delay:.24s">
+      <span class="profile-glyph">🔥</span>
+      <div class="profile-name">STRESS</div>
+      <p class="profile-caption">Step-up to the breaking point — measures maximum throughput and graceful degradation</p>
+      <div class="profile-bar"></div>
+    </div>
+    <div class="profile-card reveal" style="transition-delay:.32s">
+      <span class="profile-glyph">⚡</span>
+      <div class="profile-name">SPIKE</div>
+      <p class="profile-caption">Instant traffic burst — validates auto-scaling, queuing behaviour, and recovery time</p>
+      <div class="profile-bar"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── TESTIMONIALS ──────────────────────────────────────── -->
+<div class="section" style="max-width:1280px;margin:0 auto;padding-top:0">
+  <div class="deco-sep reveal">
+    <div class="deco-sep-inner">◆ &nbsp; WHAT TEAMS ARE SAYING &nbsp; ◆</div>
+  </div>
+  <div class="testi-grid">
+    <div class="testi-card reveal">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-quote">"Luna found a p99 regression in our payments API that would have caused a Black Friday outage. Caught it in the PR pipeline."</p>
+      <div class="testi-author">
+        <div class="testi-avatar">SR</div>
+        <div>
+          <div class="testi-name">Sofia R.</div>
+          <div class="testi-role">Staff Engineer, Fintech Scale-up</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card reveal" style="transition-delay:.1s">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-quote">"Our AI agent uses Luna's MCP tools to validate every API it calls. We went from 'assume it works' to 'prove it works' in a week."</p>
+      <div class="testi-author">
+        <div class="testi-avatar">MK</div>
+        <div>
+          <div class="testi-name">Marcus K.</div>
+          <div class="testi-role">AI Infrastructure Lead, Enterprise SaaS</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card reveal" style="transition-delay:.2s">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-quote">"Postman import to first load test took under 4 minutes. The SLO enforcement alone has saved us from three incidents this quarter."</p>
+      <div class="testi-author">
+        <div class="testi-avatar">AL</div>
+        <div>
+          <div class="testi-name">Aiko L.</div>
+          <div class="testi-role">Principal SRE, Cloud-native Platform</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── PRICING ───────────────────────────────────────────── -->
+<div class="pricing-section section-full" id="pricing">
+  <div class="section" style="padding-top:0;padding-bottom:0">
+    <div class="section-eyebrow reveal">Pricing</div>
+    <h2 class="section-title reveal" style="transition-delay:.1s">
+      Simple, <em>transparent</em> plans.
+    </h2>
+    <div class="section-sub reveal" style="transition-delay:.2s">
+      Start free. Scale when you're ready. Every plan includes full access to the platform —
+      no feature paywalls.
+    </div>
+
+    <div class="pricing-grid">
+      <div class="pricing-card reveal">
+        <div class="plan-name">LUNAR</div>
+        <div class="plan-price"><sup>$</sup>0</div>
+        <div class="plan-period">forever free</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Up to 50 API endpoints</li>
+          <li>5 test runs per day</li>
+          <li>Smoke & Ramp profiles</li>
+          <li>7-day metrics retention</li>
+          <li>OpenAPI + Postman import</li>
+          <li>Community support</li>
+        </ul>
+        <button class="plan-cta">Get Started Free</button>
+      </div>
+      <div class="pricing-card featured reveal" style="transition-delay:.1s">
+        <div class="plan-name">ECLIPSE</div>
+        <div class="plan-price"><sup>$</sup>299</div>
+        <div class="plan-period">per month, billed annually</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Unlimited API endpoints</li>
+          <li>Unlimited test runs</li>
+          <li>All 5 load profiles</li>
+          <li>90-day metrics retention</li>
+          <li>SLO enforcement + alerts</li>
+          <li>Webhook + Slack integration</li>
+          <li>5 team seats</li>
+          <li>MCP / Agent API access</li>
+          <li>Priority support</li>
+        </ul>
+        <button class="plan-cta">Start Eclipse Trial</button>
+      </div>
+      <div class="pricing-card reveal" style="transition-delay:.2s">
+        <div class="plan-name">SOLSTICE</div>
+        <div class="plan-price" style="font-size:clamp(28px,4vw,42px);margin-top:8px">Custom</div>
+        <div class="plan-period">enterprise pricing</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Everything in Eclipse</li>
+          <li>Self-hosted deployment</li>
+          <li>Unlimited team seats</li>
+          <li>1-year+ metrics retention</li>
+          <li>SSO / SAML integration</li>
+          <li>Custom SLA &amp; uptime</li>
+          <li>Dedicated infrastructure</li>
+          <li>AI agent fleet management</li>
+          <li>White-glove onboarding</li>
+        </ul>
+        <button class="plan-cta" onclick="document.querySelector('#contact').scrollIntoView({behavior:'smooth'})">Contact Sales</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── CTA ───────────────────────────────────────────────── -->
+<div class="cta-section" id="contact">
+  <div class="cta-ornament" aria-hidden="true">LUNA</div>
+  <div style="position:relative">
+    <div class="section-eyebrow reveal" style="justify-content:center;margin-bottom:24px">
+      ◆ &nbsp; EARLY ACCESS &nbsp; ◆
+    </div>
+    <h2 class="cta-title reveal" style="transition-delay:.1s">
+      Ready to <em>illuminate</em><br/>your quality?
+    </h2>
+    <p class="cta-sub reveal" style="transition-delay:.2s">
+      Join engineering teams and AI agents who test with confidence.
+    </p>
+    <div class="cta-input-row reveal" style="transition-delay:.3s">
+      <input class="cta-input" type="email" placeholder="your@company.com" aria-label="Work email"/>
+      <button class="btn-hero" style="white-space:nowrap">Request Access</button>
+    </div>
+    <p class="cta-note reveal" style="transition-delay:.4s">No credit card required · Setup in under 5 minutes · Cancel anytime</p>
+  </div>
+</div>
+
+<!-- ─── FOOTER ────────────────────────────────────────────── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="nav-logo" style="margin-bottom:16px">
+        <div class="nav-logo-mark"></div>
+        LUNA
+      </div>
+      <p class="footer-desc">Testing as a Service for engineering teams and autonomous AI agents. Built on k6, InfluxDB, and a decade of performance engineering practice.</p>
+      <div style="display:flex;gap:12px">
+        <a href="https://github.com" style="font-size:12px;color:var(--silver2);border:1px solid var(--border);padding:6px 12px;border-radius:4px;transition:all .2s;display:inline-block" onmouseover="this.style.borderColor='var(--gold3)';this.style.color='var(--gold2)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--silver2)'">GitHub ↗</a>
+        <a href="#docs" style="font-size:12px;color:var(--silver2);border:1px solid var(--border);padding:6px 12px;border-radius:4px;transition:all .2s;display:inline-block" onmouseover="this.style.borderColor='var(--gold3)';this.style.color='var(--gold2)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--silver2)'">Docs ↗</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">Platform</div>
+      <ul class="footer-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#how">How It Works</a></li>
+        <li><a href="#agents">For AI Agents</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#">Changelog</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Developers</div>
+      <ul class="footer-links">
+        <li><a href="#">API Reference</a></li>
+        <li><a href="#">MCP Integration</a></li>
+        <li><a href="#">OpenAPI Spec</a></li>
+        <li><a href="#">SDKs</a></li>
+        <li><a href="#">Self-hosting Guide</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Company</div>
+      <ul class="footer-links">
+        <li><a href="#">About Luna</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Security</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 Luna Technologies, Inc. All rights reserved.</span>
+    <span class="footer-deco">◆ &nbsp; QUALITY AT EVERY PHASE &nbsp; ◆</span>
+  </div>
+</footer>
+
+<script>
+/* ─── STARS ─────────────────────────────────────────────── */
+(function(){
+  const container = document.getElementById('stars');
+  const count = 160;
+  for(let i=0;i<count;i++){
+    const s = document.createElement('div');
+    s.className='star';
+    const size = Math.random()*1.8+.4;
+    s.style.cssText=`
+      width:${size}px;height:${size}px;
+      left:${Math.random()*100}%;
+      top:${Math.random()*100}%;
+      --op:${Math.random()*.6+.15};
+      --dur:${(Math.random()*4+3).toFixed(1)}s;
+      --del:-${(Math.random()*6).toFixed(1)}s;
+    `;
+    container.appendChild(s);
+  }
+})();
+
+/* ─── REVEAL ON SCROLL ───────────────────────────────────── */
+(function(){
+  const els = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.classList.add('visible');
+        io.unobserve(e.target);
+      }
+    });
+  },{threshold:.12,rootMargin:'0px 0px -40px 0px'});
+  els.forEach(el=>io.observe(el));
+})();
+
+/* ─── STAT COUNTERS ──────────────────────────────────────── */
+(function(){
+  function animate(el,target,prefix,suffix){
+    const isFloat=target%1!==0;
+    const dur=2200;const start=performance.now();
+    function tick(now){
+      const p=Math.min((now-start)/dur,1);
+      const eased=1-Math.pow(1-p,3);
+      const val=eased*target;
+      el.textContent=(prefix||'')+(isFloat?val.toFixed(1):Math.round(val))+(suffix||'');
+      if(p<1)requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+  const io=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        const el=e.target;
+        const t=parseFloat(el.dataset.target);
+        const pre=el.dataset.prefix||'';
+        const suf=el.dataset.suffix||'';
+        animate(el,t,pre,suf);
+        io.unobserve(el);
+      }
+    });
+  },{threshold:.5});
+  document.querySelectorAll('[data-target]').forEach(el=>io.observe(el));
+})();
+
+/* ─── FEATURE CARD MOUSE TRACKING ───────────────────────── */
+function trackMouse(e,el){
+  const r=el.getBoundingClientRect();
+  const x=((e.clientX-r.left)/r.width*100).toFixed(1);
+  const y=((e.clientY-r.top)/r.height*100).toFixed(1);
+  el.style.setProperty('--mx',x+'%');
+  el.style.setProperty('--my',y+'%');
+}
+
+/* ─── NAV SHADOW ON SCROLL ───────────────────────────────── */
+(function(){
+  const nav=document.querySelector('nav');
+  window.addEventListener('scroll',()=>{
+    if(window.scrollY>20){
+      nav.style.boxShadow='0 4px 32px rgba(0,0,0,.5)';
+    } else {
+      nav.style.boxShadow='none';
+    }
+  },{passive:true});
+})();
+
+/* ─── EMAIL CTA BUTTON ───────────────────────────────────── */
+(function(){
+  const btn=document.querySelector('.cta-section .btn-hero');
+  const input=document.querySelector('.cta-input');
+  if(!btn||!input)return;
+  btn.addEventListener('click',()=>{
+    const v=input.value.trim();
+    if(!v||!v.includes('@')){
+      input.focus();
+      input.style.borderColor='rgba(200,100,100,.6)';
+      input.style.boxShadow='0 0 0 3px rgba(200,100,100,.12)';
+      setTimeout(()=>{input.style.borderColor='';input.style.boxShadow=''},2000);
+      return;
+    }
+    btn.textContent='✓ You\'re on the list';
+    btn.style.background='linear-gradient(135deg,#2a6e40,#3d9e5a)';
+    btn.style.boxShadow='0 4px 20px rgba(61,158,90,.35)';
+    btn.disabled=true;
+    input.disabled=true;
+    input.style.opacity='.5';
+  });
+})();
+</script>
+</body>
+</html>
