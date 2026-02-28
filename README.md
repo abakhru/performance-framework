@@ -18,7 +18,7 @@ just init             # copy .env.example → .env
 | Service | Purpose | Port |
 |---|---|---|
 | InfluxDB v2 | Metrics storage | 8086 |
-| k6 (xk6-influxdb) | Load generator | 6565 |
+| k6 (custom xk6 build) | Load generator — REST API | 6565 |
 
 ```bash
 just influx-up
