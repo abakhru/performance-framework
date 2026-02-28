@@ -7,3 +7,4 @@ influxdb_data/
 **/__pycache__/
 CLAUDE.md
 k6/config/*.json
+.venv/
