@@ -305,6 +305,53 @@ def stop_run() -> dict:
     return {"status": "stopping"}
 
 
+@mcp.tool
+def generate_test_plan(url: str = "", token: str = "") -> dict:
+    """Generate a test plan from the current endpoint config or by discovering a URL."""
+    import sys
+    from pathlib import Path
+
+    repo_root = Path(__file__).parent.parent
+    sys.path.insert(0, str(repo_root))
+    from api_tests.generator import TestGenerator
+
+    try:
+        if url:
+            gen = TestGenerator.from_discovery(url, token=token)
+        else:
+            gen = TestGenerator.from_endpoints_json()
+        plan = gen.generate_test_plan()
+        return {
+            "service": plan.service,
+            "total": len(plan),
+            "entries": [{"name": e.name, "method": e.method, "path": e.path} for e in plan.entries],
+        }
+    except Exception as exc:
+        return {"error": str(exc)}
+
+
+@mcp.tool
+def run_api_tests(suite: str = "api", base_url: str = "", auth_token: str = "") -> dict:
+    """Trigger a pytest suite and return results."""
+    import sys
+    from pathlib import Path
+
+    repo_root = Path(__file__).parent.parent
+    sys.path.insert(0, str(repo_root))
+    from api_tests.runner import TestRunner
+
+    runner = TestRunner()
+    result = runner.run(suite=suite, base_url=base_url, auth_token=auth_token)
+    return {
+        "passed": result.passed,
+        "failed": result.failed,
+        "errors": result.errors,
+        "total": result.total,
+        "success": result.success,
+        "duration_ms": result.duration_ms,
+    }
+
+
 # ── Resources ──────────────────────────────────────────────────────────────────
 
 

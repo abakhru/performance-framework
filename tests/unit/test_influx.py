@@ -8,7 +8,7 @@ Tests verify line-protocol escaping, CSV parsing, and helper functions.
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "dashboard"))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / "dashboard"))
 
 import influx
 

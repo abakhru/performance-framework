@@ -33,6 +33,7 @@ from livereload import router as livereload_router  # noqa: E402
 from livereload import start_file_watcher  # noqa: E402
 from mcp_server import mcp  # noqa: E402
 from routers import analytics, data_files, endpoints, profiles, proxy, run_control, runs, slo, webhooks  # noqa: E402
+from routers import api_tests as api_tests_router  # noqa: E402
 from routers import discovery as discovery_router  # noqa: E402
 from routers import lighthouse as lighthouse_router  # noqa: E402
 from storage import DATA_DIR, HOOKS_DIR, REPO_ROOT, SCRIPT_DIR  # noqa: E402
@@ -81,6 +82,7 @@ app.include_router(profiles.router)
 app.include_router(webhooks.router)
 app.include_router(data_files.router)
 app.include_router(discovery_router.router)
+app.include_router(api_tests_router.router)
 app.include_router(lighthouse_router.router)
 
 # ── MCP server (streamable-http, spec 2025-03-26) ──────────────────────────────

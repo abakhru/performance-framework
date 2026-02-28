@@ -77,7 +77,7 @@ def _extract_result(lh_json: dict) -> dict:
                     "score": a.get("score"),
                 }
             )
-    diagnostics.sort(key=lambda x: (x["score"] or 1))
+    diagnostics.sort(key=lambda x: x["score"] or 1)
 
     return {
         "url": lh_json.get("finalDisplayedUrl") or lh_json.get("requestedUrl", ""),

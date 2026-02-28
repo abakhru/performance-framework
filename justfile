@@ -167,12 +167,12 @@ py-add-dev dep:
 
 # Lint with ruff
 lint:
-    uv run ruff check dashboard/ tests/
+    uv run ruff check dashboard/ tests/ api_tests/
 
 # Lint, fix, and format
 fix:
-    uv run ruff check --fix dashboard/ tests/
-    uv run ruff format dashboard/ tests/
+    uv run ruff check --fix dashboard/ tests/ api_tests/
+    uv run ruff format dashboard/ tests/ api_tests/
 
 # Type-check with ty
 typecheck:
@@ -181,6 +181,32 @@ typecheck:
 # Run tests
 test:
     uv run pytest
+
+# Run unit tests only
+test-unit:
+    uv run pytest tests/unit/ -v
+
+# Run per-component tests (each component in isolation)
+test-components:
+    uv run pytest tests/components/ -v
+
+# Run integration tests (multi-component, needs local services)
+test-integration:
+    uv run pytest tests/integration/ -v
+
+# Run E2E tests (full stack)
+test-e2e:
+    uv run pytest tests/e2e/ -v
+
+# Run API smoke tests against a live target (set BASE_URL env var)
+test-api:
+    uv run pytest tests/api/ -v
+
+# Combine and report coverage after running tests
+coverage:
+    uv run coverage combine
+    uv run coverage html
+    uv run coverage report
 
 # Lint + typecheck + test
 ci: lint typecheck test
