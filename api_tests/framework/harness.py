@@ -16,7 +16,7 @@ from api_tests.framework.exception import AlreadyLaunchedError, NotLaunchedError
 from api_tests.framework.logger import LOGGER
 
 # Relative path from the cwd of the unit test to the root directory of the CTF source code
-# tree.  This is based on the convention that tests run under artemis/backend
+# tree.  This is based on the convention that tests run under luna/backend
 
 _ROOT_DIR = os.path.join("..", "..")
 

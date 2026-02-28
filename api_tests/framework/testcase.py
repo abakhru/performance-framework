@@ -1,4 +1,4 @@
-# artemis/framework/common/testcase.py
+# luna/framework/common/testcase.py
 
 """Common test case for Devo Apps automation."""
 
@@ -140,7 +140,7 @@ class TestCase(common_unittest.TestCase):
 
     @property
     def faker(self):
-        return Faker(locale=os.environ.get("ARTEMIS_FAKER_LOCALE", "en-US"))
+        return Faker(locale=os.environ.get("LUNA_FAKER_LOCALE", "en-US"))
 
     def GenericAsserts(self):
         """Override this to perform asserts on each test.

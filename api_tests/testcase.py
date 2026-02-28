@@ -1,6 +1,6 @@
-"""HTTPTestCase and MultiComponentTestCase — extend the ported artemis TestCase.
+"""HTTPTestCase and MultiComponentTestCase — extend the ported luna TestCase.
 
-These are built on top of api_tests.framework.testcase.TestCase (ported from artemis).
+These are built on top of api_tests.framework.testcase.TestCase (ported from luna).
 They handle non-process harnesses (HTTP clients, multi-component integration).
 """
 

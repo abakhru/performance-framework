@@ -1,7 +1,7 @@
 # api_tests/framework/logger.py
-"""Simplified logger — drop-in replacement for artemis logger.
+"""Simplified logger — drop-in replacement for luna logger.
 
-Exposes the same public API as artemis.framework.common.logger:
+Exposes the same public API as luna.framework.common.logger:
   LOGGER    — standard Python logger
   LogStream — Register/Unregister file handlers per test
 """
@@ -21,7 +21,7 @@ LOGGER.addHandler(_handler)
 class LogStream:
     """Registers a stream so that it receives log messages.
 
-    Port of artemis LogStream. Used by TestCase.setUp/tearDown to capture
+    Port of luna LogStream. Used by TestCase.setUp/tearDown to capture
     per-test log output to a file.
     """
 
