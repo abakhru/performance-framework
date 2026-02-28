@@ -211,7 +211,13 @@ class TestParseHar:
             "log": {
                 "entries": [
                     {"request": {"method": "GET", "url": "https://api.example.com/users"}},
-                    {"request": {"method": "POST", "url": "https://api.example.com/users", "postData": {"text": '{"name":"Alice"}'}}},
+                    {
+                        "request": {
+                            "method": "POST",
+                            "url": "https://api.example.com/users",
+                            "postData": {"text": '{"name":"Alice"}'},
+                        }
+                    },
                     {"request": {"method": "GET", "url": "https://api.example.com/orders"}},
                 ]
             }
@@ -345,13 +351,7 @@ class TestParseApiBlueprint:
 class TestDetectAuthFromOpenapi:
     def test_bearer_scheme(self):
         """HTTP Bearer securityScheme → type='bearer'."""
-        spec = {
-            "components": {
-                "securitySchemes": {
-                    "BearerAuth": {"type": "http", "scheme": "bearer"}
-                }
-            }
-        }
+        spec = {"components": {"securitySchemes": {"BearerAuth": {"type": "http", "scheme": "bearer"}}}}
         auth = discovery.detect_auth_from_openapi(spec)
         assert auth is not None
         assert auth["type"] == "bearer"
@@ -360,11 +360,7 @@ class TestDetectAuthFromOpenapi:
     def test_apikey_scheme(self):
         """API key in header → type='apiKey' with correct header name."""
         spec = {
-            "components": {
-                "securitySchemes": {
-                    "ApiKeyAuth": {"type": "apiKey", "in": "header", "name": "X-API-Token"}
-                }
-            }
+            "components": {"securitySchemes": {"ApiKeyAuth": {"type": "apiKey", "in": "header", "name": "X-API-Token"}}}
         }
         auth = discovery.detect_auth_from_openapi(spec)
         assert auth is not None
@@ -515,3 +511,107 @@ class TestBaselineSloProbe:
             result = discovery.baseline_slo_probe("http://example.com", eps, {}, sample=1)
 
         assert result["error_rate"] > 0
+
+
+class TestCrawlUrl:
+    """Tests for crawl_url()."""
+
+    BASE = "http://example.com"
+
+    def _fake_get(self, responses: dict):
+        """Return a side_effect fn that maps url → (status, bytes)."""
+
+        def _get(url, headers, timeout=6):
+            url_norm = url.split("?")[0].split("#")[0]
+            for key, val in responses.items():
+                if url_norm.endswith(key) or url_norm == key:
+                    return val
+            return (200, b"")
+
+        return _get
+
+    def test_extracts_links_from_html(self):
+        """Basic anchor hrefs become GET endpoints."""
+        html = b'<html><body><a href="/api/users">users</a><a href="/api/posts">posts</a></body></html>'
+        with patch.object(discovery, "http_get", side_effect=self._fake_get({self.BASE: (200, html)})):
+            result = discovery.crawl_url(self.BASE, {})
+        paths = {ep["path"] for ep in result["endpoints"]}
+        assert "/api/users" in paths
+        assert "/api/posts" in paths
+
+    def test_extracts_form_actions(self):
+        """<form method=POST action=/api/submit> creates a POST endpoint."""
+        html = b'<html><body><form method="POST" action="/api/submit"><input type="submit"></form></body></html>'
+        with patch.object(discovery, "http_get", side_effect=self._fake_get({self.BASE: (200, html)})):
+            result = discovery.crawl_url(self.BASE, {})
+        eps = {(ep["method"], ep["path"]) for ep in result["endpoints"]}
+        assert ("POST", "/api/submit") in eps
+
+    def test_scans_js_files_for_endpoints(self):
+        """JS files are fetched and scanned for fetch() patterns."""
+        html = b'<html><head><script src="/app.js"></script></head></html>'
+        js = b"fetch('/api/data').then(r => r.json())"
+        responses = {self.BASE: (200, html), "/app.js": (200, js)}
+        with patch.object(discovery, "http_get", side_effect=self._fake_get(responses)):
+            result = discovery.crawl_url(self.BASE, {})
+        paths = {ep["path"] for ep in result["endpoints"]}
+        assert "/api/data" in paths
+        assert result["scripts_scanned"] == 1
+
+    def test_same_origin_enforcement(self):
+        """Links to external domains are not followed or added as endpoints."""
+        html = b'<html><body><a href="https://evil.com/steal">x</a><a href="/safe">y</a></body></html>'
+        with patch.object(discovery, "http_get", side_effect=self._fake_get({self.BASE: (200, html)})):
+            result = discovery.crawl_url(self.BASE, {})
+        paths = {ep["path"] for ep in result["endpoints"]}
+        assert "/safe" in paths
+        assert not any("evil.com" in p for p in paths)
+
+    def test_static_assets_filtered(self):
+        """Links to .css, .png, .js etc are not added as API endpoints."""
+        html = b'<html><head><link href="/style.css"><img src="/logo.png"></head><body><a href="/api/v1">ok</a></body></html>'
+        with patch.object(discovery, "http_get", side_effect=self._fake_get({self.BASE: (200, html)})):
+            result = discovery.crawl_url(self.BASE, {})
+        paths = {ep["path"] for ep in result["endpoints"]}
+        assert "/api/v1" in paths
+        assert "/style.css" not in paths
+        assert "/logo.png" not in paths
+
+    def test_deduplication(self):
+        """Same method+path combo only appears once."""
+        html = b'<html><body><a href="/api/items">a</a><a href="/api/items">b</a></body></html>'
+        with patch.object(discovery, "http_get", side_effect=self._fake_get({self.BASE: (200, html)})):
+            result = discovery.crawl_url(self.BASE, {})
+        paths = [ep["path"] for ep in result["endpoints"]]
+        assert paths.count("/api/items") == 1
+
+    def test_pages_crawled_count(self):
+        """pages_crawled reflects visited page count."""
+        html = b"<html><body>nothing</body></html>"
+        with patch.object(discovery, "http_get", side_effect=self._fake_get({self.BASE: (200, html)})):
+            result = discovery.crawl_url(self.BASE, {})
+        assert result["pages_crawled"] == 1
+
+    def test_max_pages_limit(self):
+        """Crawler stops after max_pages pages regardless of links found."""
+        # Every page links to 10 sub-paths
+        links = "".join(f'<a href="/p{i}">x</a>' for i in range(20))
+        html = f"<html><body>{links}</body></html>".encode()
+        # All sub-pages also return the same HTML so queue would grow unbounded
+        with patch.object(discovery, "http_get", return_value=(200, html)):
+            result = discovery.crawl_url(self.BASE, {}, max_pages=3)
+        assert result["pages_crawled"] <= 3
+
+    def test_failed_request_skipped(self):
+        """Status 0 (network error) pages are skipped gracefully."""
+        with patch.object(discovery, "http_get", return_value=(0, b"")):
+            result = discovery.crawl_url(self.BASE, {})
+        assert result["endpoints"] == []
+
+    def test_inline_js_scan(self):
+        """Inline JS in page body is scanned for API paths."""
+        html = b"<html><body><script>axios.get('/api/inline')</script></body></html>"
+        with patch.object(discovery, "http_get", side_effect=self._fake_get({self.BASE: (200, html)})):
+            result = discovery.crawl_url(self.BASE, {})
+        paths = {ep["path"] for ep in result["endpoints"]}
+        assert "/api/inline" in paths

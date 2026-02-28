@@ -61,13 +61,37 @@ from(bucket: "{INFLUX_BUCKET}")
         finals: dict[str, dict] = {r["run_id"]: r for r in final_rows if r.get("run_id")}
 
         _int_fields = [
-            "total_reqs", "vus_max", "duration_s", "s2xx", "s3xx", "s4xx", "s5xx",
-            "lat_b50", "lat_b200", "lat_b500", "lat_b1000", "lat_b2000", "lat_b5000", "lat_binf",
+            "total_reqs",
+            "vus_max",
+            "duration_s",
+            "s2xx",
+            "s3xx",
+            "s4xx",
+            "s5xx",
+            "lat_b50",
+            "lat_b200",
+            "lat_b500",
+            "lat_b1000",
+            "lat_b2000",
+            "lat_b5000",
+            "lat_binf",
         ]
         _float_fields = [
-            "error_rate", "p50_ms", "p75_ms", "p90_ms", "p95_ms", "p99_ms",
-            "avg_ms", "min_ms", "med_ms", "ttfb_avg", "checks_rate",
-            "data_sent", "data_received", "apdex_score", "conn_reuse_rate",
+            "error_rate",
+            "p50_ms",
+            "p75_ms",
+            "p90_ms",
+            "p95_ms",
+            "p99_ms",
+            "avg_ms",
+            "min_ms",
+            "med_ms",
+            "ttfb_avg",
+            "checks_rate",
+            "data_sent",
+            "data_received",
+            "apdex_score",
+            "conn_reuse_rate",
         ]
 
         runs = []

@@ -10,6 +10,7 @@ Modes:
   uvicorn dashboard.server:app --reload --port 5656  → dev mode with auto-reload
 """
 
+import logging
 import os
 import sys
 import threading
@@ -30,11 +31,28 @@ from fastapi.responses import HTMLResponse  # noqa: E402
 from lifecycle import _k6_lock, _k6_state, cleanup_orphans, load_plugin_hooks, run_k6_supervised  # noqa: E402
 from livereload import router as livereload_router  # noqa: E402
 from livereload import start_file_watcher  # noqa: E402
+from mcp_server import mcp  # noqa: E402
 from routers import analytics, data_files, endpoints, profiles, proxy, run_control, runs, slo, webhooks  # noqa: E402
 from routers import discovery as discovery_router  # noqa: E402
 from storage import DATA_DIR, HOOKS_DIR, REPO_ROOT, SCRIPT_DIR  # noqa: E402
 
 DASHBOARD_PORT = 5656
+
+# Downgrade access-log entries for high-frequency polling endpoints to DEBUG
+# so they don't flood logs at normal INFO level.
+_NOISY_PATHS = ("/k6/v1/status", "/k6/v1/metrics")
+
+
+class _QuietAccessFilter(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        msg = record.getMessage()
+        if any(p in msg for p in _NOISY_PATHS):
+            record.levelno = logging.DEBUG
+            record.levelname = "DEBUG"
+        return True
+
+
+logging.getLogger("uvicorn.access").addFilter(_QuietAccessFilter())
 
 
 @asynccontextmanager
@@ -62,6 +80,9 @@ app.include_router(profiles.router)
 app.include_router(webhooks.router)
 app.include_router(data_files.router)
 app.include_router(discovery_router.router)
+
+# ── MCP server (streamable-http, spec 2025-03-26) ──────────────────────────────
+app.mount("/mcp", mcp.http_app(path="/"))
 
 
 # ── Static ─────────────────────────────────────────────────────────────────────

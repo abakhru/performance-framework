@@ -6,11 +6,13 @@ Supports:
   - OpenAPI / Swagger spec conversion
   - GraphQL introspection
   - REST endpoint probing (common path heuristics)
+  - Web crawler (HTML + JS regex scanning for API endpoints)
 
 Public API:
   load_repo_postman() → dict
   parse_postman(collection) → dict
   discover_url(base_url, token) → dict
+  crawl_url(base_url, headers, max_pages, max_depth) → dict
 """
 
 import json
@@ -21,6 +23,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
+from html.parser import HTMLParser
 
 from storage import REPO_ROOT
 
@@ -333,9 +336,8 @@ def detect_auth_from_openapi(spec: dict) -> dict | None:
 # ── GraphQL introspection ──────────────────────────────────────────────────────
 
 
-def graphql_introspection(url: str, token: str) -> dict | None:
-    """Run GraphQL introspection and return endpoint config dict, or None."""
-    headers = {"Authorization": f"Bearer {token}"} if token else {}
+def _graphql_introspect(url: str, headers: dict) -> dict | None:
+    """Run GraphQL introspection against *url* with pre-built *headers*."""
     introspection_query = {
         "query": """
 {
@@ -357,6 +359,10 @@ def graphql_introspection(url: str, token: str) -> dict | None:
     if not schema:
         return None
 
+    # Compute path from URL once — used for both queries and mutations
+    path_part = url.split("//", 1)[-1].split("/", 1)
+    ep_path = ("/" + path_part[1]) if len(path_part) > 1 else "/graphql"
+
     endpoints = []
     query_type = schema.get("queryType") or {}
     for field in query_type.get("fields") or []:
@@ -371,8 +377,6 @@ def graphql_introspection(url: str, token: str) -> dict | None:
             f"{('(' + var_defs + ')') if var_defs else ''}"
             f" {{ {fname}{('(' + arg_use + ')') if arg_use else ''} {{ __typename }} }}"
         )
-        path_part = url.split("//", 1)[-1].split("/", 1)
-        ep_path = ("/" + path_part[1]) if len(path_part) > 1 else "/graphql"
         endpoints.append(
             {
                 "name": fname,
@@ -396,7 +400,7 @@ def graphql_introspection(url: str, token: str) -> dict | None:
                 "name": fname,
                 "group": "mutation",
                 "type": "graphql",
-                "path": "/graphql",
+                "path": ep_path,
                 "weight": 1,
                 "query": f"mutation {fname} {{ {fname} {{ __typename }} }}",
                 "variables": {},
@@ -405,6 +409,12 @@ def graphql_introspection(url: str, token: str) -> dict | None:
         )
 
     return {"endpoints": endpoints, "setup": [], "teardown": []}
+
+
+def graphql_introspection(url: str, token: str) -> dict | None:
+    """Run GraphQL introspection and return endpoint config dict, or None."""
+    hdrs = {"Authorization": f"Bearer {token}"} if token else {}
+    return _graphql_introspect(url, hdrs)
 
 
 # ── Weight heuristics ──────────────────────────────────────────────────────────
@@ -566,7 +576,7 @@ def parse_wsdl(wsdl_text: str) -> dict:
 
     # SOAP endpoint path
     soap_path = "/soap"
-    for port in (root.findall(".//wsdl:port", _WSDL_NS) or root.findall(".//port")):
+    for port in root.findall(".//wsdl:port", _WSDL_NS) or root.findall(".//port"):
         for addr in port:
             loc = addr.get("location", "")
             if loc:
@@ -585,7 +595,7 @@ def parse_wsdl(wsdl_text: str) -> dict:
             soap_body = (
                 '<?xml version="1.0" encoding="utf-8"?>'
                 '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">'
-                f"<soap:Body><{op_name} xmlns=\"{service_name}\"></{op_name}></soap:Body>"
+                f'<soap:Body><{op_name} xmlns="{service_name}"></{op_name}></soap:Body>'
                 "</soap:Envelope>"
             )
             endpoints.append(
@@ -623,7 +633,10 @@ def parse_api_blueprint(text: str) -> dict:
     seen: set = set()
 
     # Collect group names from top-level headings
-    groups_by_pos: list = [(m.start(), re.sub(r"[^a-zA-Z0-9 ]", "", m.group(1)).strip().lower().replace(" ", "_") or "api") for m in _APIB_GROUP_RE.finditer(text)]
+    groups_by_pos: list = [
+        (m.start(), re.sub(r"[^a-zA-Z0-9 ]", "", m.group(1)).strip().lower().replace(" ", "_") or "api")
+        for m in _APIB_GROUP_RE.finditer(text)
+    ]
 
     def group_for_pos(pos: int) -> str:
         name = "api"
@@ -689,7 +702,7 @@ _RAML_HTTP_METHODS = frozenset(["get", "post", "put", "patch", "delete", "head",
 def parse_raml(text: str) -> dict:
     """Parse RAML YAML; walk resources recursively; extract methods and examples."""
     try:
-        import yaml  # type: ignore[import-untyped]
+        import yaml
     except ImportError:
         return {"error": "pyyaml not installed", "endpoints": [], "setup": [], "teardown": []}
 
@@ -719,7 +732,7 @@ def parse_raml(text: str) -> dict:
                     body = None
                     if isinstance(mval, dict):
                         body_spec = mval.get("body", {}) or {}
-                        for _ct, ct_val in (body_spec.items() if isinstance(body_spec, dict) else []):
+                        for _ct, ct_val in body_spec.items() if isinstance(body_spec, dict) else []:
                             if isinstance(ct_val, dict):
                                 example = ct_val.get("example")
                                 if example:
@@ -831,4 +844,207 @@ def discover_url(base_url: str, token: str) -> dict:
         "setup": [],
         "teardown": [],
         "error": "No discoverable API spec found at standard paths",
+    }
+
+
+# ── Web crawler ────────────────────────────────────────────────────────────────
+
+# Skip static asset paths
+_STATIC_EXT_RE = re.compile(
+    r"\.(css|js|mjs|ts|png|jpg|jpeg|gif|svg|ico|woff2?|ttf|eot|map|pdf|zip|gz|tar|mp4|webm|webp)$",
+    re.IGNORECASE,
+)
+
+# JavaScript patterns that reveal API endpoint paths
+_JS_API_RE = [
+    # fetch('/api/...') or fetch(`/api/...`)
+    re.compile(
+        r"""(?:fetch|axios\.(?:get|post|put|delete|patch|head))\s*\(\s*['"`](/[^'"`\s]{2,120})['"`]""", re.IGNORECASE
+    ),
+    # url: '/api/...', endpoint: '/v1/...'
+    re.compile(r"""(?:url|endpoint|path|href)\s*[:=]\s*['"`](/[a-z0-9_/\-{}]{2,100})['"`]""", re.IGNORECASE),
+    # bare '/api/...' or '/v1/...' strings that look like REST paths
+    re.compile(r"""['"`](/(?:api|v\d+|graphql|rest|rpc|service)[^'"`\s\)]{1,80})['"`]""", re.IGNORECASE),
+    # XMLHttpRequest.open("GET", "/path")
+    re.compile(r"""\.open\s*\(\s*['"]([A-Z]+)['"]\s*,\s*['"`](/[^'"`\s]{2,100})['"`]""", re.IGNORECASE),
+]
+
+
+class _LinkExtractor(HTMLParser):
+    """Minimal HTMLParser that collects hrefs, form actions, and script srcs."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.links: list[tuple[str, str]] = []  # [(method, url)]
+        self.scripts: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list) -> None:
+        d = dict(attrs)
+        if tag == "a":
+            href = d.get("href", "")
+            if href:
+                self.links.append(("GET", href))
+        elif tag == "form":
+            action = d.get("action", "")
+            method = d.get("method", "GET").upper()
+            if action:
+                self.links.append((method, action))
+        elif tag == "script":
+            src = d.get("src", "")
+            if src:
+                self.scripts.append(src)
+
+
+def _ep_from_path(method: str, path: str) -> dict:
+    """Build a minimal endpoint dict from method + path."""
+    segs = [s for s in path.strip("/").split("/") if s and not s.startswith("{")]
+    group = segs[0] if segs else "root"
+    name = re.sub(r"[^a-zA-Z0-9]+", "_", f"{method}_{path}").strip("_") or "endpoint"
+    return {
+        "name": name,
+        "group": group,
+        "type": "rest",
+        "method": method.upper(),
+        "path": path,
+        "weight": 1,
+        "body": None,
+        "checks": {"status": 200},
+    }
+
+
+def crawl_url(base_url: str, headers: dict, max_pages: int = 30, max_depth: int = 2) -> dict:
+    """
+    Crawl *base_url* and discover API endpoints by:
+      1. Following same-origin HTML links and form actions.
+      2. Fetching referenced JS files and scanning them with regex patterns.
+      3. Regex-scanning every page body (catches inline scripts / data attrs).
+
+    Returns a dict with ``endpoints``, ``pages_crawled``, ``scripts_scanned``.
+    """
+    parsed_base = urllib.parse.urlparse(base_url)
+
+    seen_pages: set[str] = set()
+    seen_scripts: set[str] = set()
+    seen_eps: dict[str, dict] = {}  # "METHOD:/path" → endpoint dict
+
+    queue: list[tuple[str, int]] = [(base_url, 0)]
+
+    def _add(method: str, path: str) -> None:
+        method = method.upper()
+        # Reject: non-root, static asset, too short, or obviously not an API path
+        if not path.startswith("/") or _STATIC_EXT_RE.search(path):
+            return
+        # Normalise: drop query string and fragment, collapse double slashes
+        path = re.sub(r"//+", "/", path.split("?")[0].split("#")[0])
+        if len(path) < 2:
+            return
+        key = f"{method}:{path}"
+        if key not in seen_eps:
+            seen_eps[key] = _ep_from_path(method, path)
+
+    def _scan_text(text: str, default_method: str = "GET") -> None:
+        for pat in _JS_API_RE:
+            for m in pat.finditer(text):
+                groups = m.groups()
+                if len(groups) == 2:
+                    # XMLHttpRequest pattern: (method, path)
+                    _add(groups[0], groups[1])
+                else:
+                    _add(default_method, groups[0])
+
+    while queue and len(seen_pages) < max_pages:
+        url, depth = queue.pop(0)
+        # Normalise URL before dedup
+        url_norm = url.split("?")[0].split("#")[0]
+        if url_norm in seen_pages:
+            continue
+        seen_pages.add(url_norm)
+
+        status, body = http_get(url, headers, timeout=6)
+        if status == 0 or not body:
+            continue
+
+        try:
+            text = body.decode("utf-8", errors="replace")
+        except Exception:
+            continue
+
+        # ── Parse HTML ────────────────────────────────────────────────────────
+        parser = _LinkExtractor()
+        try:
+            parser.feed(text)
+        except Exception:
+            pass
+
+        for method, href in parser.links:
+            if not href or href.startswith(("mailto:", "javascript:", "tel:", "#")):
+                continue
+            full = urllib.parse.urljoin(url, href)
+            p = urllib.parse.urlparse(full)
+            if p.netloc != parsed_base.netloc:
+                continue
+            path = p.path or "/"
+            _add(method, path)
+            norm = full.split("?")[0].split("#")[0]
+            if depth < max_depth and norm not in seen_pages and not _STATIC_EXT_RE.search(path):
+                queue.append((full, depth + 1))
+
+        # ── Fetch + scan JS files ─────────────────────────────────────────────
+        for script_src in parser.scripts:
+            script_url = urllib.parse.urljoin(url, script_src)
+            s_norm = script_url.split("?")[0]
+            if s_norm in seen_scripts:
+                continue
+            seen_scripts.add(s_norm)
+            s_status, s_body = http_get(script_url, headers, timeout=5)
+            if s_status == 200 and s_body:
+                try:
+                    _scan_text(s_body.decode("utf-8", errors="replace"))
+                except Exception:
+                    pass
+
+        # ── Inline scan of the page body ──────────────────────────────────────
+        _scan_text(text)
+
+    # ── GraphQL introspection for any discovered graphql-like paths ────────────
+    # Versioned API path pattern (e.g. /api/v1alpha, /v2, /api/v1) — common for Hasura/GraphQL
+    _GQL_PATH_RE = re.compile(r"^(?:/api)?/(?:v\d|v\d[a-z]+\d*|asoc_v\d[a-z]*)(?:/|$)", re.IGNORECASE)
+
+    gql_candidates: set[str] = set()
+    for path in list(seen_eps):
+        p = path.split(":", 1)[-1]  # strip "METHOD:" prefix
+        pl = p.lower()
+        if "graphql" in pl:
+            gql_candidates.add(p)
+            # Also try stripping _socket / _ws suffix for WebSocket paths
+            bare = re.sub(r"[_\-](?:socket|ws|websocket)$", "", p, flags=re.IGNORECASE)
+            if bare != p:
+                gql_candidates.add(bare)
+        elif _GQL_PATH_RE.match(p):
+            # Versioned API path — try as potential GraphQL endpoint
+            gql_candidates.add(p)
+
+    origin = f"{parsed_base.scheme}://{parsed_base.netloc}"
+    gql_scanned: int = 0
+    for gql_path in sorted(gql_candidates):
+        target = origin + gql_path
+        # Try with provided headers first, then without auth as fallback (public introspection)
+        result = _graphql_introspect(target, headers) or _graphql_introspect(target, {})
+        if result and result.get("endpoints"):
+            gql_scanned += 1
+            # Remove the placeholder REST entry for this path (now replaced by real GQL ops)
+            for method_prefix in ("GET", "POST", "PUT"):
+                seen_eps.pop(f"{method_prefix}:{gql_path}", None)
+            for ep in result["endpoints"]:
+                key = f"graphql:{ep['name']}"
+                if key not in seen_eps:
+                    seen_eps[key] = ep
+
+    return {
+        "endpoints": list(seen_eps.values()),
+        "pages_crawled": len(seen_pages),
+        "scripts_scanned": len(seen_scripts),
+        "graphql_schemas_scanned": gql_scanned,
+        "setup": [],
+        "teardown": [],
     }

@@ -1,6 +1,7 @@
 """API discovery routes: URL introspection, Postman, HAR, WSDL, API Blueprint, RAML."""
 
 from discovery import baseline_slo_probe as _baseline_slo_probe
+from discovery import crawl_url as _crawl_url
 from discovery import discover_url as _discover_url
 from discovery import load_repo_postman as _load_repo_postman
 from discovery import parse_api_blueprint as _parse_api_blueprint
@@ -46,6 +47,12 @@ async def parse_api_blueprint(body: dict):
 @router.post("/raml")
 async def parse_raml(body: dict):
     return _parse_raml(body.get("raml", ""))
+
+
+@router.get("/crawl")
+async def crawl(url: str = "", token: str = "", max_pages: int = 30):
+    headers = {"Authorization": f"Bearer {token}"} if token else {}
+    return _crawl_url(url.rstrip("/"), headers, max_pages=max_pages)
 
 
 @router.get("/slos")

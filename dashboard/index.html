@@ -564,6 +564,21 @@ footer{
 .wiz-run-btn{padding:8px 22px;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;font-family:inherit;background:var(--accent);border:none;color:#0B0D10;border-radius:20px;cursor:pointer;transition:all .2s}
 .wiz-run-btn:hover{opacity:.85}
 .wiz-run-btn:disabled{opacity:.4;cursor:not-allowed}
+/* Saved configs modal */
+.saved-modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:900;display:flex;align-items:center;justify-content:center}
+.saved-modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;width:min(560px,95vw);max-height:70vh;display:flex;flex-direction:column;overflow:hidden}
+.saved-modal-hdr{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--border)}
+.saved-modal-title{font-size:12px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text)}
+.saved-modal-close{background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1;padding:0 4px}
+.saved-modal-close:hover{color:var(--text)}
+.saved-modal-body{overflow-y:auto;flex:1;padding:10px 12px}
+.saved-cfg-row{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;transition:background .15s;border:1px solid transparent;margin-bottom:6px}
+.saved-cfg-row:hover{background:rgba(245,166,35,.06);border-color:rgba(245,166,35,.15)}
+.saved-cfg-info{flex:1;min-width:0}
+.saved-cfg-name{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.saved-cfg-meta{font-size:10px;color:var(--muted);margin-top:2px}
+.saved-cfg-badge{font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;padding:2px 7px;border-radius:8px;background:rgba(245,166,35,.12);color:var(--accent);white-space:nowrap}
+.saved-modal-empty{padding:24px;text-align:center;font-size:12px;color:var(--muted)}
 .wiz-profile-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:14px}
 @media(max-width:700px){.wiz-profile-grid{grid-template-columns:repeat(3,1fr)}}
 /* ── Notification step ── */
@@ -1428,6 +1443,13 @@ footer{
           <div class="field-label">Bearer Token (optional)</div>
           <input class="field-input" id="wizToken" type="password" placeholder="eyJ…"/>
         </div>
+        <div style="margin-top:10px;display:flex;align-items:center;gap:8px">
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:var(--muted)">
+            <input type="checkbox" id="wizDeepScan" style="accent-color:var(--accent);width:14px;height:14px">
+            <span>Deep Scan</span>
+          </label>
+          <span style="font-size:11px;color:var(--muted);opacity:.7">crawl pages &amp; JS files to discover additional endpoints</span>
+        </div>
       </div>
 
       <!-- File source fields -->
@@ -1496,7 +1518,11 @@ footer{
       </div>
 
       <div class="wiz-nav">
-        <button class="disc-btn" onclick="wizLoadFromSaved()" title="Skip discovery and load the current endpoints.json for editing">Load saved config</button>
+        <select class="field-input" id="savedConfigSelect" style="min-width:180px;max-width:260px"
+          onfocus="wizPopulateSavedSelect(this)"
+          onchange="if(this.value)wizPickSavedConfig(this.value)">
+          <option value="">— select saved config —</option>
+        </select>
         <div class="wiz-nav-right">
           <button class="disc-btn" onclick="wizStep1Next()">Next →</button>
         </div>
@@ -1744,6 +1770,18 @@ footer{
 
   </div><!-- /wizContainer -->
 
+  <!-- Saved configs picker modal -->
+  <div id="wizSavedModal" class="saved-modal-backdrop" style="display:none" onclick="if(event.target===this)wizCloseSavedModal()">
+    <div class="saved-modal">
+      <div class="saved-modal-hdr">
+        <span class="saved-modal-title">Saved Configs</span>
+        <button class="saved-modal-close" onclick="wizCloseSavedModal()">✕</button>
+      </div>
+      <div class="saved-modal-body" id="wizSavedModalBody">
+        <div class="saved-modal-empty">Loading…</div>
+      </div>
+    </div>
+  </div>
 
 </div>
 
@@ -2307,7 +2345,7 @@ let prevReqCount=null,prevTs=null,peakRps=0;
 let maxP95=100,opTrends={},activeGroupFilter='all';
 let _debugLogged=false,__ENV_PROFILE='—';
 const logLines=[];
-const tickChars='01アイウエオ力ナニヌ';let tickIdx=0;
+const tickChars='matrix';let tickIdx=0;
 let runStartTs=null; // epoch ms when run started (from first successful status poll)
 
 function addLog(msg,cls=''){
@@ -3399,20 +3437,45 @@ async function wizStep2Discover(){
 async function wizDiscoverUrl(){
   const url=(document.getElementById('wizUrl').value||'').trim().replace(/\/+$/,'');
   const token=(document.getElementById('wizToken').value||'').trim();
+  const deepScan=document.getElementById('wizDeepScan')&&document.getElementById('wizDeepScan').checked;
 
   wiz2SetProgress('Probing OpenAPI / Swagger…');
-  const res=await fj(`/discover/url?url=${encodeURIComponent(url)}&token=${encodeURIComponent(token)}`);
-  if(res.error&&!(res.endpoints||[]).length) throw new Error(res.error);
+
+  // Fire URL scan + optional crawl in parallel
+  const discoverP=fj(`/discover/url?url=${encodeURIComponent(url)}&token=${encodeURIComponent(token)}`);
+  const crawlP=deepScan
+    ? fj(`/discover/crawl?url=${encodeURIComponent(url)}&token=${encodeURIComponent(token)}`)
+    : Promise.resolve(null);
+
+  const [res, crawlRes]=await Promise.all([discoverP, crawlP]);
+
+  // Fail only if the URL scan found nothing AND there are no crawl results to fall back on
+  const crawlEps=(crawlRes&&crawlRes.endpoints)||[];
+  if(res.error&&!(res.endpoints||[]).length&&!crawlEps.length) throw new Error(res.error);
 
   _wDiscoveredEps=res.endpoints||[];
-  _wDiscoverSource=`${(res.source||'unknown').toUpperCase()} · ${_wDiscoveredEps.length} endpoints`;
 
-  // Detect auth from OpenAPI spec (re-fetch for auth info)
+  // Merge crawl results (deduplicate by method:path)
+  if(crawlEps.length){
+    wiz2SetProgress('Merging crawl results…');
+    const epKey=e=>e.type==='graphql'?`graphql:${e.name}`:`${e.method}:${e.path}`;
+    const seen=new Set(_wDiscoveredEps.map(epKey));
+    const newEps=crawlEps.filter(e=>!seen.has(epKey(e)));
+    _wDiscoveredEps=[..._wDiscoveredEps,...newEps];
+    const gqlPart=(crawlRes.graphql_schemas_scanned||0)>0?` · ${crawlRes.graphql_schemas_scanned} GraphQL schema`:'';
+    const crawlStats=`${crawlRes.pages_crawled||0} pages · ${crawlRes.scripts_scanned||0} scripts${gqlPart}`;
+    const specPart=(res.endpoints||[]).length
+      ? `${(res.source||'unknown').toUpperCase()} · ${(res.endpoints||[]).length} endpoints + `
+      : '';
+    _wDiscoverSource=`${specPart}Crawl · ${newEps.length} endpoints · ${crawlStats}`;
+  }else{
+    _wDiscoverSource=`${(res.source||'unknown').toUpperCase()} · ${_wDiscoveredEps.length} endpoints`;
+  }
+
+  // Detect auth from OpenAPI spec
   if(res.source==='openapi'&&res.source_url){
     try{
       const spec=await fj(res.source_url);
-      const auth=await fetch('/discover/url',{method:'GET'});  // reuse via spec directly
-      // Try to detect auth from securitySchemes in the fetched spec
       const schemes=(spec&&spec.components&&spec.components.securitySchemes)||{};
       const swaggerSchemes=(spec&&spec.securityDefinitions)||{};
       const allSchemes={...schemes,...swaggerSchemes};
@@ -3424,6 +3487,11 @@ async function wizDiscoverUrl(){
         if(t==='oauth2'){_wDetectedAuth={type:'bearer',header:'Authorization'};break;}
       }
     }catch{}
+  }
+
+  // If token was provided but no auth detected from spec, infer bearer
+  if(!_wDetectedAuth && token){
+    _wDetectedAuth={type:'bearer',header:'Authorization'};
   }
 
   if(_wDetectedAuth){
@@ -3639,6 +3707,19 @@ function wizDeriveServiceName(){
   return 'discovered';
 }
 
+function wizDeriveSource(){
+  if(_wSource==='file') return _wFileFormat||'file';
+  if(_wSource==='url'){
+    const ds=(_wDiscoverSource||'').toLowerCase();
+    if(ds.includes('crawl')&&ds.includes('openapi')) return 'openapi-crawl';
+    if(ds.includes('crawl')) return 'crawl';
+    if(ds.includes('openapi')) return 'openapi';
+    if(ds.includes('graphql')) return 'graphql';
+    return 'url-scan';
+  }
+  return _wSource||'manual';
+}
+
 async function wizGetSelectedConfig(){
   const checked=[...document.querySelectorAll('.wiz3-chk:checked')].map(c=>+c.dataset.idx);
   const selected=checked.map(i=>_wDiscoveredEps[i]).filter(Boolean);
@@ -3646,11 +3727,18 @@ async function wizGetSelectedConfig(){
   const mode=document.querySelector('input[name="wizMode"]:checked')?.value||'replace';
   const serviceName=(document.getElementById('wiz6ServiceName').value||'').trim()||wizDeriveServiceName();
   let config;
+  const rawUrl=(document.getElementById('wiz4BaseUrl').value||document.getElementById('wizUrl').value||'').trim();
+  const baseUrl=rawUrl?(()=>{try{return new URL(rawUrl).origin;}catch(e){return rawUrl;}})():'';
+  const authMode=(document.getElementById('wiz4AuthMode')||{}).value||'none';
+  const authCred=(document.getElementById('wiz4AuthCred')||{value:''}).value||'';
+  const meta={_source:wizDeriveSource()};
+  if(baseUrl) meta._base_url=baseUrl;
+  if(authMode==='bearer'&&authCred) meta._auth_token=authCred;
   if(mode==='merge'){
     const existing=await fj('/config/endpoints');
-    config={...existing,service:serviceName,endpoints:[...(existing.endpoints||[]),...selected]};
+    config={...existing,service:serviceName,endpoints:[...(existing.endpoints||[]),...selected],...meta};
   }else{
-    config={service:serviceName,endpoints:selected,setup:[],teardown:[]};
+    config={service:serviceName,endpoints:selected,setup:[],teardown:[],...meta};
   }
   return config;
 }
@@ -3692,22 +3780,79 @@ function wizReset(){
   wizGo(1);
 }
 
-async function wizLoadFromSaved(){
+async function wizPopulateSavedSelect(sel){
+  // Only refetch if stale (empty beyond the placeholder or last fetch >5s ago)
+  if(sel.dataset.loaded&&Date.now()-parseInt(sel.dataset.loaded)<5000) return;
+  const cur=sel.value;
   try{
-    const cfg=await fj('/config/endpoints');
+    const list=await fj('/configs/saved');
+    sel.innerHTML='<option value="">— select saved config —</option>';
+    list.forEach(c=>{
+      const label=`${c.service||c.filename} (${c.source||'saved'} · ${c.endpoint_count} eps)`;
+      const opt=document.createElement('option');
+      opt.value=c.filename;opt.textContent=label;
+      sel.appendChild(opt);
+    });
+    if(!list.length){
+      const opt=document.createElement('option');
+      opt.value='';opt.disabled=true;opt.textContent='No saved configs yet';
+      sel.appendChild(opt);
+    }
+    sel.dataset.loaded=Date.now();
+    sel.value=cur;
+  }catch(e){/* ignore */}
+}
+
+async function wizLoadFromSaved(){
+  const modal=document.getElementById('wizSavedModal');
+  const body=document.getElementById('wizSavedModalBody');
+  modal.style.display='flex';
+  body.innerHTML='<div class="saved-modal-empty">Loading…</div>';
+  try{
+    const list=await fj('/configs/saved');
+    if(!list.length){
+      body.innerHTML='<div class="saved-modal-empty">No saved configs yet.<br>Use <strong>Save Only</strong> or <strong>Save &amp; Run</strong> to create one.</div>';
+      return;
+    }
+    body.innerHTML=list.map(c=>{
+      const ts=c.saved_at?new Date(c.saved_at).toLocaleString():'';
+      const src=c.source?`${c.source} · `:'';
+      return `<div class="saved-cfg-row" onclick="wizPickSavedConfig('${_esc(c.filename)}')">
+        <div class="saved-cfg-info">
+          <div class="saved-cfg-name">${_esc(c.service||c.filename)}</div>
+          <div class="saved-cfg-meta">${_esc(src+c.endpoint_count+' endpoints')}${ts?' · '+_esc(ts):''}</div>
+        </div>
+        <div class="saved-cfg-badge">${_esc(c.source||'saved')}</div>
+      </div>`;
+    }).join('');
+  }catch(err){
+    body.innerHTML=`<div class="saved-modal-empty">Error: ${_esc(err.message)}</div>`;
+  }
+}
+
+function wizCloseSavedModal(){
+  document.getElementById('wizSavedModal').style.display='none';
+}
+
+async function wizPickSavedConfig(filename){
+  wizCloseSavedModal();
+  // Reset the select so it shows placeholder again
+  const sel=document.getElementById('savedConfigSelect');
+  if(sel) sel.value='';
+  try{
+    const cfg=await fj('/configs/saved/'+encodeURIComponent(filename));
     const eps=cfg.endpoints||[];
-    if(!eps.length){alert('No saved endpoints found in endpoints.json');return;}
+    if(!eps.length){wizShowMsg('Config has no endpoints','error');return;}
     _wDiscoveredEps=eps;
     _wOriginalEps=JSON.parse(JSON.stringify(eps));
-    _wDiscoverSource=`Saved config · ${cfg.service||'endpoints.json'} · ${eps.length} endpoints`;
+    _wDiscoverSource=`Saved · ${cfg.service||filename} · ${eps.length} endpoints`;
     _wSource='saved';
-    // Pre-fill service name
     const sn=document.getElementById('wiz6ServiceName');
-    if(sn&&cfg.service) sn.value=cfg.service;
+    if(sn) sn.value=cfg.service||'';
     wiz3RenderTable(eps);
     wizGo(3);
   }catch(err){
-    alert('Could not load saved config: '+err.message);
+    wizShowMsg('Could not load config: '+err.message,'error');
   }
 }
 
@@ -3740,8 +3885,12 @@ async function wizSaveOnly(){
     const r=await fetch('/endpoints/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(config)});
     const data=await r.json();
     if(data.ok){
-      wizShowMsg(`Saved ${config.endpoints.length} endpoints to endpoints.json`,'ok');
+      wizShowMsg(`Saved ${config.endpoints.length} endpoints → ${data.filename||'endpoints.json'}`,'ok');
       loadEndpointConfig();
+      // Refresh both dropdowns so the new config appears immediately
+      const sel=document.getElementById('savedConfigSelect');
+      if(sel) delete sel.dataset.loaded;
+      loadProfiles();
     }else{
       wizShowMsg('Save failed','error');
     }
@@ -3761,9 +3910,26 @@ async function wizSaveAndRun(){
     const data=await r.json();
     if(!data.ok) throw new Error('Save failed');
     loadEndpointConfig();
+    // Refresh both dropdowns
+    const _sSel=document.getElementById('savedConfigSelect');
+    if(_sSel) delete _sSel.dataset.loaded;
+    loadProfiles();
     await wizApplyRunConfig();
+    // Build run payload from wizard Step 4 fields
+    const wiz4Url=(document.getElementById('wiz4BaseUrl').value||document.getElementById('wizUrl').value||'').trim();
+    const wiz4BaseUrl=wiz4Url?((()=>{try{return new URL(wiz4Url).origin;}catch(e){return wiz4Url;}})()):'';
+    const wiz4AuthMode=document.getElementById('wiz4AuthMode').value;
+    const wiz4AuthCred=(document.getElementById('wiz4AuthCred').value||'').trim();
+    const runPayload={
+      profile:_wProfile,
+      base_url:wiz4BaseUrl,
+      auth_token:wiz4AuthMode==='bearer'?wiz4AuthCred:'',
+      auth_api_key:wiz4AuthMode==='apiKey'?wiz4AuthCred:'',
+      vus:parseInt(document.getElementById('wiz4Vus').value)||10,
+      duration:parseInt(document.getElementById('wiz4Duration').value)||60,
+    };
     // Start run
-    await fetch('/run/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({})});
+    await fetch('/run/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(runPayload)});
     showTab('overview');
   }catch(err){
     wizShowMsg('Error: '+err.message,'error');
@@ -3859,15 +4025,29 @@ document.addEventListener('DOMContentLoaded',()=>{
   const wizUrlEl=document.getElementById('wizUrl');
   if(wizUrlEl) wizUrlEl.addEventListener('change',()=>{
     const base=document.getElementById('wiz4BaseUrl');
-    if(base&&!base.value) base.value=wizUrlEl.value;
+    if(base&&!base.value){
+      try{base.value=new URL(wizUrlEl.value).origin;}catch(e){base.value=wizUrlEl.value;}
+    }
   });
   // Pre-fill auth mode from detected auth when entering step 4
   const step4=document.getElementById('wizPane4');
   if(step4){
     const observer=new MutationObserver(()=>{
-      if(step4.classList.contains('active')&&_wDetectedAuth){
-        const am=document.getElementById('wiz4AuthMode');
-        if(am) am.value=_wDetectedAuth.type==='apiKey'?'apiKey':_wDetectedAuth.type;
+      if(step4.classList.contains('active')){
+        // Pre-fill base URL from Step 1 input (use origin so k6 paths resolve correctly)
+        const base=document.getElementById('wiz4BaseUrl');
+        const rawUrl=(document.getElementById('wizUrl').value||'').trim();
+        if(base&&!base.value&&rawUrl){
+          try{base.value=new URL(rawUrl).origin;}catch(e){base.value=rawUrl;}
+        }
+        if(_wDetectedAuth){
+          const am=document.getElementById('wiz4AuthMode');
+          if(am) am.value=_wDetectedAuth.type==='apiKey'?'apiKey':_wDetectedAuth.type;
+        }
+        // Pre-fill credential from Step 1 token input if not already set
+        const cred=document.getElementById('wiz4AuthCred');
+        const tok=(document.getElementById('wizToken').value||'').trim();
+        if(cred&&!cred.value&&tok) cred.value=tok;
       }
     });
     observer.observe(step4,{attributes:true,attributeFilter:['class']});
@@ -3886,16 +4066,69 @@ async function loadProfiles() {
     const sel = document.getElementById('profileSelect');
     if (!sel) return;
     sel.innerHTML = '<option value="">— select profile —</option>';
-    Object.keys(_profiles).forEach(name => {
-      const opt = document.createElement('option');
-      opt.value = name; opt.textContent = name;
-      sel.appendChild(opt);
-    });
+
+    // ── Saved endpoint configs ──────────────────────────────────────
+    let savedCfgs = [];
+    try { savedCfgs = await fj('/configs/saved'); } catch {}
+    if (savedCfgs.length) {
+      const grp = document.createElement('optgroup');
+      grp.label = 'Saved Endpoint Configs';
+      savedCfgs.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = 'cfg:' + c.filename;
+        opt.textContent = `${c.service || c.filename}  (${c.source || 'saved'} · ${c.endpoint_count} eps)`;
+        grp.appendChild(opt);
+      });
+      sel.appendChild(grp);
+    }
+
+    // ── Run profiles ────────────────────────────────────────────────
+    const profileNames = Object.keys(_profiles);
+    if (profileNames.length) {
+      const grp = document.createElement('optgroup');
+      grp.label = 'Run Profiles';
+      profileNames.forEach(name => {
+        const opt = document.createElement('option');
+        opt.value = name; opt.textContent = name;
+        grp.appendChild(opt);
+      });
+      sel.appendChild(grp);
+    }
   } catch {}
 }
 
 async function loadProfile(name) {
   if (!name) { document.getElementById('profileDeleteBtn').style.display='none'; return; }
+
+  // ── Saved endpoint config ──────────────────────────────────────────────────
+  if (name.startsWith('cfg:')) {
+    const filename = name.slice(4);
+    document.getElementById('profileDeleteBtn').style.display='none';
+    try {
+      const cfg = await fj('/configs/saved/' + encodeURIComponent(filename));
+      if (!cfg || !cfg.endpoints) { addLog('Config not found: ' + filename, 'warn'); return; }
+      // Activate: write as current endpoints.json (keep _source for re-save naming)
+      const r = await fetch('/endpoints/save', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({...cfg, _source:'saved'})
+      });
+      const d = await r.json();
+      if (d.ok) {
+        loadEndpointConfig();
+        // Pre-fill base_url and auth_token from config meta if present
+        const meta = cfg._meta || {};
+        const v = (id, val) => { const e = document.getElementById(id); if(e && val) e.value = val; };
+        if (meta.base_url) v('cfgBaseUrl', meta.base_url);
+        if (meta.auth_token) v('cfgAuthToken', meta.auth_token);
+        addLog(`Loaded config: ${cfg.service || filename} (${cfg.endpoints.length} endpoints)`, 'ok');
+      }
+    } catch(e) { addLog('Failed to load config: ' + e.message, 'error'); }
+    // Reset select back to placeholder after a moment
+    setTimeout(() => { const s=document.getElementById('profileSelect'); if(s) s.value=''; }, 300);
+    return;
+  }
+
+  // ── Run profile ────────────────────────────────────────────────────────────
   const p = _profiles[name];
   if (!p) return;
   _activeProfileName = name;
