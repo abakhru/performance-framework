@@ -511,6 +511,82 @@ footer{
 .disc-type-chip{display:inline-block;font-size:9px;padding:2px 7px;border-radius:20px;letter-spacing:.3px;text-transform:uppercase;font-weight:600}
 .disc-type-rest{color:var(--blue);border:1px solid rgba(59,130,246,.3)}
 .disc-type-graphql{color:var(--purple);border:1px solid rgba(168,85,247,.3)}
+/* ── Wizard ── */
+.wiz-steps{display:flex;margin-bottom:18px;background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.wiz-step{flex:1;padding:9px 4px;text-align:center;font-size:9px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);border-right:1px solid var(--border);transition:all .2s;cursor:default;line-height:1.3}
+.wiz-step:last-child{border-right:none}
+.wiz-step.active{background:rgba(245,166,35,.1);color:var(--accent)}
+.wiz-step.done{background:rgba(245,166,35,.04);color:rgba(245,166,35,.55)}
+.wiz-pane{display:none}
+.wiz-pane.active{display:block}
+.wiz-nav{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:12px;border-top:1px solid var(--border)}
+.wiz-nav-right{display:flex;gap:8px}
+.wiz-source-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+@media(max-width:820px){.wiz-source-cards{grid-template-columns:1fr}}
+.wiz-source-card{background:var(--surface);border:2px solid var(--border);border-radius:14px;padding:16px;cursor:pointer;transition:all .2s}
+.wiz-source-card:hover{border-color:var(--border2)}
+.wiz-source-card.selected{border-color:var(--accent3);background:var(--accentdim)}
+.wiz-source-icon{font-size:22px;margin-bottom:6px}
+.wiz-source-title{font-size:11px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:var(--text);margin-bottom:4px}
+.wiz-source-desc{font-size:10px;color:var(--muted);line-height:1.4}
+.wiz2-badge{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;padding:3px 10px;border-radius:20px;background:var(--accentdim);color:var(--accent);border:1px solid var(--accent3);margin-bottom:8px}
+.wiz2-auth-banner{display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(245,166,35,.07);border:1px solid rgba(245,166,35,.2);border-radius:10px;font-size:11px;color:var(--accent);margin:10px 0}
+.wiz2-slo-wrap{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin:10px 0;overflow:hidden}
+.wiz2-slo-summary{padding:10px 14px;font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);cursor:pointer;user-select:none;display:flex;justify-content:space-between;align-items:center}
+.wiz2-slo-summary:hover{color:var(--text)}
+.wiz2-slo-body{display:none;padding:10px 14px 14px;border-top:1px solid var(--border)}
+.wiz2-slo-body.open{display:block}
+.wiz2-slo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px}
+.wiz2-slo-stat{display:flex;flex-direction:column;gap:3px}
+.wiz2-slo-val{font-size:18px;font-weight:800;font-variant-numeric:tabular-nums;color:#fff}
+.wiz2-slo-label{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:500}
+.wiz2-progress{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:8px;margin:12px 0}
+.wiz-spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:wiz-spin .6s linear infinite;flex-shrink:0}
+@keyframes wiz-spin{to{transform:rotate(360deg)}}
+.wiz3-table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:10px;font-size:11px}
+.wiz3-table thead tr{background:var(--surface2)}
+.wiz3-table th{padding:8px 10px;text-align:left;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;font-weight:600}
+.wiz3-table td{padding:7px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+.wiz3-table tr:last-child td{border-bottom:none}
+.wiz3-table input[type=text],.wiz3-table input[type=number]{background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-family:inherit;font-size:11px;padding:3px 8px;border-radius:8px}
+.wiz3-table input[type=text]{width:90px}
+.wiz3-table input[type=number]{width:44px}
+.wiz3-body-preview{font-size:9px;color:var(--muted);font-family:monospace;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;padding:2px 6px;background:var(--bg2);border-radius:6px;border:1px solid var(--border2)}
+.wiz3-body-preview:hover{color:var(--text);border-color:var(--accent3)}
+.wiz3-body-edit{width:100%;min-height:60px;font-family:monospace;font-size:10px;background:var(--bg2);color:var(--text);border:1px solid var(--accent3);border-radius:8px;padding:6px 8px;resize:vertical}
+.wiz4-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+@media(max-width:700px){.wiz4-grid{grid-template-columns:1fr}}
+.wiz5-summary{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px}
+.wiz5-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:11px}
+.wiz5-row:last-child{border-bottom:none}
+.wiz5-label{color:var(--muted);font-weight:500}
+.wiz5-val{color:var(--text);font-weight:600}
+.wiz-run-btn{padding:8px 22px;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;font-family:inherit;background:var(--accent);border:none;color:#0B0D10;border-radius:20px;cursor:pointer;transition:all .2s}
+.wiz-run-btn:hover{opacity:.85}
+.wiz-run-btn:disabled{opacity:.4;cursor:not-allowed}
+.wiz-profile-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:14px}
+@media(max-width:700px){.wiz-profile-grid{grid-template-columns:repeat(3,1fr)}}
+/* ── Notification step ── */
+.wiz-notif-providers{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.wiz-notif-provider{display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 14px;background:var(--surface);border:2px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;min-width:72px}
+.wiz-notif-provider:hover{border-color:var(--border2)}
+.wiz-notif-provider.selected{border-color:var(--accent3);background:var(--accentdim)}
+.wiz-notif-provider-icon{font-size:18px;line-height:1}
+.wiz-notif-provider-name{font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.wiz-notif-provider.selected .wiz-notif-provider-name{color:var(--accent)}
+.wiz-notif-hint{font-size:10px;color:var(--muted);padding:6px 10px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:12px;display:none}
+.wiz-notif-hint.visible{display:block}
+.wiz-hook-list{margin-bottom:12px}
+.wiz-hook-row{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:4px;font-size:10px}
+.wiz-hook-name{color:var(--accent);font-weight:700;flex:0 0 auto;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wiz-hook-url{color:var(--muted);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wiz-hook-events{color:var(--muted);flex:0 0 auto;font-size:9px}
+.wiz-hook-actions{display:flex;gap:4px;flex-shrink:0}
+.wiz-hook-test{background:none;border:1px solid var(--border2);color:var(--muted);font-family:inherit;font-size:9px;padding:2px 7px;cursor:pointer;border-radius:4px;transition:all .15s}
+.wiz-hook-test:hover{border-color:var(--accent3);color:var(--accent)}
+.wiz-hook-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;padding:0 2px;transition:color .15s}
+.wiz-hook-del:hover{color:var(--err)}
+.wiz-notif-empty{font-size:11px;color:var(--muted);padding:14px;text-align:center}
 /* delta chips */
 .delta-chip{display:inline-block;font-size:9px;padding:2px 7px;border-radius:20px;margin-left:6px;font-weight:600}
 .delta-better{background:rgba(245,166,35,.1);color:var(--accent)}
@@ -1308,147 +1384,366 @@ footer{
 <!-- ══ DISCOVER ══════════════════════════════════════════════════════════════ -->
 <div id="pane-discover" class="pane">
 
-  <div class="stitle">Discovery Source</div>
-  <div class="disc-sources">
+  <!-- ── Wizard ── -->
+  <div id="wizContainer">
 
-    <!-- Postman -->
-    <div class="disc-card">
-      <div class="disc-card-title">📂 Postman Import</div>
-      <button class="disc-btn" id="discPostmanRepoBtn" onclick="discoverPostmanFromRepo()">Load from repo</button>
-      <div class="disc-drop-zone" id="discDropZone">
-        Drop Postman collection .json here<br>or click to browse
-        <input type="file" id="discFileInput" accept=".json" style="display:none" onchange="discoverPostmanFromFile(this)">
-      </div>
+    <!-- Step indicator -->
+    <div class="wiz-steps">
+      <div class="wiz-step active" id="wizStep1Tab">1 · Source</div>
+      <div class="wiz-step" id="wizStep2Tab">2 · Discover</div>
+      <div class="wiz-step" id="wizStep3Tab">3 · Review</div>
+      <div class="wiz-step" id="wizStep4Tab">4 · Run Config</div>
+      <div class="wiz-step" id="wizStep5Tab">5 · Notify</div>
+      <div class="wiz-step" id="wizStep6Tab">6 · Save &amp; Launch</div>
     </div>
 
-    <!-- URL Scan -->
-    <div class="disc-card">
-      <div class="disc-card-title">🔍 Scan URL</div>
-      <div class="field-group" style="margin-bottom:6px">
-        <div class="field-label">Service Base URL</div>
-        <input class="field-input" id="discUrl" type="url" placeholder="https://api.example.com"/>
+    <!-- ── Step 1: Source & Input ── -->
+    <div class="wiz-pane active" id="wizPane1">
+      <div class="stitle" style="margin-bottom:10px">Choose Discovery Source</div>
+      <div class="wiz-source-cards">
+        <div class="wiz-source-card selected" id="wizSrcUrl" onclick="wizSelectSource('url',this)">
+          <div class="wiz-source-icon">🔍</div>
+          <div class="wiz-source-title">URL Scan</div>
+          <div class="wiz-source-desc">Auto-probe OpenAPI, GraphQL, and common REST paths from a live service URL</div>
+        </div>
+        <div class="wiz-source-card" id="wizSrcFile" onclick="wizSelectSource('file',this)">
+          <div class="wiz-source-icon">📂</div>
+          <div class="wiz-source-title">File Upload</div>
+          <div class="wiz-source-desc">Import from HAR, Postman collection, OpenAPI, WSDL, API Blueprint, or RAML file</div>
+        </div>
+        <div class="wiz-source-card" id="wizSrcManual" onclick="wizSelectSource('manual',this)">
+          <div class="wiz-source-icon">✏️</div>
+          <div class="wiz-source-title">Manual Entry</div>
+          <div class="wiz-source-desc">Add endpoints one at a time with full control over method, path, and body</div>
+        </div>
       </div>
-      <div class="field-group" style="margin-bottom:6px">
-        <div class="field-label">Bearer Token (optional)</div>
-        <input class="field-input" id="discToken" type="password" placeholder="eyJ…"/>
-      </div>
-      <button class="disc-btn" id="discScanBtn" onclick="discoverUrl()">Scan</button>
-    </div>
 
-    <!-- Manual Add -->
-    <div class="disc-card">
-      <div class="disc-card-title">✏️ Manual Add</div>
-      <div class="field-group" style="margin-bottom:4px">
-        <div class="field-label">Name</div>
-        <input class="field-input" id="discManualName" type="text" placeholder="GetUsers"/>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:4px">
-        <div class="field-group">
-          <div class="field-label">Path</div>
-          <input class="field-input" id="discManualPath" type="text" placeholder="/api/users"/>
+      <!-- URL source fields -->
+      <div id="wizSrcUrlFields">
+        <div class="field-group" style="margin-bottom:8px">
+          <div class="field-label">Service Base URL</div>
+          <input class="field-input" id="wizUrl" type="url" placeholder="https://api.example.com"/>
         </div>
         <div class="field-group">
-          <div class="field-label">Type</div>
-          <select class="field-input" id="discManualType">
-            <option value="rest">REST</option>
-            <option value="graphql">GraphQL</option>
+          <div class="field-label">Bearer Token (optional)</div>
+          <input class="field-input" id="wizToken" type="password" placeholder="eyJ…"/>
+        </div>
+      </div>
+
+      <!-- File source fields -->
+      <div id="wizSrcFileFields" style="display:none">
+        <!-- API spec drop zone -->
+        <div class="disc-card-title" style="margin-bottom:6px">API Spec / Traffic File</div>
+        <div class="disc-drop-zone" id="wizDropZone">
+          Drop file here or click to browse<br>
+          <span style="font-size:9px;color:var(--muted)">.har · .json (Postman/OpenAPI) · .wsdl · .xml · .apib · .md · .raml · .yaml</span>
+          <input type="file" id="wizFileInput" accept=".har,.json,.wsdl,.xml,.apib,.md,.raml,.yaml,.yml" style="display:none" onchange="wizHandleFile(this)">
+        </div>
+        <div id="wizFileLabel" style="margin-top:6px;margin-bottom:14px;font-size:11px;color:var(--muted)"></div>
+
+        <!-- Data files (CSV) -->
+        <div class="disc-card-title" style="margin-bottom:6px">Data Files <span style="font-size:9px;font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted)">— CSV files for data-driven load injection</span></div>
+        <div id="dataFileList" style="margin-bottom:8px"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px">
+          <div class="field-group">
+            <div class="field-label">Key name <span style="font-weight:400;text-transform:none;letter-spacing:0">(data_file in endpoints.json)</span></div>
+            <input class="field-input" id="dataFileName" type="text" placeholder="users"/>
+          </div>
+          <div class="field-group" style="align-self:end">
+            <div class="disc-drop-zone" id="dataDropZone" style="margin-top:0;padding:10px">
+              Drop .csv or click<br>
+              <input type="file" id="dataFileInput" accept=".csv" style="display:none" onchange="uploadDataFile(this)">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Manual source fields -->
+      <div id="wizSrcManualFields" style="display:none">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+          <div class="field-group">
+            <div class="field-label">Name</div>
+            <input class="field-input" id="wizManualName" type="text" placeholder="GetUsers"/>
+          </div>
+          <div class="field-group">
+            <div class="field-label">Path</div>
+            <input class="field-input" id="wizManualPath" type="text" placeholder="/api/users"/>
+          </div>
+          <div class="field-group">
+            <div class="field-label">Method</div>
+            <select class="field-input" id="wizManualMethod">
+              <option>GET</option><option>POST</option><option>PUT</option><option>PATCH</option><option>DELETE</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <div class="field-label">Type</div>
+            <select class="field-input" id="wizManualType">
+              <option value="rest">REST</option>
+              <option value="graphql">GraphQL</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <div class="field-label">Group</div>
+            <input class="field-input" id="wizManualGroup" type="text" placeholder="api"/>
+          </div>
+          <div class="field-group">
+            <div class="field-label">Weight</div>
+            <input class="field-input" id="wizManualWeight" type="number" placeholder="1" min="0" value="1"/>
+          </div>
+        </div>
+        <button class="disc-btn" onclick="wizManualAdd()">Add to List</button>
+        <div id="wizManualList" style="margin-top:10px;font-size:11px;color:var(--muted)">No endpoints added yet</div>
+      </div>
+
+      <div class="wiz-nav">
+        <button class="disc-btn" onclick="wizLoadFromSaved()" title="Skip discovery and load the current endpoints.json for editing">Load saved config</button>
+        <div class="wiz-nav-right">
+          <button class="disc-btn" onclick="wizStep1Next()">Next →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Step 2: Discover ── -->
+    <div class="wiz-pane" id="wizPane2">
+      <div class="stitle" style="margin-bottom:10px">Discovering Endpoints</div>
+      <div class="wiz2-progress" id="wiz2Progress"><span class="wiz-spinner"></span><span id="wiz2ProgressText">Initialising…</span></div>
+      <div id="wiz2Badge" style="display:none"></div>
+      <div id="wiz2AuthBanner" style="display:none" class="wiz2-auth-banner">🔑 <span id="wiz2AuthText"></span></div>
+      <div id="wiz2SloWrap" class="wiz2-slo-wrap" style="display:none">
+        <div class="wiz2-slo-summary" onclick="wizToggleSlo()">
+          Baseline SLO suggestions <span id="wiz2SloToggleIcon">▸</span>
+        </div>
+        <div class="wiz2-slo-body" id="wiz2SloBody">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:6px">From <span id="wiz2SloSampleCount"></span> sampled requests</div>
+          <div class="wiz2-slo-grid">
+            <div class="wiz2-slo-stat"><div class="wiz2-slo-val" id="wiz2SloP95">—</div><div class="wiz2-slo-label">p95 ms</div></div>
+            <div class="wiz2-slo-stat"><div class="wiz2-slo-val" id="wiz2SloErr">—</div><div class="wiz2-slo-label">Error rate</div></div>
+            <div class="wiz2-slo-stat"><div class="wiz2-slo-val" id="wiz2SloApdex">—</div><div class="wiz2-slo-label">Apdex</div></div>
+          </div>
+        </div>
+      </div>
+      <div id="wiz2Error" style="display:none;margin-top:10px;font-size:11px;color:var(--err);padding:10px;background:rgba(239,68,68,.08);border-radius:8px"></div>
+      <div class="wiz-nav">
+        <button class="disc-btn" onclick="wizGo(1)">← Back</button>
+        <div class="wiz-nav-right">
+          <button class="disc-btn" id="wiz2NextBtn" onclick="wizGo(3)" disabled>Next →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Step 3: Review & Edit ── -->
+    <div class="wiz-pane" id="wizPane3">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div class="stitle" style="margin-bottom:0">Review Endpoints</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="disc-count" id="wiz3Count">0 endpoints</span>
+          <button class="disc-btn" style="margin-top:0" onclick="wizResetToDiscovered()">Reset</button>
+        </div>
+      </div>
+      <div id="wiz3TableWrap" style="overflow-x:auto">
+        <div class="disc-empty" id="wiz3Empty">No endpoints discovered</div>
+        <table class="wiz3-table" id="wiz3Table" style="display:none">
+          <thead>
+            <tr>
+              <th style="width:28px"><input type="checkbox" id="wiz3SelectAll" title="Select all" onchange="wiz3ToggleAll(this.checked)"/></th>
+              <th>Name</th>
+              <th>Path</th>
+              <th>Type</th>
+              <th>Method</th>
+              <th>Group</th>
+              <th style="width:52px">Weight</th>
+              <th>Body</th>
+              <th style="width:32px"></th>
+            </tr>
+          </thead>
+          <tbody id="wiz3TableBody"></tbody>
+        </table>
+      </div>
+      <div class="wiz-nav">
+        <button class="disc-btn" onclick="wizGo(2)">← Back</button>
+        <div class="wiz-nav-right">
+          <button class="disc-btn" onclick="wizGo(4)">Next →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Step 4: Run Config ── -->
+    <div class="wiz-pane" id="wizPane4">
+      <div class="stitle" style="margin-bottom:10px">Run Configuration</div>
+
+      <div class="field-group" style="margin-bottom:10px">
+        <div class="field-label">Base URL</div>
+        <input class="field-input" id="wiz4BaseUrl" type="url" placeholder="https://api.example.com"/>
+      </div>
+
+      <div class="stitle" style="font-size:10px;margin-bottom:8px">Load Profile</div>
+      <div class="wiz-profile-grid" style="margin-bottom:14px">
+        <button class="profile-btn active" id="wiz4BtnSmoke" onclick="wizSetProfile('smoke',this)">SMOKE<br><span style="font-size:9px;letter-spacing:0;color:var(--muted)">2 VUs · 30s</span></button>
+        <button class="profile-btn" id="wiz4BtnRamp" onclick="wizSetProfile('ramp',this)">RAMP<br><span style="font-size:9px;letter-spacing:0;color:var(--muted)">0→N ramp</span></button>
+        <button class="profile-btn" id="wiz4BtnSoak" onclick="wizSetProfile('soak',this)">SOAK<br><span style="font-size:9px;letter-spacing:0;color:var(--muted)">endurance</span></button>
+        <button class="profile-btn" id="wiz4BtnStress" onclick="wizSetProfile('stress',this)">STRESS<br><span style="font-size:9px;letter-spacing:0;color:var(--muted)">break point</span></button>
+        <button class="profile-btn" id="wiz4BtnSpike" onclick="wizSetProfile('spike',this)">SPIKE<br><span style="font-size:9px;letter-spacing:0;color:var(--muted)">burst</span></button>
+      </div>
+
+      <div class="wiz4-grid">
+        <div class="field-group">
+          <div class="field-label">Virtual Users</div>
+          <input class="field-input" id="wiz4Vus" type="number" placeholder="10" min="1" value="10"/>
+        </div>
+        <div class="field-group">
+          <div class="field-label">Duration (s)</div>
+          <input class="field-input" id="wiz4Duration" type="number" placeholder="60" min="1" value="60"/>
+        </div>
+        <div class="field-group">
+          <div class="field-label">Auth Mode</div>
+          <select class="field-input" id="wiz4AuthMode">
+            <option value="none">None</option>
+            <option value="bearer">Bearer Token</option>
+            <option value="apiKey">API Key Header</option>
+            <option value="basic">Basic Auth</option>
           </select>
         </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px">
         <div class="field-group">
-          <div class="field-label">Group</div>
-          <input class="field-input" id="discManualGroup" type="text" placeholder="api"/>
-        </div>
-        <div class="field-group">
-          <div class="field-label">Weight</div>
-          <input class="field-input" id="discManualWeight" type="number" placeholder="1" min="1" value="1"/>
+          <div class="field-label">Auth Credential</div>
+          <input class="field-input" id="wiz4AuthCred" type="password" placeholder="token or key…"/>
         </div>
       </div>
-      <button class="disc-btn" onclick="discoverManualAdd()">Add to Preview</button>
-    </div>
-  </div>
 
-  <!-- Preview Table -->
-  <div class="disc-preview-header">
-    <div class="stitle" style="margin-bottom:0">Discovered Endpoints</div>
-    <div class="disc-count" id="discCount">0 endpoints</div>
-  </div>
-  <div id="discTableWrap">
-    <div class="disc-empty" id="discEmpty">No endpoints yet — use one of the discovery methods above</div>
-    <table class="disc-preview-table" id="discTable" style="display:none">
-      <thead>
-        <tr>
-          <th style="width:28px"><input type="checkbox" id="discSelectAll" title="Select all" onchange="discToggleAll(this.checked)"/></th>
-          <th>Name</th>
-          <th>Path</th>
-          <th>Type</th>
-          <th>Method</th>
-          <th>Group</th>
-          <th style="width:60px">Weight</th>
-          <th style="width:32px"></th>
-        </tr>
-      </thead>
-      <tbody id="discTableBody"></tbody>
-    </table>
-  </div>
+      <details class="wiz2-slo-wrap" style="margin-bottom:10px">
+        <summary class="wiz2-slo-summary">SLO Thresholds <span style="font-size:9px;font-weight:400;letter-spacing:0;text-transform:none;margin-left:6px;color:var(--muted)">pre-filled from baseline</span></summary>
+        <div style="padding:10px 14px 14px;border-top:1px solid var(--border)">
+          <div class="wiz4-grid">
+            <div class="field-group">
+              <div class="field-label">p95 ms ≤</div>
+              <input class="field-input" id="wiz4SloP95" type="number" placeholder="500"/>
+            </div>
+            <div class="field-group">
+              <div class="field-label">p99 ms ≤</div>
+              <input class="field-input" id="wiz4SloP99" type="number" placeholder="2000"/>
+            </div>
+            <div class="field-group">
+              <div class="field-label">Error rate ≤</div>
+              <input class="field-input" id="wiz4SloErr" type="number" placeholder="0.01" step="0.001"/>
+            </div>
+            <div class="field-group">
+              <div class="field-label">Checks rate ≥</div>
+              <input class="field-input" id="wiz4SloChecks" type="number" placeholder="0.99" step="0.001"/>
+            </div>
+          </div>
+        </div>
+      </details>
 
-  <!-- Save Bar -->
-  <div class="disc-save-bar" style="margin-top:10px">
-    <div class="disc-mode-toggle">
-      <label><input type="radio" name="discMode" value="replace" checked> Replace all</label>
-      <label><input type="radio" name="discMode" value="merge"> Merge with existing</label>
-    </div>
-    <span id="discMsg" class="disc-msg" style="display:none"></span>
-    <button class="disc-save-btn" id="discSaveBtn" onclick="saveDiscoveredEndpoints()" disabled>Save endpoints.json</button>
-  </div>
-
-  <!-- Webhooks -->
-  <div style="margin-top:20px">
-    <div class="stitle">Webhooks <span style="font-size:9px;color:var(--muted);letter-spacing:0;text-transform:none">— notify external services on run events</span></div>
-    <div id="webhookList" style="margin-bottom:8px"></div>
-    <div class="disc-card" style="margin-top:8px">
-      <div class="disc-card-title">Add Webhook</div>
-      <div class="field-group" style="margin-bottom:4px">
-        <div class="field-label">Name</div>
-        <input class="field-input" id="whName" type="text" placeholder="slack-alerts"/>
-      </div>
-      <div class="field-group" style="margin-bottom:4px">
-        <div class="field-label">URL</div>
-        <input class="field-input" id="whUrl" type="url" placeholder="https://hooks.slack.com/…"/>
-      </div>
-      <div class="field-group" style="margin-bottom:6px">
-        <div class="field-label">Events</div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;font-size:10px">
-          <label><input type="checkbox" id="whEvtFinished" checked> run.finished</label>
-          <label><input type="checkbox" id="whEvtFailed" checked> run.failed</label>
-          <label><input type="checkbox" id="whEvtSlo"> slo.breached</label>
+      <div class="wiz-nav">
+        <button class="disc-btn" onclick="wizGo(3)">← Back</button>
+        <div class="wiz-nav-right">
+          <button class="disc-btn" onclick="wizGo(5)">Next →</button>
         </div>
       </div>
-      <div class="field-group" style="margin-bottom:6px">
-        <div class="field-label">Secret (HMAC-SHA256, optional)</div>
-        <input class="field-input" id="whSecret" type="password" placeholder="my-secret"/>
-      </div>
-      <button class="disc-btn" onclick="addWebhook()">Add</button>
     </div>
-  </div>
 
-  <!-- Data Files -->
-  <div style="margin-top:20px">
-    <div class="stitle">Data Files <span style="font-size:9px;color:var(--muted);letter-spacing:0;text-transform:none">— CSV files for data-driven load injection</span></div>
-    <div id="dataFileList" style="margin-bottom:8px"></div>
-    <div class="disc-card" style="margin-top:8px">
-      <div class="disc-card-title">Upload CSV</div>
-      <div class="field-group" style="margin-bottom:4px">
-        <div class="field-label">Name (used as data_file key in endpoints.json)</div>
-        <input class="field-input" id="dataFileName" type="text" placeholder="users"/>
+    <!-- ── Step 5: Notify ── -->
+    <div class="wiz-pane" id="wizPane5">
+      <div class="stitle" style="margin-bottom:4px">Notifications</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:14px">Send alerts when a run finishes, fails, or breaches an SLO</div>
+
+      <!-- Provider picker -->
+      <div class="wiz-notif-providers">
+        <div class="wiz-notif-provider selected" id="wiz5ProvWebhook" onclick="wizNotifSelectProvider('webhook',this)">
+          <span class="wiz-notif-provider-icon">🔗</span>
+          <span class="wiz-notif-provider-name">Webhook</span>
+        </div>
+        <div class="wiz-notif-provider" id="wiz5ProvSlack" onclick="wizNotifSelectProvider('slack',this)">
+          <span class="wiz-notif-provider-icon">💬</span>
+          <span class="wiz-notif-provider-name">Slack</span>
+        </div>
+        <div class="wiz-notif-provider" id="wiz5ProvTeams" onclick="wizNotifSelectProvider('teams',this)">
+          <span class="wiz-notif-provider-icon">🔷</span>
+          <span class="wiz-notif-provider-name">Teams</span>
+        </div>
+        <div class="wiz-notif-provider" id="wiz5ProvDiscord" onclick="wizNotifSelectProvider('discord',this)">
+          <span class="wiz-notif-provider-icon">🎮</span>
+          <span class="wiz-notif-provider-name">Discord</span>
+        </div>
+        <div class="wiz-notif-provider" id="wiz5ProvPagerduty" onclick="wizNotifSelectProvider('pagerduty',this)">
+          <span class="wiz-notif-provider-icon">🚨</span>
+          <span class="wiz-notif-provider-name">PagerDuty</span>
+        </div>
       </div>
-      <div class="disc-drop-zone" id="dataDropZone" style="margin-top:6px">
-        Drop CSV file here or click to browse
-        <input type="file" id="dataFileInput" accept=".csv" style="display:none" onchange="uploadDataFile(this)">
+      <div class="wiz-notif-hint" id="wiz5ProvHint"></div>
+
+      <!-- Existing hooks list -->
+      <div id="webhookList" class="wiz-hook-list">
+        <div class="wiz-notif-empty">No notifications configured yet</div>
+      </div>
+
+      <!-- Add form -->
+      <div class="disc-card" style="margin-top:4px">
+        <div class="disc-card-title">Add Notification</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+          <div class="field-group">
+            <div class="field-label">Name</div>
+            <input class="field-input" id="whName" type="text" placeholder="my-alert"/>
+          </div>
+          <div class="field-group">
+            <div class="field-label">Webhook URL</div>
+            <input class="field-input" id="whUrl" type="url" placeholder="https://…"/>
+          </div>
+        </div>
+        <div class="field-group" style="margin-bottom:8px">
+          <div class="field-label">Trigger on</div>
+          <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:10px;margin-top:4px">
+            <label><input type="checkbox" id="whEvtFinished" checked> run.finished</label>
+            <label><input type="checkbox" id="whEvtFailed" checked> run.failed</label>
+            <label><input type="checkbox" id="whEvtSlo"> slo.breached</label>
+          </div>
+        </div>
+        <div class="field-group" style="margin-bottom:10px">
+          <div class="field-label">Signing secret (HMAC-SHA256, optional)</div>
+          <input class="field-input" id="whSecret" type="password" placeholder="my-secret"/>
+        </div>
+        <button class="disc-btn" style="margin-top:0" onclick="wizAddNotification()">Add</button>
+      </div>
+
+      <div class="wiz-nav">
+        <button class="disc-btn" onclick="wizGo(4)">← Back</button>
+        <div class="wiz-nav-right">
+          <button class="disc-btn" onclick="wizGo(6)">Next →</button>
+        </div>
       </div>
     </div>
-  </div>
+
+    <!-- ── Step 6: Save & Launch ── -->
+    <div class="wiz-pane" id="wizPane6">
+      <div class="stitle" style="margin-bottom:10px">Save &amp; Launch</div>
+
+      <div class="field-group" style="margin-bottom:12px">
+        <div class="field-label">Config name <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted)">— the "service" label stored in endpoints.json</span></div>
+        <input class="field-input" id="wiz6ServiceName" type="text" placeholder="my-api"/>
+      </div>
+
+      <div class="wiz5-summary" id="wiz5Summary"></div>
+
+      <div class="disc-save-bar" style="margin-bottom:12px">
+        <div class="disc-mode-toggle">
+          <label><input type="radio" name="wizMode" value="replace" checked> Replace endpoints.json</label>
+          <label><input type="radio" name="wizMode" value="merge"> Merge with existing</label>
+        </div>
+      </div>
+      <span id="wizMsg" class="disc-msg" style="display:none;margin-bottom:10px"></span>
+      <div class="wiz-nav">
+        <div style="display:flex;gap:8px">
+          <button class="disc-btn" onclick="wizGo(5)">← Back</button>
+          <button class="disc-btn" onclick="wizReset()" title="Discard current discovery and start fresh">↺ Start Over</button>
+        </div>
+        <div class="wiz-nav-right">
+          <button class="disc-btn" id="wizSaveOnlyBtn" onclick="wizSaveOnly()">Save Only</button>
+          <button class="wiz-run-btn" id="wizSaveRunBtn" onclick="wizSaveAndRun()">Save &amp; Run</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /wizContainer -->
+
 
 </div>
 
@@ -2907,191 +3202,677 @@ function setBanner(cls,msg){
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   DISCOVER TAB
+   DISCOVER WIZARD
    ══════════════════════════════════════════════════════════════════ */
-let _discoveredEps=[];
-
-function _discSetBusy(btnId,busy){
-  const b=document.getElementById(btnId);
-  if(b)b.disabled=busy;
-}
-
-function showDiscoverMsg(msg,type){
-  const el=document.getElementById('discMsg');
-  el.textContent=msg;
-  el.className='disc-msg '+(type||'ok');
-  el.style.display='';
-  clearTimeout(el._t);
-  el._t=setTimeout(()=>{el.style.display='none'},6000);
-}
-
-function renderDiscoveryTable(eps){
-  _discoveredEps=eps;
-  const countEl=document.getElementById('discCount');
-  const empty=document.getElementById('discEmpty');
-  const table=document.getElementById('discTable');
-  const tbody=document.getElementById('discTableBody');
-  const saveBtn=document.getElementById('discSaveBtn');
-  const selectAll=document.getElementById('discSelectAll');
-
-  countEl.textContent=eps.length+' endpoint'+(eps.length===1?'':'s');
-
-  if(!eps.length){
-    empty.style.display='';
-    table.style.display='none';
-    saveBtn.disabled=true;
-    return;
-  }
-  empty.style.display='none';
-  table.style.display='';
-  saveBtn.disabled=false;
-  selectAll.checked=true;
-
-  tbody.innerHTML=eps.map((ep,i)=>{
-    const typeClass=ep.type==='graphql'?'disc-type-graphql':'disc-type-rest';
-    const method=ep.method||'POST';
-    return `<tr id="disc-row-${i}">
-      <td><input type="checkbox" class="disc-chk" data-idx="${i}" checked></td>
-      <td style="font-weight:bold;color:var(--text)">${_esc(ep.name)}</td>
-      <td style="color:var(--muted);font-size:10px">${_esc(ep.path)}</td>
-      <td><span class="disc-type-chip ${typeClass}">${ep.type}</span></td>
-      <td style="font-size:10px;color:var(--muted)">${ep.type==='rest'?_esc(method):'—'}</td>
-      <td><input type="text" value="${_esc(ep.group||'')}" data-field="group" data-idx="${i}" onchange="discUpdateField(${i},'group',this.value)"></td>
-      <td><input type="number" value="${ep.weight||1}" min="1" data-field="weight" data-idx="${i}" onchange="discUpdateField(${i},'weight',+this.value)"></td>
-      <td><button class="disc-remove-btn" onclick="discRemove(${i})" title="Remove">✕</button></td>
-    </tr>`;
-  }).join('');
-}
+let _wStep=1;
+let _wSource='url';
+let _wDiscoveredEps=[];
+let _wOriginalEps=[];  // for "reset to discovered"
+let _wFileText='';
+let _wFileName='';
+let _wFileFormat='';
+let _wProfile='smoke';
+let _wSloBaseline={};
+let _wDetectedAuth=null;
+let _wDiscoverSource='';
 
 function _esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 
-function discUpdateField(idx,field,val){
-  if(_discoveredEps[idx])_discoveredEps[idx][field]=val;
+function wizShowMsg(msg,type){
+  const el=document.getElementById('wizMsg');
+  if(!el)return;
+  el.textContent=msg;
+  el.className='disc-msg '+(type||'ok');
+  el.style.display='block';
+  clearTimeout(el._t);
+  el._t=setTimeout(()=>{el.style.display='none'},7000);
 }
 
-function discRemove(idx){
-  _discoveredEps.splice(idx,1);
-  renderDiscoveryTable(_discoveredEps);
-}
-
-function discToggleAll(checked){
-  document.querySelectorAll('.disc-chk').forEach(c=>c.checked=checked);
-}
-
-async function discoverPostmanFromRepo(){
-  _discSetBusy('discPostmanRepoBtn',true);
-  try{
-    const col=await fj('/discover/postman-collection');
-    if(col.error){showDiscoverMsg(col.error,'error');return;}
-    const res=await fetch('/discover/postman',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({collection:col})});
-    const data=await res.json();
-    _discoveredEps=data.endpoints||[];
-    renderDiscoveryTable(_discoveredEps);
-    showDiscoverMsg(`Loaded ${_discoveredEps.length} endpoints from Postman collection`,'ok');
-  }catch(err){
-    showDiscoverMsg('Error: '+err.message,'error');
-  }finally{
-    _discSetBusy('discPostmanRepoBtn',false);
+function wizGo(step){
+  _wStep=step;
+  for(let i=1;i<=6;i++){
+    const pane=document.getElementById('wizPane'+i);
+    const tab=document.getElementById('wizStep'+i+'Tab');
+    if(pane)pane.classList.toggle('active',i===step);
+    if(tab){
+      tab.classList.toggle('active',i===step);
+      tab.classList.toggle('done',i<step);
+    }
+  }
+  if(step===5) loadWebhooks();
+  if(step===6){
+    // Auto-fill service name if empty
+    const sn=document.getElementById('wiz6ServiceName');
+    if(sn&&!sn.value) sn.value=wizDeriveServiceName();
+    wizBuildSummary();
   }
 }
 
-function discoverPostmanFromFile(input){
+function wizSelectSource(type,el){
+  _wSource=type;
+  document.querySelectorAll('.wiz-source-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('wizSrcUrlFields').style.display=type==='url'?'':'none';
+  document.getElementById('wizSrcFileFields').style.display=type==='file'?'':'none';
+  document.getElementById('wizSrcManualFields').style.display=type==='manual'?'':'none';
+  if(type==='file') loadDataFiles();
+}
+
+function wizStep1Next(){
+  if(_wSource==='url'){
+    const url=(document.getElementById('wizUrl').value||'').trim();
+    if(!url){alert('Enter a base URL first');return;}
+  }else if(_wSource==='file'){
+    if(!_wFileText){alert('Select a file first');return;}
+  }
+  wizGo(2);
+  wizStep2Discover();
+}
+
+// ── File handling ───────────────────────────────────────────────────────────
+
+function wizDetectFormat(name,text){
+  const ext=(name.split('.').pop()||'').toLowerCase();
+  if(ext==='har') return 'har';
+  if(ext==='wsdl'||ext==='xml') return 'wsdl';
+  if(ext==='apib') return 'apib';
+  if(ext==='raml') return 'raml';
+  if(ext==='yaml'||ext==='yml'){
+    return text.includes('#%RAML')?'raml':'raml';
+  }
+  if(ext==='md') return 'apib';
+  if(ext==='json'){
+    try{
+      const obj=JSON.parse(text);
+      if(obj.log&&obj.log.entries) return 'har';
+      if(obj.info&&(obj.info.schema||'').includes('postman')) return 'postman';
+      if(obj.openapi||obj.swagger||obj.paths) return 'openapi';
+      return 'postman'; // best guess
+    }catch{return 'postman';}
+  }
+  return 'postman';
+}
+
+function wizHandleFile(input){
   const file=input.files[0];
   if(!file)return;
   const reader=new FileReader();
-  reader.onload=async e=>{
-    try{
-      const col=JSON.parse(e.target.result);
-      const res=await fetch('/discover/postman',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({collection:col})});
-      const data=await res.json();
-      _discoveredEps=data.endpoints||[];
-      renderDiscoveryTable(_discoveredEps);
-      showDiscoverMsg(`Loaded ${_discoveredEps.length} endpoints from ${file.name}`,'ok');
-    }catch(err){
-      showDiscoverMsg('Parse error: '+err.message,'error');
-    }
+  reader.onload=e=>{
+    _wFileText=e.target.result;
+    _wFileName=file.name;
+    _wFileFormat=wizDetectFormat(file.name,_wFileText);
+    const label=document.getElementById('wizFileLabel');
+    if(label) label.textContent=`${file.name} — detected: ${_wFileFormat.toUpperCase()}`;
   };
   reader.readAsText(file);
 }
 
-// Drag-and-drop on the drop zone
-(function(){
-  const zone=document.getElementById('discDropZone');
+// Drop zone wiring (set up after DOM ready via DOMContentLoaded)
+document.addEventListener('DOMContentLoaded',()=>{
+  const zone=document.getElementById('wizDropZone');
   if(!zone)return;
-  zone.addEventListener('click',()=>document.getElementById('discFileInput').click());
+  zone.addEventListener('click',()=>document.getElementById('wizFileInput').click());
   zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('drag-over')});
   zone.addEventListener('dragleave',()=>zone.classList.remove('drag-over'));
   zone.addEventListener('drop',e=>{
     e.preventDefault();zone.classList.remove('drag-over');
     const file=e.dataTransfer.files[0];
-    if(file){const dt=new DataTransfer();dt.items.add(file);document.getElementById('discFileInput').files=dt.files;discoverPostmanFromFile(document.getElementById('discFileInput'));}
+    if(file){
+      const dt=new DataTransfer();dt.items.add(file);
+      document.getElementById('wizFileInput').files=dt.files;
+      wizHandleFile(document.getElementById('wizFileInput'));
+    }
   });
-})();
+});
 
-async function discoverUrl(){
-  const url=document.getElementById('discUrl').value.trim();
-  const token=document.getElementById('discToken').value.trim();
-  if(!url){showDiscoverMsg('Enter a base URL first','error');return;}
-  _discSetBusy('discScanBtn',true);
+// ── Step 2: Discover ────────────────────────────────────────────────────────
+
+function wiz2SetProgress(text,done){
+  const spinner=document.querySelector('#wiz2Progress .wiz-spinner');
+  const txt=document.getElementById('wiz2ProgressText');
+  if(txt) txt.textContent=text;
+  if(spinner) spinner.style.display=done?'none':'';
+}
+
+function wiz2ShowBadge(text){
+  const el=document.getElementById('wiz2Badge');
+  if(!el)return;
+  el.innerHTML=`<span class="wiz2-badge">${_esc(text)}</span>`;
+  el.style.display='';
+}
+
+function wiz2ShowError(msg){
+  const el=document.getElementById('wiz2Error');
+  if(el){el.textContent=msg;el.style.display='';}
+}
+
+async function wizStep2Discover(){
+  document.getElementById('wiz2Badge').style.display='none';
+  document.getElementById('wiz2AuthBanner').style.display='none';
+  document.getElementById('wiz2SloWrap').style.display='none';
+  document.getElementById('wiz2Error').style.display='none';
+  document.getElementById('wiz2NextBtn').disabled=true;
+  _wDiscoveredEps=[];
+  _wDiscoverSource='';
+  _wDetectedAuth=null;
+  _wSloBaseline={};
+
   try{
-    const res=await fj(`/discover/url?url=${encodeURIComponent(url)}&token=${encodeURIComponent(token)}`);
-    if(res.error&&!res.endpoints?.length){showDiscoverMsg(res.error,'error');return;}
-    _discoveredEps=res.endpoints||[];
-    renderDiscoveryTable(_discoveredEps);
-    showDiscoverMsg(`Found ${_discoveredEps.length} endpoints via ${res.source} (${res.source_url||url})`,'ok');
+    if(_wSource==='url'){
+      await wizDiscoverUrl();
+    }else if(_wSource==='file'){
+      await wizDiscoverFile();
+    }else{
+      // manual — skip straight to review
+      wiz2SetProgress('Ready — endpoints added manually',true);
+      document.getElementById('wiz2NextBtn').disabled=false;
+      return;
+    }
+
+    // Assign weights
+    _wDiscoveredEps.forEach((ep,i)=>{
+      if(ep.weight===1||ep.weight===undefined){
+        const path=(ep.path||'/').toLowerCase();
+        const method=(ep.method||'GET').toUpperCase();
+        const type=ep.type||'rest';
+        const _HEALTH=['/','\/health','/healthz','/ping','/status','/api'];
+        if(_HEALTH.includes(path)) ep.weight=0;
+        else if(type==='graphql') ep.weight=ep.group==='mutation'?1:3;
+        else if(method==='GET') ep.weight=3;
+        else if(['POST','PUT','PATCH'].includes(method)) ep.weight=2;
+        else if(method==='DELETE') ep.weight=1;
+      }
+    });
+
+    _wOriginalEps=JSON.parse(JSON.stringify(_wDiscoveredEps));
+    wiz3RenderTable(_wDiscoveredEps);
+    wiz2SetProgress(`Found ${_wDiscoveredEps.length} endpoint${_wDiscoveredEps.length===1?'':'s'}`,true);
+    wiz2ShowBadge(_wDiscoverSource);
+    document.getElementById('wiz2NextBtn').disabled=false;
+
   }catch(err){
-    showDiscoverMsg('Scan error: '+err.message,'error');
-  }finally{
-    _discSetBusy('discScanBtn',false);
+    wiz2SetProgress('Discovery failed',true);
+    wiz2ShowError(err.message||String(err));
   }
 }
 
-function discoverManualAdd(){
-  const name=(document.getElementById('discManualName').value||'').trim();
-  const path=(document.getElementById('discManualPath').value||'').trim();
-  const type=document.getElementById('discManualType').value;
-  const group=(document.getElementById('discManualGroup').value||'default').trim();
-  const weight=parseInt(document.getElementById('discManualWeight').value)||1;
-  if(!name||!path){showDiscoverMsg('Name and Path are required','error');return;}
-  const ep=type==='graphql'
-    ?{name,group,type:'graphql',path,weight,query:'',variables:{},checks:{status:200,no_graphql_errors:true,has_data:true}}
-    :{name,group,type:'rest',method:'GET',path,weight,body:null,checks:{status:200}};
-  _discoveredEps=[..._discoveredEps,ep];
-  renderDiscoveryTable(_discoveredEps);
-  // clear form
-  ['discManualName','discManualPath','discManualGroup'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('discManualWeight').value='1';
-  showDiscoverMsg(`Added "${name}" to preview`,'ok');
+async function wizDiscoverUrl(){
+  const url=(document.getElementById('wizUrl').value||'').trim().replace(/\/+$/,'');
+  const token=(document.getElementById('wizToken').value||'').trim();
+
+  wiz2SetProgress('Probing OpenAPI / Swagger…');
+  const res=await fj(`/discover/url?url=${encodeURIComponent(url)}&token=${encodeURIComponent(token)}`);
+  if(res.error&&!(res.endpoints||[]).length) throw new Error(res.error);
+
+  _wDiscoveredEps=res.endpoints||[];
+  _wDiscoverSource=`${(res.source||'unknown').toUpperCase()} · ${_wDiscoveredEps.length} endpoints`;
+
+  // Detect auth from OpenAPI spec (re-fetch for auth info)
+  if(res.source==='openapi'&&res.source_url){
+    try{
+      const spec=await fj(res.source_url);
+      const auth=await fetch('/discover/url',{method:'GET'});  // reuse via spec directly
+      // Try to detect auth from securitySchemes in the fetched spec
+      const schemes=(spec&&spec.components&&spec.components.securitySchemes)||{};
+      const swaggerSchemes=(spec&&spec.securityDefinitions)||{};
+      const allSchemes={...schemes,...swaggerSchemes};
+      for(const[,s] of Object.entries(allSchemes)){
+        if(!s||typeof s!=='object') continue;
+        const t=(s.type||'').toLowerCase();
+        if(t==='http'&&(s.scheme||'').toLowerCase()==='bearer'){_wDetectedAuth={type:'bearer',header:'Authorization'};break;}
+        if(t==='apikey'&&s.in==='header'){_wDetectedAuth={type:'apiKey',header:s.name||'X-API-Key'};break;}
+        if(t==='oauth2'){_wDetectedAuth={type:'bearer',header:'Authorization'};break;}
+      }
+    }catch{}
+  }
+
+  if(_wDetectedAuth){
+    const banner=document.getElementById('wiz2AuthBanner');
+    const txt=document.getElementById('wiz2AuthText');
+    if(txt) txt.textContent=`${_wDetectedAuth.type} auth detected (${_wDetectedAuth.header})`;
+    if(banner) banner.style.display='flex';
+  }
+
+  // Baseline SLO probe
+  if(_wDiscoveredEps.length){
+    wiz2SetProgress('Running baseline SLO probe…');
+    try{
+      const slo=await fj(`/discover/slos?url=${encodeURIComponent(url)}&token=${encodeURIComponent(token)}`);
+      _wSloBaseline=slo;
+      if(slo.p95_ms!==null&&slo.p95_ms!==undefined){
+        document.getElementById('wiz2SloP95').textContent=slo.p95_ms+'ms';
+        document.getElementById('wiz2SloErr').textContent=((slo.error_rate||0)*100).toFixed(1)+'%';
+        document.getElementById('wiz2SloApdex').textContent=(slo.apdex_score||0).toFixed(2);
+        document.getElementById('wiz2SloSampleCount').textContent='sampled GET endpoints';
+        document.getElementById('wiz2SloWrap').style.display='';
+        // Pre-fill step 4 SLOs
+        if(slo.p95_ms) document.getElementById('wiz4SloP95').value=Math.ceil(slo.p95_ms*2);
+        document.getElementById('wiz4SloErr').value=(Math.max(slo.error_rate||0,0.01)).toFixed(3);
+      }
+    }catch{}
+  }
 }
 
-async function saveDiscoveredEndpoints(){
-  const checked=[...document.querySelectorAll('.disc-chk:checked')].map(c=>+c.dataset.idx);
-  const selected=checked.map(i=>_discoveredEps[i]).filter(Boolean);
-  if(!selected.length){showDiscoverMsg('Select at least one endpoint','error');return;}
-  const mode=document.querySelector('input[name="discMode"]:checked')?.value||'replace';
-  _discSetBusy('discSaveBtn',true);
-  try{
-    let config;
-    if(mode==='merge'){
-      const existing=await fj('/config/endpoints');
-      config={...existing,endpoints:[...(existing.endpoints||[]),...selected]};
-    }else{
-      config={service:'Discovered',endpoints:selected,setup:[],teardown:[]};
+async function wizDiscoverFile(){
+  const fmt=_wFileFormat;
+  wiz2SetProgress(`Parsing ${fmt.toUpperCase()}…`);
+  let result;
+
+  if(fmt==='har'){
+    let har;
+    try{har=JSON.parse(_wFileText);}catch{throw new Error('Invalid JSON in HAR file');}
+    const r=await fetch('/discover/har',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({har})});
+    result=await r.json();
+  }else if(fmt==='wsdl'){
+    const r=await fetch('/discover/wsdl',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({wsdl:_wFileText})});
+    result=await r.json();
+  }else if(fmt==='apib'){
+    const r=await fetch('/discover/api-blueprint',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({blueprint:_wFileText})});
+    result=await r.json();
+  }else if(fmt==='raml'){
+    const r=await fetch('/discover/raml',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({raml:_wFileText})});
+    result=await r.json();
+  }else if(fmt==='openapi'){
+    let spec;
+    try{spec=JSON.parse(_wFileText);}catch{throw new Error('Invalid JSON in OpenAPI file');}
+    // Detect auth from spec
+    const schemes=(spec.components&&spec.components.securitySchemes)||spec.securityDefinitions||{};
+    for(const[,s] of Object.entries(schemes)){
+      if(!s) continue;
+      const t=(s.type||'').toLowerCase();
+      if(t==='http'&&(s.scheme||'').toLowerCase()==='bearer'){_wDetectedAuth={type:'bearer',header:'Authorization'};break;}
+      if(t==='apikey'&&s.in==='header'){_wDetectedAuth={type:'apiKey',header:s.name||'X-API-Key'};break;}
     }
+    // Use existing URL discovery via postman route or parse locally
+    const r=await fetch('/discover/postman',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({collection:spec})});
+    const raw=await r.json();
+    // If postman parse returns nothing fall back to treating paths directly
+    if(raw.endpoints&&raw.endpoints.length){
+      result=raw;
+    }else{
+      // parse openapi locally via URL discover endpoint using a data: approach is not feasible;
+      // send to a hypothetical /discover/openapi or just return raw
+      result={endpoints:[],error:'Could not parse as Postman — try URL Scan for OpenAPI'};
+    }
+  }else{
+    // Postman
+    let col;
+    try{col=JSON.parse(_wFileText);}catch{throw new Error('Invalid JSON in Postman file');}
+    const r=await fetch('/discover/postman',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({collection:col})});
+    result=await r.json();
+  }
+
+  if(result.error&&!(result.endpoints||[]).length) throw new Error(result.error);
+  _wDiscoveredEps=result.endpoints||[];
+  _wDiscoverSource=`${fmt.toUpperCase()} · ${_wFileName} · ${_wDiscoveredEps.length} endpoints`;
+
+  if(_wDetectedAuth){
+    const txt=document.getElementById('wiz2AuthText');
+    if(txt) txt.textContent=`${_wDetectedAuth.type} auth detected`;
+    document.getElementById('wiz2AuthBanner').style.display='flex';
+  }
+}
+
+// ── Step 3: Review table ─────────────────────────────────────────────────────
+
+function wiz3RenderTable(eps){
+  _wDiscoveredEps=eps;
+  const count=document.getElementById('wiz3Count');
+  const empty=document.getElementById('wiz3Empty');
+  const table=document.getElementById('wiz3Table');
+  const tbody=document.getElementById('wiz3TableBody');
+  const sa=document.getElementById('wiz3SelectAll');
+
+  if(count) count.textContent=eps.length+' endpoint'+(eps.length===1?'':'s');
+  if(!eps.length){
+    if(empty) empty.style.display='';
+    if(table) table.style.display='none';
+    return;
+  }
+  if(empty) empty.style.display='none';
+  if(table) table.style.display='';
+  if(sa) sa.checked=true;
+
+  tbody.innerHTML=eps.map((ep,i)=>{
+    const tc=ep.type==='graphql'?'disc-type-graphql':'disc-type-rest';
+    const method=ep.method||'POST';
+    const bodyPreview=ep.body?JSON.stringify(ep.body).slice(0,40):'—';
+    const bodyAttr=ep.body?`data-body="${_esc(JSON.stringify(ep.body))}"`:'' ;
+    return `<tr id="wiz3-row-${i}">
+      <td><input type="checkbox" class="wiz3-chk" data-idx="${i}" checked></td>
+      <td style="font-weight:600;color:var(--text)">${_esc(ep.name)}</td>
+      <td style="color:var(--muted);font-size:10px">${_esc(ep.path)}</td>
+      <td><span class="disc-type-chip ${tc}">${ep.type}</span></td>
+      <td style="font-size:10px;color:var(--muted)">${ep.type==='rest'?_esc(method):'—'}</td>
+      <td><input type="text" value="${_esc(ep.group||'')}" onchange="wiz3UpdateEp(${i},'group',this.value)"></td>
+      <td><input type="number" value="${ep.weight??1}" min="0" onchange="wiz3UpdateEp(${i},'weight',+this.value)"></td>
+      <td><span class="wiz3-body-preview" ${bodyAttr} onclick="wiz3EditBody(${i},this)" title="Click to edit">${_esc(bodyPreview)}</span></td>
+      <td><button class="disc-remove-btn" onclick="wiz3RemoveEp(${i})" title="Remove">✕</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function wiz3UpdateEp(idx,field,val){if(_wDiscoveredEps[idx])_wDiscoveredEps[idx][field]=val;}
+
+function wiz3RemoveEp(idx){
+  _wDiscoveredEps.splice(idx,1);
+  wiz3RenderTable(_wDiscoveredEps);
+}
+
+function wiz3ToggleAll(checked){
+  document.querySelectorAll('.wiz3-chk').forEach(c=>c.checked=checked);
+}
+
+function wizResetToDiscovered(){
+  _wDiscoveredEps=JSON.parse(JSON.stringify(_wOriginalEps));
+  wiz3RenderTable(_wDiscoveredEps);
+}
+
+function wiz3EditBody(idx,el){
+  const ep=_wDiscoveredEps[idx];
+  if(!ep)return;
+  const current=ep.body?JSON.stringify(ep.body,null,2):'';
+  const ta=document.createElement('textarea');
+  ta.className='wiz3-body-edit';
+  ta.value=current;
+  ta.onblur=()=>{
+    try{
+      ep.body=ta.value?JSON.parse(ta.value):null;
+      const preview=ep.body?JSON.stringify(ep.body).slice(0,40):'—';
+      el.textContent=preview;
+      el.style.display='';
+      ta.remove();
+    }catch{}
+  };
+  el.style.display='none';
+  el.parentNode.insertBefore(ta,el);
+  ta.focus();
+}
+
+// ── Step 4: Profile ──────────────────────────────────────────────────────────
+
+function wizSetProfile(name,btn){
+  _wProfile=name;
+  document.querySelectorAll('[id^=wiz4Btn]').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ── Step 5: Summary ──────────────────────────────────────────────────────────
+
+function wizBuildSummary(){
+  const checked=[...document.querySelectorAll('.wiz3-chk:checked')].map(c=>+c.dataset.idx);
+  const selected=checked.map(i=>_wDiscoveredEps[i]).filter(Boolean);
+  const url=(document.getElementById('wiz4BaseUrl').value||document.getElementById('wizUrl').value||'').trim();
+  const authMode=document.getElementById('wiz4AuthMode').value;
+  const p95=document.getElementById('wiz4SloP95').value;
+  const p99=document.getElementById('wiz4SloP99').value;
+  const hookCount=document.querySelectorAll('.wiz-hook-row').length;
+
+  const serviceName=(document.getElementById('wiz6ServiceName').value||'').trim()||wizDeriveServiceName();
+  const rows=[
+    ['Config name', serviceName],
+    ['Endpoints',`${selected.length} selected`],
+    ['Source',_wDiscoverSource||_wSource],
+    ['Base URL',url||'(not set)'],
+    ['Profile',_wProfile.toUpperCase()],
+    ['Auth',authMode==='none'?'None':authMode],
+    ['p95 SLO',p95?p95+'ms':'(not set)'],
+    ['p99 SLO',p99?p99+'ms':'(not set)'],
+    ['Notifications',hookCount?`${hookCount} configured`:'None'],
+  ];
+
+  const el=document.getElementById('wiz5Summary');
+  if(el) el.innerHTML=rows.map(([l,v])=>`<div class="wiz5-row"><span class="wiz5-label">${l}</span><span class="wiz5-val">${_esc(String(v))}</span></div>`).join('');
+}
+
+function wizDeriveServiceName(){
+  if(_wSource==='file'&&_wFileName){
+    // strip extension(s), replace separators with spaces, title-case
+    return _wFileName.replace(/\.[^.]+$/, '').replace(/[-_.]+/g,' ').trim() || 'discovered';
+  }
+  if(_wSource==='url'){
+    try{
+      const u=new URL(document.getElementById('wizUrl').value||'');
+      return u.hostname.replace(/^www\./,'') || 'discovered';
+    }catch{}
+  }
+  return 'discovered';
+}
+
+async function wizGetSelectedConfig(){
+  const checked=[...document.querySelectorAll('.wiz3-chk:checked')].map(c=>+c.dataset.idx);
+  const selected=checked.map(i=>_wDiscoveredEps[i]).filter(Boolean);
+  if(!selected.length) throw new Error('Select at least one endpoint');
+  const mode=document.querySelector('input[name="wizMode"]:checked')?.value||'replace';
+  const serviceName=(document.getElementById('wiz6ServiceName').value||'').trim()||wizDeriveServiceName();
+  let config;
+  if(mode==='merge'){
+    const existing=await fj('/config/endpoints');
+    config={...existing,service:serviceName,endpoints:[...(existing.endpoints||[]),...selected]};
+  }else{
+    config={service:serviceName,endpoints:selected,setup:[],teardown:[]};
+  }
+  return config;
+}
+
+function wizReset(){
+  _wStep=1;
+  _wSource='url';
+  _wDiscoveredEps=[];
+  _wOriginalEps=[];
+  _wFileText='';
+  _wFileName='';
+  _wFileFormat='';
+  _wProfile='smoke';
+  _wSloBaseline={};
+  _wDetectedAuth=null;
+  _wDiscoverSource='';
+  _wNotifProvider='webhook';
+  // Reset source card selection
+  document.querySelectorAll('.wiz-source-card').forEach(c=>c.classList.remove('selected'));
+  const srcUrl=document.getElementById('wizSrcUrl');
+  if(srcUrl) srcUrl.classList.add('selected');
+  document.getElementById('wizSrcUrlFields').style.display='';
+  document.getElementById('wizSrcFileFields').style.display='none';
+  document.getElementById('wizSrcManualFields').style.display='none';
+  // Reset profile buttons
+  document.querySelectorAll('[id^=wiz4Btn]').forEach(b=>b.classList.remove('active'));
+  const smokeBtn=document.getElementById('wiz4BtnSmoke');
+  if(smokeBtn) smokeBtn.classList.add('active');
+  // Clear inputs
+  ['wizUrl','wizToken','wiz4BaseUrl','wiz6ServiceName'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('wiz2NextBtn').disabled=true;
+  document.getElementById('wiz2Badge').style.display='none';
+  document.getElementById('wiz2AuthBanner').style.display='none';
+  document.getElementById('wiz2SloWrap').style.display='none';
+  document.getElementById('wiz2Error').style.display='none';
+  wiz2SetProgress('Initialising…');
+  wiz3RenderTable([]);
+  wizShowMsg('','ok');
+  wizGo(1);
+}
+
+async function wizLoadFromSaved(){
+  try{
+    const cfg=await fj('/config/endpoints');
+    const eps=cfg.endpoints||[];
+    if(!eps.length){alert('No saved endpoints found in endpoints.json');return;}
+    _wDiscoveredEps=eps;
+    _wOriginalEps=JSON.parse(JSON.stringify(eps));
+    _wDiscoverSource=`Saved config · ${cfg.service||'endpoints.json'} · ${eps.length} endpoints`;
+    _wSource='saved';
+    // Pre-fill service name
+    const sn=document.getElementById('wiz6ServiceName');
+    if(sn&&cfg.service) sn.value=cfg.service;
+    wiz3RenderTable(eps);
+    wizGo(3);
+  }catch(err){
+    alert('Could not load saved config: '+err.message);
+  }
+}
+
+async function wizApplyRunConfig(){
+  const url=(document.getElementById('wiz4BaseUrl').value||document.getElementById('wizUrl').value||'').trim();
+  const vus=parseInt(document.getElementById('wiz4Vus').value)||10;
+  const dur=parseInt(document.getElementById('wiz4Duration').value)||60;
+  const profile=_wProfile;
+  const p95=document.getElementById('wiz4SloP95').value;
+  const p99=document.getElementById('wiz4SloP99').value;
+  const errRate=document.getElementById('wiz4SloErr').value;
+  const checks=document.getElementById('wiz4SloChecks').value;
+
+  // Sync to run tab fields
+  const urlEl=document.getElementById('targetUrl');if(urlEl&&url) urlEl.value=url;
+  const vusEl=document.getElementById('vus');if(vusEl) vusEl.value=vus;
+  const durEl=document.getElementById('duration');if(durEl) durEl.value=dur;
+  setProfile(profile);
+  if(p95){const el=document.getElementById('sloP95');if(el) el.value=p95;}
+  if(p99){const el=document.getElementById('sloP99');if(el) el.value=p99;}
+  if(errRate){const el=document.getElementById('sloErrRate');if(el) el.value=errRate;}
+  if(checks){const el=document.getElementById('sloChecks');if(el) el.value=checks;}
+}
+
+async function wizSaveOnly(){
+  const btn=document.getElementById('wizSaveOnlyBtn');
+  if(btn) btn.disabled=true;
+  try{
+    const config=await wizGetSelectedConfig();
     const r=await fetch('/endpoints/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(config)});
     const data=await r.json();
     if(data.ok){
-      showDiscoverMsg(`Saved ${selected.length} endpoints to endpoints.json`,'ok');
+      wizShowMsg(`Saved ${config.endpoints.length} endpoints to endpoints.json`,'ok');
       loadEndpointConfig();
     }else{
-      showDiscoverMsg('Save failed','error');
+      wizShowMsg('Save failed','error');
     }
   }catch(err){
-    showDiscoverMsg('Save error: '+err.message,'error');
+    wizShowMsg('Save error: '+err.message,'error');
   }finally{
-    _discSetBusy('discSaveBtn',false);
+    if(btn) btn.disabled=false;
   }
 }
+
+async function wizSaveAndRun(){
+  const btn=document.getElementById('wizSaveRunBtn');
+  if(btn) btn.disabled=true;
+  try{
+    const config=await wizGetSelectedConfig();
+    const r=await fetch('/endpoints/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(config)});
+    const data=await r.json();
+    if(!data.ok) throw new Error('Save failed');
+    loadEndpointConfig();
+    await wizApplyRunConfig();
+    // Start run
+    await fetch('/run/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({})});
+    showTab('overview');
+  }catch(err){
+    wizShowMsg('Error: '+err.message,'error');
+    if(btn) btn.disabled=false;
+  }
+}
+
+// ── Manual add (step 1 manual source) ───────────────────────────────────────
+
+function wizManualAdd(){
+  const name=(document.getElementById('wizManualName').value||'').trim();
+  const path=(document.getElementById('wizManualPath').value||'').trim();
+  const method=document.getElementById('wizManualMethod').value||'GET';
+  const type=document.getElementById('wizManualType').value||'rest';
+  const group=(document.getElementById('wizManualGroup').value||'api').trim();
+  const weight=parseInt(document.getElementById('wizManualWeight').value)||1;
+  if(!name||!path){alert('Name and Path are required');return;}
+  const ep=type==='graphql'
+    ?{name,group,type:'graphql',path,weight,query:'',variables:{},checks:{status:200,no_graphql_errors:true,has_data:true}}
+    :{name,group,type:'rest',method,path,weight,body:null,checks:{status:200}};
+  _wDiscoveredEps=[..._wDiscoveredEps,ep];
+  _wOriginalEps=JSON.parse(JSON.stringify(_wDiscoveredEps));
+  ['wizManualName','wizManualPath','wizManualGroup'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('wizManualWeight').value='1';
+  const list=document.getElementById('wizManualList');
+  if(list) list.innerHTML=_wDiscoveredEps.map((e,i)=>`<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--border)"><span style="color:var(--text)">${_esc(e.name)} <span style="color:var(--muted)">${e.method||''} ${e.path}</span></span><button class="disc-remove-btn" onclick="wizManualRemove(${i})">✕</button></div>`).join('');
+}
+
+function wizManualRemove(idx){
+  _wDiscoveredEps.splice(idx,1);
+  _wOriginalEps=JSON.parse(JSON.stringify(_wDiscoveredEps));
+  const list=document.getElementById('wizManualList');
+  if(list){
+    if(_wDiscoveredEps.length){
+      list.innerHTML=_wDiscoveredEps.map((e,i)=>`<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--border)"><span style="color:var(--text)">${_esc(e.name)} <span style="color:var(--muted)">${e.method||''} ${e.path}</span></span><button class="disc-remove-btn" onclick="wizManualRemove(${i})">✕</button></div>`).join('');
+    }else{
+      list.textContent='No endpoints added yet';
+    }
+  }
+}
+
+function wizToggleSlo(){
+  const body=document.getElementById('wiz2SloBody');
+  const icon=document.getElementById('wiz2SloToggleIcon');
+  if(!body) return;
+  const open=body.classList.toggle('open');
+  if(icon) icon.textContent=open?'▾':'▸';
+}
+
+// ── Notification provider picker ────────────────────────────────────────────
+
+let _wNotifProvider='webhook';
+
+const _WIZ_NOTIF_PROVIDERS={
+  webhook:{
+    placeholder:'https://your-server.example.com/webhook',
+    hint:'',
+  },
+  slack:{
+    placeholder:'https://hooks.slack.com/services/T…/B…/…',
+    hint:'Create an Incoming Webhook in your Slack workspace → App settings → Incoming Webhooks',
+  },
+  teams:{
+    placeholder:'https://your-org.webhook.office.com/webhookb2/…',
+    hint:'Add a "Incoming Webhook" connector in your Teams channel → Manage channel → Connectors',
+  },
+  discord:{
+    placeholder:'https://discord.com/api/webhooks/…/…',
+    hint:'Server Settings → Integrations → Webhooks → New Webhook → Copy Webhook URL',
+  },
+  pagerduty:{
+    placeholder:'https://events.pagerduty.com/v2/enqueue',
+    hint:'Use your PagerDuty Events API v2 integration key as the signing secret below',
+  },
+};
+
+function wizNotifSelectProvider(id,el){
+  _wNotifProvider=id;
+  document.querySelectorAll('.wiz-notif-provider').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  const cfg=_WIZ_NOTIF_PROVIDERS[id]||{};
+  const urlEl=document.getElementById('whUrl');
+  if(urlEl) urlEl.placeholder=cfg.placeholder||'https://…';
+  const hint=document.getElementById('wiz5ProvHint');
+  if(hint){
+    hint.textContent=cfg.hint||'';
+    hint.classList.toggle('visible',!!(cfg.hint));
+  }
+}
+
+// Pre-fill step 4 base URL when wizUrl changes
+document.addEventListener('DOMContentLoaded',()=>{
+  const wizUrlEl=document.getElementById('wizUrl');
+  if(wizUrlEl) wizUrlEl.addEventListener('change',()=>{
+    const base=document.getElementById('wiz4BaseUrl');
+    if(base&&!base.value) base.value=wizUrlEl.value;
+  });
+  // Pre-fill auth mode from detected auth when entering step 4
+  const step4=document.getElementById('wizPane4');
+  if(step4){
+    const observer=new MutationObserver(()=>{
+      if(step4.classList.contains('active')&&_wDetectedAuth){
+        const am=document.getElementById('wiz4AuthMode');
+        if(am) am.value=_wDetectedAuth.type==='apiKey'?'apiKey':_wDetectedAuth.type;
+      }
+    });
+    observer.observe(step4,{attributes:true,attributeFilter:['class']});
+  }
+});
 
 /* ══════════════════════════════════════════════════════════════════
    ENVIRONMENT PROFILES (Feature 1)
@@ -3411,34 +4192,43 @@ async function loadWebhooks() {
     const hooks = await fj('/webhooks');
     const list = document.getElementById('webhookList');
     if (!list) return;
-    if (!hooks.length) { list.innerHTML = '<div style="font-size:10px;color:var(--muted)">No webhooks configured</div>'; return; }
+    if (!hooks.length) {
+      list.innerHTML = '<div class="wiz-notif-empty">No notifications configured yet</div>';
+      return;
+    }
     list.innerHTML = hooks.map(h => `
-      <div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--surface);border:1px solid var(--border);border-radius:2px;margin-bottom:4px;font-size:10px">
-        <span style="color:var(--accent);font-weight:bold;flex:0 0 auto">${h.name||'webhook'}</span>
-        <span style="color:var(--muted);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${h.url}</span>
-        <span style="color:var(--muted)">${(h.events||[]).join(', ')}</span>
-        <button onclick="testWebhook('${h.id}')" style="background:none;border:1px solid var(--border2);color:var(--muted);font-family:inherit;font-size:9px;padding:2px 6px;cursor:pointer;border-radius:2px">test</button>
-        <button onclick="deleteWebhook('${h.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px">✕</button>
+      <div class="wiz-hook-row">
+        <span class="wiz-hook-name" title="${_esc(h.name||'webhook')}">${_esc(h.name||'webhook')}</span>
+        <span class="wiz-hook-url" title="${_esc(h.url)}">${_esc(h.url)}</span>
+        <span class="wiz-hook-events">${(h.events||[]).join(', ')}</span>
+        <div class="wiz-hook-actions">
+          <button class="wiz-hook-test" onclick="testWebhook('${h.id}')">test</button>
+          <button class="wiz-hook-del" onclick="deleteWebhook('${h.id}')" title="Delete">✕</button>
+        </div>
       </div>`).join('');
   } catch {}
 }
 
-async function addWebhook() {
+async function wizAddNotification() {
   const name = document.getElementById('whName').value.trim();
   const url  = document.getElementById('whUrl').value.trim();
-  if (!url) return;
+  if (!url) { wizShowMsg('Webhook URL is required', 'error'); return; }
   const events = [];
   if (document.getElementById('whEvtFinished').checked) events.push('run.finished');
   if (document.getElementById('whEvtFailed').checked)   events.push('run.failed');
   if (document.getElementById('whEvtSlo').checked)      events.push('slo.breached');
   const secret = document.getElementById('whSecret').value.trim();
   await fetch('/webhooks', { method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({name, url, events, secret: secret||undefined}) });
+    body: JSON.stringify({name: name||_wNotifProvider, url, events, secret: secret||undefined}) });
   document.getElementById('whName').value='';
   document.getElementById('whUrl').value='';
   document.getElementById('whSecret').value='';
   await loadWebhooks();
+  wizShowMsg('Notification added', 'ok');
 }
+
+// Keep addWebhook as alias for backward compat
+async function addWebhook() { return wizAddNotification(); }
 
 async function deleteWebhook(id) {
   await fetch(`/webhooks/${id}`, { method:'DELETE' });
@@ -3447,7 +4237,7 @@ async function deleteWebhook(id) {
 
 async function testWebhook(id) {
   await fetch(`/webhooks/${id}/test`, { method:'POST' });
-  showDiscoverMsg('Test webhook fired', 'ok');
+  wizShowMsg('Test notification fired', 'ok');
 }
 
 /* ══════════════════════════════════════════════════════════════════
@@ -3459,13 +4249,18 @@ async function loadDataFiles() {
     const list = document.getElementById('dataFileList');
     if (!list) return;
     const files = d.files || [];
-    if (!files.length) { list.innerHTML = '<div style="font-size:10px;color:var(--muted)">No data files uploaded</div>'; return; }
+    if (!files.length) {
+      list.innerHTML = '<div style="font-size:10px;color:var(--muted);padding:4px 0">No CSV files uploaded yet</div>';
+      return;
+    }
     list.innerHTML = files.map(f => `
-      <div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--surface);border:1px solid var(--border);border-radius:2px;margin-bottom:4px;font-size:10px">
-        <span style="color:var(--accent);font-weight:bold">${f.name}</span>
-        <span style="color:var(--muted)">${f.row_count||'?'} rows</span>
-        <span style="color:var(--muted);flex:1">${(f.columns||[]).join(', ')}</span>
-        <button onclick="deleteDataFile('${f.name}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px">✕</button>
+      <div class="wiz-hook-row">
+        <span class="wiz-hook-name" title="${_esc(f.name)}">${_esc(f.name)}.csv</span>
+        <span class="wiz-hook-url">${f.row_count||'?'} rows</span>
+        <span class="wiz-hook-events">${(f.columns||[]).slice(0,4).join(', ')}${(f.columns||[]).length>4?'…':''}</span>
+        <div class="wiz-hook-actions">
+          <button class="wiz-hook-del" onclick="deleteDataFile('${_esc(f.name)}')" title="Delete">✕</button>
+        </div>
       </div>`).join('');
   } catch {}
 }
@@ -3473,13 +4268,13 @@ async function loadDataFiles() {
 async function uploadDataFile(input) {
   const file = input.files[0];
   if (!file) return;
-  const name = document.getElementById('dataFileName').value.trim() || file.name.replace('.csv','');
+  const name = (document.getElementById('dataFileName').value||'').trim() || file.name.replace(/\.csv$/i,'');
   const content = await file.text();
   await fetch('/data/upload', { method:'POST', headers:{'Content-Type':'application/json'},
     body: JSON.stringify({name, content}) });
   document.getElementById('dataFileName').value='';
   await loadDataFiles();
-  showDiscoverMsg(`Uploaded ${file.name} as "${name}"`, 'ok');
+  wizShowMsg(`Uploaded ${file.name} as "${name}"`, 'ok');
 }
 
 async function deleteDataFile(name) {
@@ -3487,8 +4282,8 @@ async function deleteDataFile(name) {
   await loadDataFiles();
 }
 
-// Wire up data drop zone
-(function(){
+// Wire up data drop zone (after DOM ready — element lives inside the wizard now)
+document.addEventListener('DOMContentLoaded', () => {
   const zone = document.getElementById('dataDropZone');
   if (!zone) return;
   zone.addEventListener('click', () => document.getElementById('dataFileInput').click());
@@ -3499,7 +4294,7 @@ async function deleteDataFile(name) {
     const file = e.dataTransfer.files[0];
     if (file) { const dt = new DataTransfer(); dt.items.add(file); document.getElementById('dataFileInput').files = dt.files; uploadDataFile(document.getElementById('dataFileInput')); }
   });
-})();
+});
 
 /* ══════════════════════════════════════════════════════════════════
    BOOT

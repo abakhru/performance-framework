@@ -1,12 +1,16 @@
-FROM grafana/k6:latest AS k6base
+FROM grafana/k6:1.6.1 AS k6base
 
 FROM python:3.12-slim
 
-# Copy k6 binary from official image
 COPY --from=k6base /usr/bin/k6 /usr/bin/k6
+
+# Install deps first — this layer is cached until pyproject.toml/uv.lock changes
+COPY pyproject.toml uv.lock ./
+RUN pip install --no-cache-dir uv && uv sync --no-dev --frozen
 
 WORKDIR /tests
 
+# Copy source last — invalidates only when code changes
 COPY k6/ ./k6/
 COPY dashboard/ ./dashboard/
 

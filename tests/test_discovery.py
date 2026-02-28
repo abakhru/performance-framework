@@ -1,8 +1,8 @@
 """
 test_discovery.py — Unit tests for dashboard/discovery.py
 
-Issue: Modularization of server.py
-Tests cover Postman parsing, OpenAPI conversion, REST probing, and UA headers.
+Covers Postman parsing, OpenAPI conversion, HAR/WSDL/API Blueprint/RAML parsers,
+auth detection, weight assignment, schema stubs, and SLO baseline probe.
 """
 
 import sys
@@ -199,3 +199,319 @@ class TestProbeRestEndpoints:
         assert result[0]["path"] == "/api"
         assert result[0]["type"] == "rest"
         assert result[0]["method"] == "GET"
+
+
+# ── parse_har ──────────────────────────────────────────────────────────────────
+
+
+class TestParseHar:
+    def test_parse_har_basic(self):
+        """Mixed GET/POST requests are extracted with correct method and path."""
+        har = {
+            "log": {
+                "entries": [
+                    {"request": {"method": "GET", "url": "https://api.example.com/users"}},
+                    {"request": {"method": "POST", "url": "https://api.example.com/users", "postData": {"text": '{"name":"Alice"}'}}},
+                    {"request": {"method": "GET", "url": "https://api.example.com/orders"}},
+                ]
+            }
+        }
+        result = discovery.parse_har(har)
+        eps = result["endpoints"]
+        assert len(eps) == 3
+        methods = {ep["method"] for ep in eps}
+        assert "GET" in methods and "POST" in methods
+
+    def test_parse_har_deduplicates(self):
+        """Duplicate method+path combinations appear only once."""
+        har = {
+            "log": {
+                "entries": [
+                    {"request": {"method": "GET", "url": "https://api.example.com/items"}},
+                    {"request": {"method": "GET", "url": "https://api.example.com/items"}},
+                ]
+            }
+        }
+        result = discovery.parse_har(har)
+        assert len(result["endpoints"]) == 1
+
+    def test_parse_har_body_from_postdata(self):
+        """JSON postData text is parsed into the body field."""
+        har = {
+            "log": {
+                "entries": [
+                    {
+                        "request": {
+                            "method": "POST",
+                            "url": "https://api.example.com/items",
+                            "postData": {"text": '{"key": "value"}'},
+                        }
+                    }
+                ]
+            }
+        }
+        result = discovery.parse_har(har)
+        ep = result["endpoints"][0]
+        assert ep["body"] == {"key": "value"}
+
+    def test_parse_har_group_from_path(self):
+        """Group is inferred from the first path segment."""
+        har = {
+            "log": {
+                "entries": [
+                    {"request": {"method": "GET", "url": "https://api.example.com/api/v1/users"}},
+                ]
+            }
+        }
+        result = discovery.parse_har(har)
+        assert result["endpoints"][0]["group"] == "api"
+
+
+# ── parse_wsdl ─────────────────────────────────────────────────────────────────
+
+
+class TestParseWsdl:
+    _SAMPLE_WSDL = """<?xml version="1.0"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             name="Calculator">
+  <portType name="CalculatorPortType">
+    <operation name="Add"><input/><output/></operation>
+    <operation name="Subtract"><input/><output/></operation>
+  </portType>
+  <service name="Calculator">
+    <port name="CalculatorPort" binding="tns:CalculatorBinding">
+      <soap:address location="http://example.com/calculator"/>
+    </port>
+  </service>
+</definitions>"""
+
+    def test_parse_wsdl_operations(self):
+        """WSDL with 2 operations produces 2 endpoint dicts."""
+        result = discovery.parse_wsdl(self._SAMPLE_WSDL)
+        eps = result["endpoints"]
+        assert len(eps) == 2
+
+    def test_parse_wsdl_method_is_post(self):
+        """All SOAP operations use POST method."""
+        result = discovery.parse_wsdl(self._SAMPLE_WSDL)
+        assert all(ep["method"] == "POST" for ep in result["endpoints"])
+
+    def test_parse_wsdl_invalid_xml(self):
+        """Invalid XML returns error key rather than raising."""
+        result = discovery.parse_wsdl("not xml at all")
+        assert "error" in result
+        assert result["endpoints"] == []
+
+
+# ── parse_api_blueprint ────────────────────────────────────────────────────────
+
+
+class TestParseApiBlueprint:
+    _SAMPLE = """# My API
+
+# Group Users
+
+## List Users [GET /users]
+
+## Create User [POST /users]
+
+# Group Products
+
+## List Products [GET /products]
+"""
+
+    def test_parse_apib_endpoint_count(self):
+        """3 resource definitions → 3 endpoint dicts."""
+        result = discovery.parse_api_blueprint(self._SAMPLE)
+        assert len(result["endpoints"]) == 3
+
+    def test_parse_apib_methods(self):
+        """GET and POST methods are extracted correctly."""
+        result = discovery.parse_api_blueprint(self._SAMPLE)
+        methods = {ep["method"] for ep in result["endpoints"]}
+        assert "GET" in methods and "POST" in methods
+
+    def test_parse_apib_group_from_path(self):
+        """Group is derived from first path segment."""
+        result = discovery.parse_api_blueprint(self._SAMPLE)
+        groups = {ep["group"] for ep in result["endpoints"]}
+        assert "users" in groups or "products" in groups
+
+
+# ── detect_auth_from_openapi ───────────────────────────────────────────────────
+
+
+class TestDetectAuthFromOpenapi:
+    def test_bearer_scheme(self):
+        """HTTP Bearer securityScheme → type='bearer'."""
+        spec = {
+            "components": {
+                "securitySchemes": {
+                    "BearerAuth": {"type": "http", "scheme": "bearer"}
+                }
+            }
+        }
+        auth = discovery.detect_auth_from_openapi(spec)
+        assert auth is not None
+        assert auth["type"] == "bearer"
+        assert auth["header"] == "Authorization"
+
+    def test_apikey_scheme(self):
+        """API key in header → type='apiKey' with correct header name."""
+        spec = {
+            "components": {
+                "securitySchemes": {
+                    "ApiKeyAuth": {"type": "apiKey", "in": "header", "name": "X-API-Token"}
+                }
+            }
+        }
+        auth = discovery.detect_auth_from_openapi(spec)
+        assert auth is not None
+        assert auth["type"] == "apiKey"
+        assert auth["header"] == "X-API-Token"
+
+    def test_no_schemes(self):
+        """Spec with no securitySchemes returns None."""
+        assert discovery.detect_auth_from_openapi({"openapi": "3.0.0"}) is None
+
+
+# ── assign_weights ─────────────────────────────────────────────────────────────
+
+
+class TestAssignWeights:
+    def test_get_weight(self):
+        """GET endpoints get weight 3."""
+        eps = [{"method": "GET", "path": "/users", "type": "rest"}]
+        result = discovery.assign_weights(eps)
+        assert result[0]["weight"] == 3
+
+    def test_post_weight(self):
+        """POST endpoints get weight 2."""
+        eps = [{"method": "POST", "path": "/users", "type": "rest"}]
+        result = discovery.assign_weights(eps)
+        assert result[0]["weight"] == 2
+
+    def test_delete_weight(self):
+        """DELETE endpoints get weight 1."""
+        eps = [{"method": "DELETE", "path": "/users/1", "type": "rest"}]
+        result = discovery.assign_weights(eps)
+        assert result[0]["weight"] == 1
+
+    def test_health_weight(self):
+        """Health/root paths get weight 0 regardless of method."""
+        eps = [{"method": "GET", "path": "/health", "type": "rest"}]
+        result = discovery.assign_weights(eps)
+        assert result[0]["weight"] == 0
+
+    def test_graphql_query_weight(self):
+        """GraphQL query group gets weight 3."""
+        eps = [{"type": "graphql", "group": "query", "path": "/graphql"}]
+        result = discovery.assign_weights(eps)
+        assert result[0]["weight"] == 3
+
+    def test_graphql_mutation_weight(self):
+        """GraphQL mutation group gets weight 1."""
+        eps = [{"type": "graphql", "group": "mutation", "path": "/graphql"}]
+        result = discovery.assign_weights(eps)
+        assert result[0]["weight"] == 1
+
+
+# ── _schema_to_stub ────────────────────────────────────────────────────────────
+
+
+class TestSchemaToStub:
+    def test_string_type(self):
+        assert discovery._schema_to_stub({"type": "string"}, {}) == ""
+
+    def test_integer_type(self):
+        assert discovery._schema_to_stub({"type": "integer"}, {}) == 0
+
+    def test_boolean_type(self):
+        assert discovery._schema_to_stub({"type": "boolean"}, {}) is False
+
+    def test_array_type(self):
+        result = discovery._schema_to_stub({"type": "array", "items": {"type": "string"}}, {})
+        assert result == [""]
+
+    def test_object_type(self):
+        schema = {
+            "type": "object",
+            "properties": {
+                "name": {"type": "string"},
+                "age": {"type": "integer"},
+            },
+        }
+        result = discovery._schema_to_stub(schema, {})
+        assert result == {"name": "", "age": 0}
+
+    def test_nested_object(self):
+        schema = {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "object",
+                    "properties": {"street": {"type": "string"}},
+                }
+            },
+        }
+        result = discovery._schema_to_stub(schema, {})
+        assert result == {"address": {"street": ""}}
+
+    def test_ref_resolution(self):
+        spec = {
+            "components": {
+                "schemas": {
+                    "Item": {
+                        "type": "object",
+                        "properties": {"id": {"type": "integer"}},
+                    }
+                }
+            }
+        }
+        result = discovery._schema_to_stub({"$ref": "#/components/schemas/Item"}, spec)
+        assert result == {"id": 0}
+
+    def test_email_format(self):
+        result = discovery._schema_to_stub({"type": "string", "format": "email"}, {})
+        assert "@" in result
+
+
+# ── baseline_slo_probe ─────────────────────────────────────────────────────────
+
+
+class TestBaselineSloProbe:
+    def test_probe_returns_p95(self):
+        """Mocked responses produce a valid p95_ms value."""
+        call_count = {"n": 0}
+
+        def fake_get(url, headers, timeout=5):
+            call_count["n"] += 1
+            return 200, b'{"ok":true}'
+
+        with patch.object(discovery, "http_get", side_effect=fake_get):
+            eps = [{"method": "GET", "path": "/health", "weight": 1}]
+            # Override health path weight so it gets sampled
+            result = discovery.baseline_slo_probe("http://example.com", eps, {}, sample=1)
+
+        assert result["p95_ms"] is not None
+        assert result["error_rate"] == 0.0
+        assert 0.0 <= result["apdex_score"] <= 1.0
+
+    def test_probe_no_endpoints_returns_none(self):
+        """No GET endpoints → all None values."""
+        result = discovery.baseline_slo_probe("http://example.com", [], {})
+        assert result["p95_ms"] is None
+        assert result["error_rate"] is None
+
+    def test_probe_counts_errors(self):
+        """4xx responses increment error rate."""
+
+        def fake_get(url, headers, timeout=5):
+            return 404, b""
+
+        with patch.object(discovery, "http_get", side_effect=fake_get):
+            eps = [{"method": "GET", "path": "/missing", "weight": 1}]
+            result = discovery.baseline_slo_probe("http://example.com", eps, {}, sample=1)
+
+        assert result["error_rate"] > 0
