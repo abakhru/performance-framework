@@ -3,6 +3,7 @@
 Runs the FastAPI dashboard as a real subprocess with coverage instrumentation.
 Run standalone: pytest tests/components/dashboard/ -v
 """
+
 import subprocess
 import sys
 from pathlib import Path

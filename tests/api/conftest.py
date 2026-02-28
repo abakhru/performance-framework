@@ -3,6 +3,7 @@
 Set BASE_URL and AUTH_TOKEN environment variables before running.
 Run: BASE_URL=https://api.example.com pytest tests/api/ -v
 """
+
 import os
 import sys
 from pathlib import Path

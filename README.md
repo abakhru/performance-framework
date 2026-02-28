@@ -45,6 +45,32 @@ just spike            # instant burst resilience
 
 ---
 
+## Agent Integration (AI Agents & CI)
+
+Luna is built to be called by autonomous AI agents, not just humans.
+
+**One-shot Python:**
+
+```python
+from api_tests.luna import LunaClient
+
+result = LunaClient().test_service("https://api.example.com")
+result.assert_success()
+```
+
+**One-shot CLI:**
+
+```bash
+just test-service url=https://api.example.com
+```
+
+**MCP (Claude, GPT-4o, any MCP agent):**
+Connect to `http://localhost:5656/mcp` — the primary tool is `test_service`.
+
+See [docs/AGENTS.md](docs/AGENTS.md) for the complete agent integration guide.
+
+---
+
 ## Configuration
 
 Copy `.env.example` for a full template. Core variables:

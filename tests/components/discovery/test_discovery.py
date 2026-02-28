@@ -3,6 +3,7 @@
 bd-discovery-component: Verify endpoint discovery and parsing logic.
 Run standalone: pytest tests/components/discovery/ -v
 """
+
 import json
 import sys
 from pathlib import Path

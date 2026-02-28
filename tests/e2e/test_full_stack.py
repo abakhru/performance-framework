@@ -2,6 +2,7 @@
 
 bd-e2e-fullstack: End-to-end performance test cycle.
 """
+
 import os
 
 import pytest
@@ -30,9 +31,7 @@ class TestFullStack:
         h.AssertGoodExitCode()
 
         # Verify metrics landed in InfluxDB
-        rows = influx_harness.query(
-            'from(bucket:"k6") |> range(start: -5m) |> limit(n:1)'
-        )
+        rows = influx_harness.query('from(bucket:"k6") |> range(start: -5m) |> limit(n:1)')
         assert len(rows) > 0, "Expected k6 metrics in InfluxDB after smoke run"
 
         # Verify dashboard can read the run

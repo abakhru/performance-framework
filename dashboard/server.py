@@ -35,6 +35,7 @@ from mcp_server import mcp  # noqa: E402
 from routers import analytics, data_files, endpoints, profiles, proxy, run_control, runs, slo, webhooks  # noqa: E402
 from routers import api_tests as api_tests_router  # noqa: E402
 from routers import discovery as discovery_router  # noqa: E402
+from routers import health as health_router  # noqa: E402
 from routers import lighthouse as lighthouse_router  # noqa: E402
 from storage import DATA_DIR, HOOKS_DIR, REPO_ROOT, SCRIPT_DIR  # noqa: E402
 
@@ -72,6 +73,7 @@ app = FastAPI(docs_url="/docs", redoc_url=None, lifespan=_lifespan)
 # ── Register routers ───────────────────────────────────────────────────────────
 
 app.include_router(livereload_router)
+app.include_router(health_router.router)
 app.include_router(proxy.router)
 app.include_router(runs.router)
 app.include_router(run_control.router)

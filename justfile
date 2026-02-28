@@ -244,3 +244,47 @@ clean:
     rm -rf out/
     find . -type d -name __pycache__ -exec rm -rf {} +
     rm -rf .ruff_cache .pytest_cache
+
+# ── Agent / Luna ───────────────────────────────────────────────────────────────
+
+# Start Luna dashboard + InfluxDB, print the MCP connection URL
+agent-start: influx-up
+    @echo ""
+    @echo "╔══════════════════════════════════════════════════════╗"
+    @echo "║  Luna is starting…                                   ║"
+    @echo "║  Dashboard  →  http://localhost:5656                  ║"
+    @echo "║  MCP        →  http://localhost:5656/mcp              ║"
+    @echo "║  Health     →  http://localhost:5656/health           ║"
+    @echo "║  API Docs   →  http://localhost:5656/docs              ║"
+    @echo "╚══════════════════════════════════════════════════════╝"
+    @echo ""
+    uv run uvicorn dashboard.server:app --host 0.0.0.0 --port 5656 \
+      --reload --reload-dir dashboard
+
+# Test any service in one command  e.g. just test-service url=https://api.example.com profile=smoke
+test-service url profile="smoke" auth="":
+    @echo "Luna: testing {{url}} with profile={{profile}}"
+    uv run python -c "from api_tests.luna import LunaClient; luna = LunaClient(); result = luna.test_service('{{url}}', token='{{auth}}', profile='{{profile}}'); print(result.summary); exit(0 if result.success else 1)"
+
+# Print MCP server connection info for agents
+mcp-info:
+    @echo "MCP server:  http://localhost:5656/mcp"
+    @echo "Transport:   streamable-http (spec 2025-03-26)"
+    @echo ""
+    @echo "Connect with Claude Desktop — add to claude_desktop_config.json:"
+    @echo '  "luna": {'
+    @echo '    "command": "npx",'
+    @echo '    "args": ["-y", "mcp-remote", "http://localhost:5656/mcp"]'
+    @echo '  }'
+    @echo ""
+    @echo "Connect with Python (mcp library):"
+    @echo '  from mcp import ClientSession'
+    @echo '  from mcp.client.streamable_http import streamablehttp_client'
+
+# Run the Luna Python client in interactive mode (REPL)
+luna-repl:
+    uv run python -c "from api_tests.luna import LunaClient; luna = LunaClient(); print('LunaClient connected to', luna._base_url); print('luna.health()         ->', luna.health()); print('luna.list_configs()   ->', len(luna.list_configs()), 'configs'); print(); print('Try: luna.test_service(\"https://your-api.com\")')"
+
+# Show Luna health status
+luna-health:
+    @curl -sf http://localhost:5656/health | python3 -m json.tool || echo "Luna is not running — run: just agent-start"

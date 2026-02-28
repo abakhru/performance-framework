@@ -46,13 +46,47 @@ from fastmcp import FastMCP  # noqa: E402
 # in tests or standalone mode without requiring the full FastAPI app.
 
 mcp: FastMCP = FastMCP(
-    name="perf-framework",
-    instructions=(
-        "Performance testing assistant for the k6 dashboard. "
-        "Use discover_url or crawl_url to find API endpoints, "
-        "then save_endpoint_config to activate them, "
-        "then start_run to kick off a load test."
-    ),
+    name="luna",
+    instructions="""
+Luna — Testing as a Service for engineering teams and autonomous AI agents.
+
+QUICKSTART (one tool call):
+  Use test_service(url="https://my-api.com") to discover endpoints, run a smoke
+  test, and get structured pass/fail results in a single call.
+
+STEP-BY-STEP WORKFLOW:
+  1. discover_url(url)          → find API endpoints (OpenAPI/GraphQL/REST probe)
+  2. save_endpoint_config(...)  → activate the discovered endpoints
+  3. start_run(base_url, ...)   → launch k6 load test (smoke/ramp/soak/stress/spike)
+  4. wait_for_run(run_id)       → block until run completes, returns metrics
+  5. get_run_history()          → review past runs and SLO verdicts
+
+DISCOVERY — supported sources:
+  discover_url    OpenAPI / Swagger → GraphQL introspection → REST probe
+  crawl_url       Follow HTML links + scan JS + GraphQL introspection
+  parse_postman   Postman Collection v2.x dict
+  parse_har       HTTP Archive (HAR) dict
+  parse_wsdl      SOAP/WSDL XML string
+  parse_api_blueprint  API Blueprint markdown
+  parse_raml      RAML YAML string
+  baseline_slo_probe   Measure real p95/error-rate baselines before testing
+
+LOAD PROFILES:
+  smoke   2 VUs · 30 s — sanity check (default)
+  ramp    0 → N VUs → 0 — standard load test
+  soak    sustained load for hours — memory/connection endurance
+  stress  step-up to breaking point — capacity planning
+  spike   instant burst — auto-scaling / queue resilience
+
+AUTH MODES (pass via auth_token or env):
+  Bearer token, API key, Basic auth, OAuth2 client credentials, AWS SigV4
+
+RESOURCES:
+  perf://endpoints     active endpoint config
+  perf://run/status    live k6 run status
+  perf://history       past run history with SLO verdicts
+  perf://health        service health
+""",
 )
 
 
@@ -352,6 +386,263 @@ def run_api_tests(suite: str = "api", base_url: str = "", auth_token: str = "") 
     }
 
 
+@mcp.tool
+def test_service(
+    url: str,
+    auth_token: str = "",
+    profile: str = "smoke",
+    vus: int = 2,
+    duration: int = 30,
+    save_config: bool = True,
+) -> dict:
+    """
+    ONE-SHOT: Discover endpoints from *url*, optionally save the config, start a k6
+    load test, wait for completion, and return structured results.
+
+    This is the primary tool for autonomous agents — a single call does everything.
+
+    Args:
+        url:         Target service base URL (e.g. "https://api.example.com")
+        auth_token:  Bearer token for authenticated services
+        profile:     smoke | ramp | soak | stress | spike  (default: smoke)
+        vus:         Virtual users (default: 2 for smoke)
+        duration:    Test duration in seconds (default: 30)
+        save_config: If True, save discovered endpoints as the active config
+
+    Returns dict with keys:
+        success, run_id, profile, elapsed_s, endpoint_count, source,
+        endpoints (list), error (if any)
+    """
+    import threading
+    import time
+    import uuid
+
+    # Step 1: Discover endpoints
+    from discovery import discover_url as _discover_url
+
+    try:
+        discovered = _discover_url(url.rstrip("/"), auth_token)
+    except Exception as exc:
+        return {"success": False, "error": f"Discovery failed: {exc}"}
+
+    endpoints = discovered.get("endpoints", [])
+    source = discovered.get("source", "unknown")
+
+    if not endpoints:
+        return {
+            "success": False,
+            "error": "No endpoints discovered. Try crawl_url() or supply a Postman collection.",
+            "source": source,
+            "url": url,
+        }
+
+    # Step 2: Save config
+    if save_config:
+        from app_state import state
+        from storage import save_named_config
+
+        config = {
+            "service": url.split("//")[-1].split("/")[0],
+            "endpoints": endpoints,
+            "setup": [],
+            "teardown": [],
+            "_source": source,
+            "_base_url": url,
+            "_auth_token": auth_token,
+        }
+        state.save_endpoints(config)
+        save_named_config(config)
+
+    # Step 3: Start run
+    from app_state import state as _state
+    from lifecycle import _k6_lock, _k6_state, run_k6_supervised
+
+    valid = ("smoke", "ramp", "soak", "stress", "spike")
+    if profile not in valid:
+        return {"success": False, "error": f"profile must be one of {valid}"}
+
+    cfg = {
+        "base_url": url,
+        "auth_token": auth_token,
+        "auth_basic_user": "",
+        "auth_api_key": "",
+        "auth_api_key_header": "X-API-Key",
+        "auth_host": "",
+        "auth_realm": "master",
+        "auth_client_id": "",
+        "auth_client_secret": "",
+        "vus": str(vus),
+        "duration": f"{duration}s",
+        "ramp_duration": "30s",
+    }
+    run_id = str(uuid.uuid4())
+
+    with _k6_lock:
+        if _k6_state["status"] not in ("idle", "finished", "error"):
+            return {
+                "success": False,
+                "error": f"A run is already {_k6_state['status']}. Call stop_run() first.",
+                "run_id": _k6_state.get("run_id"),
+            }
+        _k6_state["status"] = "starting"
+        _k6_state["run_id"] = run_id
+
+    threading.Thread(
+        target=run_k6_supervised,
+        args=(profile, cfg, run_id, _state.ep_cfg_ref, _state.op_group_ref),
+        daemon=True,
+    ).start()
+
+    # Step 4: Wait for completion
+    timeout = max(duration + 60, 120)
+    start = time.monotonic()
+    while time.monotonic() - start < timeout:
+        with _k6_lock:
+            status = _k6_state.get("status", "idle")
+            _ = _k6_state.get("started_at")
+        if status in ("finished", "idle", "error"):
+            break
+        time.sleep(2)
+
+    with _k6_lock:
+        final_status = _k6_state.get("status", "unknown")
+    elapsed = int(time.monotonic() - start)
+
+    return {
+        "success": final_status in ("finished", "idle"),
+        "run_id": run_id,
+        "profile": profile,
+        "elapsed_s": elapsed,
+        "endpoint_count": len(endpoints),
+        "source": source,
+        "endpoints": [
+            {"name": e.get("name"), "method": e.get("method"), "path": e.get("path")} for e in endpoints[:20]
+        ],
+        "status": final_status,
+        "url": url,
+    }
+
+
+@mcp.tool
+def wait_for_run(run_id: str = "", timeout_s: int = 300) -> dict:
+    """
+    Block until the current k6 run completes (or timeout_s is reached).
+
+    Useful when you call start_run() and want to poll for results without
+    busy-waiting in your own loop.
+
+    Args:
+        run_id:    Optional run ID returned by start_run() — used for validation only.
+        timeout_s: Maximum seconds to wait (default 300).
+
+    Returns dict with: status, run_id, elapsed_s, timed_out.
+    """
+    import time
+
+    from lifecycle import _k6_lock, _k6_state
+
+    start = time.monotonic()
+    current_run_id = None
+    while time.monotonic() - start < timeout_s:
+        with _k6_lock:
+            status = _k6_state.get("status", "idle")
+            current_run_id = _k6_state.get("run_id")
+        if status in ("finished", "idle", "error"):
+            break
+        time.sleep(2)
+
+    elapsed = int(time.monotonic() - start)
+    timed_out = elapsed >= timeout_s
+
+    with _k6_lock:
+        final = _k6_state.get("status", "unknown")
+
+    return {
+        "status": final,
+        "run_id": current_run_id,
+        "elapsed_s": elapsed,
+        "timed_out": timed_out,
+        "success": final in ("finished", "idle") and not timed_out,
+    }
+
+
+@mcp.tool
+def get_run_history(limit: int = 10) -> list:
+    """
+    Return the most recent k6 run records, newest first.
+
+    Each record includes: run_id, profile, base_url, started_at, duration_s,
+    p95_ms, error_rate, apdex_score, slo_pass (bool), endpoint_count.
+
+    Useful for agents that need to compare runs, check regression, or report
+    quality trends over time.
+    """
+    from queries import get_run_history as _get_runs
+
+    try:
+        runs = _get_runs(limit=limit)
+        return runs if isinstance(runs, list) else []
+    except Exception as exc:
+        return [{"error": str(exc)}]
+
+
+@mcp.tool
+def luna_health() -> dict:
+    """
+    Return health status of the Luna service and its dependencies.
+
+    Checks: dashboard (always up if this returns), k6 binary, InfluxDB connectivity.
+    Safe to call before any other tool to verify the service is ready.
+
+    Returns dict with: status ("ok"|"degraded"), dashboard, k6, influxdb, version.
+    """
+    import shutil
+    from pathlib import Path
+
+    import influx as _influx
+
+    # Check k6
+    repo_root = Path(__file__).parent.parent
+    k6_bin = repo_root / "bin" / "k6"
+    k6_ok = k6_bin.exists() or bool(shutil.which("k6"))
+
+    # Check InfluxDB
+    influx_ok = False
+    try:
+        influx_ok = _influx.health_check() if hasattr(_influx, "health_check") else True
+    except Exception:
+        pass
+
+    overall = "ok" if k6_ok else "degraded"
+
+    return {
+        "status": overall,
+        "dashboard": "ok",
+        "k6": "ok" if k6_ok else "not_found — run: just build",
+        "influxdb": "ok" if influx_ok else "unreachable — run: just influx-up",
+        "mcp_tools": [
+            "test_service",
+            "discover_url",
+            "crawl_url",
+            "parse_postman",
+            "parse_har",
+            "parse_wsdl",
+            "save_endpoint_config",
+            "list_saved_configs",
+            "load_saved_config",
+            "start_run",
+            "stop_run",
+            "run_status",
+            "wait_for_run",
+            "get_run_history",
+            "generate_test_plan",
+            "run_api_tests",
+            "baseline_slo_probe",
+            "luna_health",
+        ],
+    }
+
+
 # ── Resources ──────────────────────────────────────────────────────────────────
 
 
@@ -375,3 +666,68 @@ def resource_saved_configs() -> list:
 def resource_run_status() -> dict:
     """Live k6 run status."""
     return run_status()
+
+
+@mcp.resource("perf://history")
+def resource_history() -> list:
+    """Past k6 run history with SLO verdicts."""
+    return get_run_history(limit=20)
+
+
+@mcp.resource("perf://health")
+def resource_health() -> dict:
+    """Luna service health: dashboard, k6, InfluxDB."""
+    return luna_health()
+
+
+# ── Prompts (reusable workflow templates) ──────────────────────────────────────
+
+
+@mcp.prompt
+def quickstart_prompt(url: str, auth_token: str = "") -> str:
+    """One-shot prompt: test any service from scratch."""
+    token_hint = f', auth_token="{auth_token}"' if auth_token else ""
+    return f"""Use the Luna testing framework to validate the service at {url}.
+
+Steps to follow:
+1. Call luna_health() to confirm the framework is ready.
+2. Call test_service(url="{url}"{token_hint}, profile="smoke") to discover
+   endpoints and run a smoke test in one call.
+3. Report back: how many endpoints were discovered, did all pass, what was
+   the p95 latency, and are there any SLO violations?
+
+If test_service reports failures, call get_run_history(limit=1) for more detail.
+"""
+
+
+@mcp.prompt
+def load_test_prompt(url: str, profile: str = "ramp", vus: int = 10, duration: int = 60) -> str:
+    """Prompt for a full load test with manual steps."""
+    return f"""Run a {profile} load test against {url} using Luna.
+
+Steps:
+1. Call luna_health() — confirm k6 and InfluxDB are reachable.
+2. Call discover_url(url="{url}") to map all API endpoints.
+3. Call save_endpoint_config(endpoints=<result>, base_url="{url}") to activate them.
+4. Call start_run(base_url="{url}", profile="{profile}", vus={vus}, duration={duration}).
+5. Call wait_for_run(timeout_s={duration + 90}) to block until it finishes.
+6. Call get_run_history(limit=1) and summarise: p95 ms, error rate, Apdex, SLO pass/fail.
+"""
+
+
+@mcp.prompt
+def slo_baseline_prompt(url: str, auth_token: str = "") -> str:
+    """Measure latency/error baselines before writing SLO thresholds."""
+    token_hint = f', auth_token="{auth_token}"' if auth_token else ""
+    return f"""Establish SLO baselines for the service at {url}.
+
+Steps:
+1. Call discover_url(url="{url}"{token_hint}) to enumerate endpoints.
+2. Call baseline_slo_probe(base_url="{url}", endpoints=<result>{token_hint}, sample=10)
+   to make real HTTP requests and measure p95 latency and error rate.
+3. Recommend SLO thresholds based on the observed values:
+   - p95_ms: observed_p95 × 1.5 (headroom)
+   - error_rate: max(0.01, observed_error_rate × 2)
+   - apdex_score: 0.85 if observed_p95 < 500 else 0.75
+4. Return a JSON snippet showing the recommended "slos" block for endpoints.json.
+"""

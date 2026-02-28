@@ -3,6 +3,7 @@
 Requires: bin/k6 binary (run: just build).
 Run standalone: pytest tests/components/k6/ -v
 """
+
 import sys
 from pathlib import Path
 

@@ -3,6 +3,7 @@
 Requires: docker-compose up influxdb (or local InfluxDB).
 Run standalone: pytest tests/integration/ -v
 """
+
 import subprocess
 import sys
 from pathlib import Path

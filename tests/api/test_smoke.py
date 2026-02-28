@@ -4,6 +4,7 @@ bd-api-smoke: Verify each discovered endpoint responds within SLO.
 Requires: BASE_URL env var pointing at the target service.
 Run: BASE_URL=https://api.example.com pytest tests/api/test_smoke.py -v
 """
+
 import sys
 from pathlib import Path
 
@@ -53,10 +54,7 @@ class TestEndpointSmoke:
             r = method(entry.path, **kwargs)
 
         assert r.status_code == entry.expected_status, (
-            f"{entry.name} [{entry.method} {entry.path}]: "
-            f"expected {entry.expected_status}, got {r.status_code}"
+            f"{entry.name} [{entry.method} {entry.path}]: expected {entry.expected_status}, got {r.status_code}"
         )
         elapsed_ms = r.elapsed.total_seconds() * 1000
-        assert elapsed_ms < 2000, (
-            f"{entry.name}: response time {elapsed_ms:.0f}ms exceeded 2000ms SLO"
-        )
+        assert elapsed_ms < 2000, f"{entry.name}: response time {elapsed_ms:.0f}ms exceeded 2000ms SLO"

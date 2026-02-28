@@ -3,6 +3,7 @@
 bd-dashboard-component: Verify all key dashboard API endpoints in isolation.
 Run standalone: pytest tests/components/dashboard/ -v
 """
+
 import unittest
 
 import pytest

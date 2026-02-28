@@ -3,6 +3,7 @@
 Run standalone: pytest tests/components/discovery/ -v
 No real services required.
 """
+
 import sys
 from pathlib import Path
 

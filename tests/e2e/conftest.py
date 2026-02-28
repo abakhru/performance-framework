@@ -3,6 +3,7 @@
 Requires: bin/k6 (just build), docker-compose up influxdb.
 Run standalone: pytest tests/e2e/ -v
 """
+
 import subprocess
 import sys
 from pathlib import Path

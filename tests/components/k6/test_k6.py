@@ -3,6 +3,7 @@
 bd-k6-component: Verify k6 subprocess launches, runs, and exits cleanly.
 Run standalone: pytest tests/components/k6/ -v
 """
+
 import subprocess
 import unittest
 from pathlib import Path

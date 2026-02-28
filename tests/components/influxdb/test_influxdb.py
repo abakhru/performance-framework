@@ -3,6 +3,7 @@
 bd-influxdb-component: Verify InfluxDBHarness can write and query data.
 Run standalone: pytest tests/components/influxdb/ -v
 """
+
 import time
 import unittest
 
@@ -28,8 +29,7 @@ class TestInfluxDBHarness(unittest.TestCase):
         )
         time.sleep(1)  # InfluxDB write is eventually consistent
         rows = self.harness.query(
-            'from(bucket:"k6") |> range(start: -1m) '
-            '|> filter(fn: (r) => r._measurement == "test_harness")'
+            'from(bucket:"k6") |> range(start: -1m) |> filter(fn: (r) => r._measurement == "test_harness")'
         )
         self.assertGreater(len(rows), 0, "Expected at least one row from InfluxDB query")
 
