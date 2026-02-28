@@ -68,6 +68,8 @@ def load_plugin_hooks() -> None:
     for path in sorted(HOOKS_DIR.glob("*.py")):
         try:
             spec = importlib.util.spec_from_file_location(path.stem, path)
+            if spec is None or spec.loader is None:
+                continue
             mod = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(mod)
             _plugin_hooks.append(mod)

@@ -20,10 +20,10 @@ from datetime import UTC, datetime
 
 # ── InfluxDB connection settings (overridden by main() from env) ───────────────
 
-INFLUX_URL = "http://localhost:8086"
-INFLUX_ORG = "matrix"
-INFLUX_BUCKET = "k6"
-INFLUX_TOKEN = "matrix-k6-token"
+INFLUX_URL: str = "http://localhost:8086"
+INFLUX_ORG: str = "matrix"
+INFLUX_BUCKET: str = "k6"
+INFLUX_TOKEN: str = "matrix-k6-token"
 
 
 # ── Line-protocol helpers ──────────────────────────────────────────────────────

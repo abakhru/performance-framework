@@ -14,6 +14,7 @@ import os
 import sys
 import threading
 import webbrowser
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 # Ensure the dashboard directory is on sys.path so local modules resolve
@@ -35,7 +36,18 @@ from storage import DATA_DIR, HOOKS_DIR, REPO_ROOT, SCRIPT_DIR  # noqa: E402
 
 DASHBOARD_PORT = 5656
 
-app = FastAPI(docs_url="/docs", redoc_url=None)
+
+@asynccontextmanager
+async def _lifespan(app: FastAPI):  # noqa: ARG001
+    _load_env()
+    _init_influx()
+    DATA_DIR.mkdir(exist_ok=True)
+    HOOKS_DIR.mkdir(exist_ok=True)
+    load_plugin_hooks()
+    yield
+
+
+app = FastAPI(docs_url="/docs", redoc_url=None, lifespan=_lifespan)
 
 # ── Register routers ───────────────────────────────────────────────────────────
 
@@ -59,18 +71,6 @@ app.include_router(discovery_router.router)
 @app.get("/index.html", response_class=HTMLResponse)
 async def index():
     return HTMLResponse((SCRIPT_DIR / "index.html").read_text(encoding="utf-8"))
-
-
-# ── Startup ────────────────────────────────────────────────────────────────────
-
-
-@app.on_event("startup")
-async def _startup():
-    _load_env()
-    _init_influx()
-    DATA_DIR.mkdir(exist_ok=True)
-    HOOKS_DIR.mkdir(exist_ok=True)
-    load_plugin_hooks()
 
 
 # ── Startup helpers ────────────────────────────────────────────────────────────
