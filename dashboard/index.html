@@ -459,12 +459,7 @@ tr.ops-slowest td{background:rgba(249,115,22,.03)!important}
 .charts-row-live{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:10px;margin-bottom:12px}
 @media(max-width:1100px){.charts-row-live{grid-template-columns:1fr 1fr}}
 
-/* footer */
-footer{
-  flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
-  padding:8px 24px;border-top:1px solid var(--border);
-  background:var(--bg2);font-size:10px;color:var(--muted);font-weight:500;
-}
+/* footer — see footer element in HTML for inline styles */
 
 /* discover tab */
 .disc-sources{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
@@ -804,6 +799,402 @@ footer{
 .lh-passed-list{display:none;margin-top:6px}
 .lh-passed-item{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:11px;color:var(--muted)}
 .lh-passed-item::before{content:'✓';color:#0CCE6B;font-weight:700;flex-shrink:0}
+
+/* ═══════════════════════════════════════════════════════════════════
+   DESIGN SYSTEM v2 — Luna Performance Dashboard Redesign
+   Adds semantic tokens, grouped nav, button system, badge system,
+   empty states, improved cards, toasts, and component polish.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Semantic status tokens (per theme) ── */
+:root,[data-theme="matrix"]{
+  --ok:#22c55e;--ok-dim:rgba(34,197,94,.08);--ok-border:rgba(34,197,94,.25);
+  --info:#3b82f6;--info-dim:rgba(59,130,246,.08);--info-border:rgba(59,130,246,.25);
+  --warn-dim:rgba(255,181,71,.08);--warn-border:rgba(255,181,71,.25);
+  --err-dim:rgba(239,68,68,.08);--err-border:rgba(239,68,68,.25);
+  --radius:14px;--radius-sm:8px;--radius-xs:5px;--radius-full:9999px;
+  --shadow:0 4px 24px rgba(0,0,0,.3);--shadow-lg:0 8px 40px rgba(0,0,0,.45);--shadow-sm:0 2px 8px rgba(0,0,0,.2);
+  --transition:all .18s ease;
+}
+[data-theme="cyberpunk"]{--ok:#00f5c0;--ok-dim:rgba(0,245,192,.08);--ok-border:rgba(0,245,192,.22);}
+[data-theme="midnight"]{--ok:#22c55e;--ok-dim:rgba(34,197,94,.08);--ok-border:rgba(34,197,94,.22);}
+[data-theme="amber"]{--ok:#22c55e;--ok-dim:rgba(34,197,94,.08);--ok-border:rgba(34,197,94,.22);}
+[data-theme="aurora"]{--ok:#22c55e;--ok-dim:rgba(34,197,94,.08);--ok-border:rgba(34,197,94,.22);}
+[data-theme="arctic"]{--ok:#16a34a;--ok-dim:rgba(22,163,74,.08);--ok-border:rgba(22,163,74,.25);}
+
+/* ── Global scroll ── */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:var(--muted)}
+
+/* ── Content padding ── */
+.content{padding:16px 20px}
+
+/* ══ SIDEBAR v2 ══════════════════════════════════════════════════════ */
+.sidebar{
+  width:236px;flex-shrink:0;
+  background:var(--bg);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.sidebar-logo{padding:18px 16px 14px;border-bottom:1px solid var(--border)}
+.logo{
+  font-size:14px;font-weight:900;letter-spacing:3px;text-transform:uppercase;
+  color:var(--text);line-height:1;display:flex;align-items:center;gap:8px;
+}
+.logo-mark{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:28px;height:28px;background:var(--accent);border-radius:7px;
+  color:#0B0D10;font-size:14px;font-weight:900;flex-shrink:0;letter-spacing:0;
+  box-shadow:0 0 12px rgba(245,166,35,.3);
+}
+.logo em{color:var(--accent);font-style:normal}
+.logo-sub{
+  font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;
+  margin-top:7px;display:flex;align-items:center;gap:7px;font-weight:500;
+}
+
+/* ── Nav groups ── */
+.sidebar-nav{flex:1;padding:8px 6px;overflow-y:auto}
+.nav-section-label{
+  font-size:9px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;
+  color:var(--muted);opacity:.45;padding:10px 10px 4px;user-select:none;display:block;
+}
+.nav-divider{height:1px;background:var(--border);margin:5px 6px 3px}
+
+/* ── Tab redesign — left accent bar ── */
+.tab{
+  display:flex;align-items:center;gap:9px;
+  padding:8px 10px;border-radius:9px;
+  color:var(--muted);font-size:11px;font-weight:500;
+  cursor:pointer;transition:var(--transition);user-select:none;
+  margin-bottom:1px;position:relative;
+  border:1px solid transparent;
+}
+.tab:hover{background:var(--surface);color:var(--text)}
+.tab.active{
+  background:var(--surface);color:var(--accent);
+  border-color:var(--border);
+}
+.tab.active::before{
+  content:'';position:absolute;left:-1px;top:18%;bottom:18%;
+  width:3px;background:var(--accent);border-radius:0 3px 3px 0;
+  box-shadow:0 0 8px var(--accent);
+}
+.tab-icon{width:15px;height:15px;flex-shrink:0;opacity:.55;transition:opacity .18s}
+.tab.active .tab-icon{opacity:1}
+.tab:hover .tab-icon{opacity:.85}
+.tab-dot{display:none} /* replaced by left-bar */
+.tab-badge{
+  margin-left:auto;font-size:9px;font-weight:700;padding:1px 6px;
+  border-radius:var(--radius-full);background:rgba(245,166,35,.12);
+  color:var(--accent);border:1px solid rgba(245,166,35,.2);flex-shrink:0;
+}
+.tab-status-dot{margin-left:auto;width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.tab-status-ok{background:var(--ok);box-shadow:0 0 5px rgba(34,197,94,.5)}
+.tab-status-running{background:var(--accent);animation:blink 1.2s infinite}
+
+/* ── Sidebar footer ── */
+.sidebar-footer{padding:10px 6px 12px;border-top:1px solid var(--border)}
+.theme-label-row{
+  font-size:9px;color:var(--muted);letter-spacing:1.2px;text-transform:uppercase;
+  font-weight:600;padding:0 6px;margin-bottom:7px;
+}
+.theme-switcher{display:flex;gap:5px;flex-wrap:wrap;padding:0 6px}
+.theme-swatch{
+  width:15px;height:15px;border-radius:50%;
+  border:2px solid transparent;background:var(--sw,#F5A623);
+  cursor:pointer;transition:all .2s;padding:0;flex-shrink:0;
+}
+.theme-swatch:hover{transform:scale(1.3)}
+.theme-swatch.active{border-color:var(--text);transform:scale(1.3)}
+
+/* ══ HEADER v2 ════════════════════════════════════════════════════════ */
+header{
+  height:54px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:0 20px;
+  background:var(--bg);
+  border-bottom:1px solid var(--border);
+}
+.header-left{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
+.page-crumb{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}
+.page-crumb .crumb-sep{opacity:.35;font-size:10px}
+.page-crumb .crumb-cur{color:var(--text);font-weight:700;font-size:12px}
+.page-crumb .crumb-root{font-size:10px;letter-spacing:.5px;text-transform:uppercase;font-weight:600}
+.header-stats{display:flex;align-items:center;gap:5px}
+.hstat{
+  display:flex;flex-direction:column;align-items:flex-end;gap:0;
+  padding:4px 9px;background:var(--surface);
+  border:1px solid var(--border);border-radius:8px;
+  min-width:52px;
+}
+.hstat-label{font-size:8px;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;font-weight:500}
+.hstat-value{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--accent);line-height:1.2}
+.hstat-value.warn{color:var(--warn)}
+.hstat-value.err{color:var(--err)}
+.header-controls{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.status-bar{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--muted)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--muted);transition:all .3s;flex-shrink:0}
+.dot.running{background:var(--accent);box-shadow:var(--glow);animation:blink 1.6s infinite}
+.dot.waiting{background:var(--warn);animation:blink 1s infinite}
+.dot.finished{background:var(--muted)}
+.dot.ok{background:var(--ok)}
+.toggle-btn{
+  display:flex;align-items:center;gap:5px;padding:5px 10px;
+  background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-full);
+  color:var(--muted);font-family:inherit;font-size:9px;font-weight:700;
+  letter-spacing:.8px;text-transform:uppercase;cursor:pointer;transition:var(--transition);
+}
+.toggle-btn:hover{border-color:var(--accent3);color:var(--accent)}
+.toggle-btn.live{border-color:var(--accent);color:var(--accent);background:var(--accentdim)}
+.led{width:5px;height:5px;border-radius:50%;background:var(--muted);transition:all .2s}
+.toggle-btn.live .led{background:var(--accent);animation:blink 1s infinite}
+
+/* ── Quick-run FAB ── */
+.btn-run-quick{
+  display:flex;align-items:center;gap:5px;
+  padding:5px 12px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  font-family:inherit;background:var(--accentdim);border:1px solid var(--accent3);color:var(--accent);
+  border-radius:var(--radius-full);cursor:pointer;transition:var(--transition);
+}
+.btn-run-quick:hover{background:var(--accent);color:#0B0D10;border-color:var(--accent);box-shadow:var(--glow)}
+.btn-run-quick svg{width:12px;height:12px;flex-shrink:0}
+
+/* ══ BUTTON SYSTEM ════════════════════════════════════════════════════ */
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 14px;font-size:11px;font-weight:600;letter-spacing:.3px;text-transform:uppercase;
+  font-family:inherit;border:1px solid;border-radius:var(--radius-full);
+  cursor:pointer;transition:var(--transition);white-space:nowrap;line-height:1;
+}
+.btn:disabled{opacity:.35;cursor:not-allowed;pointer-events:none}
+.btn-primary{background:var(--accentdim);border-color:var(--accent3);color:var(--accent)}
+.btn-primary:hover{background:var(--accent);color:#0B0D10;box-shadow:var(--glow);border-color:var(--accent)}
+.btn-ghost{background:var(--surface2);border-color:var(--border2);color:var(--muted)}
+.btn-ghost:hover{color:var(--text);background:var(--surface);border-color:var(--border2)}
+.btn-danger{background:var(--err-dim);border-color:var(--err-border);color:var(--err)}
+.btn-danger:hover{background:var(--err);color:#fff;border-color:var(--err)}
+.btn-ok{background:var(--ok-dim);border-color:var(--ok-border);color:var(--ok)}
+.btn-ok:hover{background:var(--ok);color:#fff;border-color:var(--ok)}
+.btn-info{background:var(--info-dim);border-color:var(--info-border);color:var(--info)}
+.btn-sm{padding:3px 10px;font-size:9px}
+.btn-md{padding:7px 16px;font-size:11px}
+.btn-lg{padding:10px 22px;font-size:12px}
+
+/* ══ BADGE SYSTEM ═════════════════════════════════════════════════════ */
+.badge{
+  display:inline-flex;align-items:center;gap:3px;
+  font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;
+  padding:2px 7px;border-radius:var(--radius-full);border:1px solid;line-height:1.4;
+}
+.badge-ok{background:var(--ok-dim);border-color:var(--ok-border);color:var(--ok)}
+.badge-warn{background:var(--warn-dim);border-color:var(--warn-border);color:var(--warn)}
+.badge-err{background:var(--err-dim);border-color:var(--err-border);color:var(--err)}
+.badge-info{background:var(--info-dim);border-color:var(--info-border);color:var(--info)}
+.badge-accent{background:var(--accentdim);border-color:var(--accent3);color:var(--accent)}
+.badge-muted{background:var(--surface2);border-color:var(--border2);color:var(--muted)}
+.badge-count{
+  min-width:16px;height:16px;padding:0 4px;border-radius:8px;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:8px;font-weight:800;background:var(--accentdim);color:var(--accent);border:1px solid var(--accent4);
+}
+
+/* ══ EMPTY STATE ══════════════════════════════════════════════════════ */
+.empty-state{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:56px 24px;text-align:center;gap:10px;
+}
+.empty-state-icon{font-size:40px;opacity:.25;line-height:1}
+.empty-state-title{font-size:14px;font-weight:600;color:var(--text);opacity:.5;margin-top:4px}
+.empty-state-body{font-size:11px;color:var(--muted);max-width:280px;line-height:1.7}
+.empty-state-cta{margin-top:12px}
+
+/* ══ CARD VARIANTS ════════════════════════════════════════════════════ */
+.card-section{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:16px 18px;margin-bottom:12px;
+  box-shadow:var(--shadow);
+}
+.card-section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:10px}
+.card-section-title{font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text)}
+.card-accent-l{border-left:3px solid var(--accent)!important}
+.card-ok-l{border-left:3px solid var(--ok)!important}
+.card-err-l{border-left:3px solid var(--err)!important}
+.card-info-l{border-left:3px solid var(--info)!important}
+.card-warn-l{border-left:3px solid var(--warn)!important}
+/* subtle glow on card hover */
+.card:hover{border-color:var(--border2);box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.card:hover::before{background:linear-gradient(90deg,transparent,rgba(245,166,35,.18),transparent)}
+
+/* ══ TOAST v2 ═════════════════════════════════════════════════════════ */
+#toastContainer{position:fixed;bottom:24px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:7px;align-items:flex-end}
+.toast{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;background:var(--surface2);
+  border:1px solid var(--border2);border-radius:11px;
+  box-shadow:0 8px 32px rgba(0,0,0,.55);
+  font-size:11px;font-weight:500;color:var(--text);
+  animation:toastSlideIn .22s ease-out;
+  min-width:180px;max-width:340px;
+}
+.toast-ok{border-left:3px solid var(--ok)}
+.toast-warn{border-left:3px solid var(--warn)}
+.toast-err{border-left:3px solid var(--err)}
+.toast-info{border-left:3px solid var(--info)}
+.toast-icon{font-size:13px;flex-shrink:0}
+.toast-msg{flex:1;line-height:1.4}
+.toast-close{color:var(--muted);cursor:pointer;font-size:13px;background:none;border:none;padding:0 2px;line-height:1;opacity:.6}
+.toast-close:hover{opacity:1;color:var(--text)}
+@keyframes toastSlideIn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:translateX(0)}}
+
+/* ══ WIZARD STEP INDICATOR v2 ════════════════════════════════════════ */
+.wiz-steps{
+  display:flex;margin-bottom:20px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;overflow:hidden;
+}
+.wiz-step{
+  flex:1;padding:9px 4px 8px;text-align:center;
+  font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  color:var(--muted);border-right:1px solid var(--border);
+  transition:var(--transition);cursor:default;line-height:1.3;
+  position:relative;
+}
+.wiz-step:last-child{border-right:none}
+.wiz-step.active{background:rgba(245,166,35,.08);color:var(--accent)}
+.wiz-step.active::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:var(--accent);border-radius:1px;
+}
+.wiz-step.done{background:rgba(245,166,35,.03);color:rgba(245,166,35,.45)}
+
+/* ══ TABLE v2 ════════════════════════════════════════════════════════ */
+table{border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+thead tr{background:var(--surface2);border-bottom:1px solid var(--border2)}
+th{font-size:9px;letter-spacing:.7px;padding:10px 12px}
+td{font-size:11px;padding:9px 12px}
+tbody tr:hover td{background:rgba(245,166,35,.025)!important}
+
+/* ══ FORM INPUTS v2 ══════════════════════════════════════════════════ */
+.field-input{
+  background:var(--bg);border:1px solid var(--border2);color:var(--text);
+  font-family:inherit;font-size:12px;padding:8px 12px;
+  border-radius:var(--radius-sm);outline:none;
+  transition:border-color .2s,box-shadow .2s;width:100%;
+}
+.field-input:focus{border-color:var(--accent3);box-shadow:0 0 0 3px rgba(245,166,35,.1)}
+.field-input::placeholder{color:var(--muted);opacity:.4}
+.field-label{font-size:9px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+
+/* ══ PROFILE PICKER BUTTONS ══════════════════════════════════════════ */
+.profile-btn{
+  flex:1;padding:10px 8px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  font-family:inherit;background:var(--surface);border:1px solid var(--border);
+  color:var(--muted);border-radius:10px;cursor:pointer;transition:var(--transition);text-align:center;
+}
+.profile-btn:hover{border-color:var(--border2);color:var(--text)}
+.profile-btn.active{background:var(--accentdim);border-color:var(--accent);color:var(--accent);box-shadow:var(--glow)}
+
+/* ══ LOG STREAM v2 ════════════════════════════════════════════════════ */
+.log-stream{
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px 16px;
+  height:calc(100vh - 260px);min-height:320px;
+  overflow-y:auto;font-size:11px;line-height:1.8;
+  font-family:'SF Mono','Fira Code','JetBrains Mono',monospace;
+  box-shadow:var(--shadow);
+}
+
+/* ══ FILTER BUTTONS v2 ════════════════════════════════════════════════ */
+.filter-btn{
+  padding:4px 12px;font-size:10px;font-weight:600;letter-spacing:.3px;font-family:inherit;
+  background:var(--surface);border:1px solid var(--border);color:var(--muted);
+  border-radius:var(--radius-full);cursor:pointer;transition:var(--transition);
+}
+.filter-btn:hover{border-color:var(--border2);color:var(--text)}
+.filter-btn.active{border-color:var(--accent3);color:var(--accent);background:var(--accentdim)}
+
+/* ══ WIZ7 RESULTS v2 ═════════════════════════════════════════════════ */
+.wiz7-results{
+  background:var(--bg);border:1px solid var(--border2);
+  border-radius:10px;padding:10px 12px;font-size:11px;min-height:40px;
+}
+.wiz7-results-empty{color:var(--muted);font-style:italic}
+.wiz7-results-running{color:var(--accent3);animation:pulse-opacity 1.2s ease-in-out infinite}
+.wiz7-results-ok{border-left:3px solid var(--ok);color:var(--text)}
+.wiz7-results-fail{border-left:3px solid var(--err);color:var(--text)}
+
+/* ══ MISC IMPROVEMENTS ════════════════════════════════════════════════ */
+.section-divider{
+  font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--muted);margin:18px 0 12px;
+  display:flex;align-items:center;gap:10px;opacity:.6;
+}
+.section-divider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border2),transparent)}
+.stitle{
+  font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+  color:var(--muted);margin-bottom:12px;
+  display:flex;align-items:center;gap:10px;
+}
+.stitle::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border2),transparent)}
+.back-btn{
+  padding:5px 12px;margin-bottom:14px;font-size:10px;font-weight:600;letter-spacing:.3px;text-transform:uppercase;
+  background:var(--surface);border:1px solid var(--border2);color:var(--muted);
+  font-family:inherit;border-radius:var(--radius-full);cursor:pointer;transition:var(--transition);
+}
+.back-btn:hover{color:var(--accent);border-color:var(--accent3)}
+/* lh-score-card hover */
+.lh-score-card{transition:var(--transition)}
+.lh-score-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+/* run rows clickable feel */
+tr.run-row{cursor:pointer}
+tr.run-row:hover td{background:rgba(245,166,35,.03)!important}
+/* pane fade-in */
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.pane.active{animation:fadeIn .18s ease-out}
+/* disc btn unified with btn system */
+.disc-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:5px 13px;font-size:10px;font-weight:600;letter-spacing:.3px;text-transform:uppercase;
+  font-family:inherit;background:var(--surface2);border:1px solid var(--border2);color:var(--accent);
+  border-radius:var(--radius-full);cursor:pointer;transition:var(--transition);
+}
+.disc-btn:hover{background:var(--accentdim);border-color:var(--accent3)}
+.disc-btn:disabled{opacity:.38;cursor:not-allowed}
+/* disc-save-btn */
+.disc-save-btn{
+  padding:6px 18px;font-size:10px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;
+  font-family:inherit;background:var(--accentdim);border:1px solid var(--accent3);color:var(--accent);
+  border-radius:var(--radius-full);cursor:pointer;transition:var(--transition);margin-left:auto;
+}
+.disc-save-btn:hover{background:var(--accent);color:#0B0D10}
+.disc-save-btn:disabled{opacity:.38;cursor:not-allowed}
+/* wiz-run-btn */
+.wiz-run-btn{
+  padding:8px 20px;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;
+  font-family:inherit;background:var(--accent);border:none;color:#0B0D10;
+  border-radius:var(--radius-full);cursor:pointer;transition:var(--transition);
+}
+.wiz-run-btn:hover{opacity:.85}
+.wiz-run-btn:disabled{opacity:.4;cursor:not-allowed}
+/* run-btn consolidated */
+.run-btn{
+  flex:1;padding:12px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  font-family:inherit;border:1px solid;border-radius:var(--radius);cursor:pointer;transition:var(--transition);
+}
+.run-btn.start{background:var(--accentdim);border-color:var(--accent3);color:var(--accent);box-shadow:var(--glow)}
+.run-btn.start:hover:not(:disabled){background:var(--accent);color:#0B0D10;box-shadow:0 8px 32px rgba(245,166,35,.4)}
+.run-btn.stop{background:var(--err-dim);border-color:var(--err-border);color:var(--err)}
+.run-btn.stop:hover:not(:disabled){background:var(--err);color:#fff;box-shadow:0 8px 24px rgba(239,68,68,.4)}
+.run-btn:disabled{opacity:.35;cursor:not-allowed}
+/* card glow on hover refined */
+.card::before{
+  content:'';position:absolute;top:0;left:20%;right:20%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(245,166,35,.12),transparent);
+  transition:background .3s;
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 </head>
@@ -814,51 +1205,90 @@ footer{
 
 <!-- ══ SIDEBAR ═══════════════════════════════════════════════════════════════ -->
 <aside class="sidebar">
+  <!-- Logo -->
   <div class="sidebar-logo">
-    <span class="logo"><span style="color:var(--accent)">L</span>UNA</span>
+    <div class="logo">
+      <span class="logo-mark">L</span>
+      <span class="logo-text">UNA <em style="font-size:11px;font-weight:500;opacity:.5;letter-spacing:1px">PERF</em></span>
+    </div>
     <div class="logo-sub">
       <div class="dot waiting" id="statusDot"></div>
       <span id="statusLabel">CONNECTING</span>
-      <span id="profileChip" style="color:var(--accent3);font-size:10px"></span>
+      <span id="profileChip" style="color:var(--accent3);font-size:9px;margin-left:auto"></span>
     </div>
   </div>
+
+  <!-- Nav -->
   <nav class="sidebar-nav">
+
+    <!-- ── Testing ── -->
+    <span class="nav-section-label">Testing</span>
+
     <div class="tab" onclick="showTab('discover')">
       <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <span>Discover</span><div class="tab-dot"></div>
+      <span>Discover</span>
     </div>
+
     <div class="tab active" onclick="showTab('run')">
       <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5,3 19,12 5,21"/></svg>
-      <span>Execute</span><div class="tab-dot"></div>
+      <span>Execute</span>
+      <div class="tab-status-dot tab-status-running" id="tabRunDot" style="display:none"></div>
     </div>
-    <div class="tab" onclick="showTab('overview')">
-      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-      <span>Overview</span><div class="tab-dot"></div>
-    </div>
-    <div class="tab" onclick="showTab('endpoints')">
-      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3" cy="6" r="1.5" fill="currentColor"/><circle cx="3" cy="12" r="1.5" fill="currentColor"/><circle cx="3" cy="18" r="1.5" fill="currentColor"/></svg>
-      <span>Endpoints</span><div class="tab-dot"></div>
-    </div>
-    <div class="tab" onclick="showTab('http')">
-      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
-      <span>HTTP Metrics</span><div class="tab-dot"></div>
-    </div>
-    <div class="tab" onclick="showTab('log')">
-      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4,17 10,11 4,5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
-      <span>Log</span><div class="tab-dot"></div>
-    </div>
+
     <div class="tab" onclick="showTab('history')">
       <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
-      <span>History</span><div class="tab-dot"></div>
+      <span>History</span>
+      <span class="tab-badge" id="tabHistBadge" style="display:none">0</span>
     </div>
+
+    <div class="nav-divider"></div>
+
+    <!-- ── Observe ── -->
+    <span class="nav-section-label">Observe</span>
+
+    <div class="tab" onclick="showTab('overview')">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span>Overview</span>
+    </div>
+
+    <div class="tab" onclick="showTab('http')">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+      <span>HTTP Metrics</span>
+    </div>
+
+    <div class="tab" onclick="showTab('endpoints')">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3" cy="6" r="1.5" fill="currentColor"/><circle cx="3" cy="12" r="1.5" fill="currentColor"/><circle cx="3" cy="18" r="1.5" fill="currentColor"/></svg>
+      <span>Endpoints</span>
+      <span class="tab-badge" id="tabEpBadge" style="display:none">0</span>
+    </div>
+
+    <div class="tab" onclick="showTab('log')">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4,17 10,11 4,5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+      <span>Log</span>
+    </div>
+
+    <div class="nav-divider"></div>
+
+    <!-- ── Quality ── -->
+    <span class="nav-section-label">Quality</span>
+
     <div class="tab" onclick="showTab('lighthouse')">
       <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-      <span>Lighthouse</span><div class="tab-dot"></div>
+      <span>Lighthouse</span>
     </div>
+
+    <div class="tab" onclick="showTab('visualqa')">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M20.188 10.934c.326.504.326 1.628 0 2.132C18.768 15.37 15.636 18 12 18c-3.636 0-6.768-2.63-8.188-4.934-.326-.504-.326-1.628 0-2.132C5.232 8.63 8.364 6 12 6c3.636 0 6.768 2.63 8.188 4.934z"/></svg>
+      <span>Visual QA</span>
+      <span class="badge badge-accent" style="font-size:8px;padding:1px 5px;margin-left:auto">31</span>
+    </div>
+
   </nav>
-  <div class="sidebar-footer" style="font-size:10px;color:var(--muted)">
-    <div id="themeLabel" style="font-weight:500;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px"></div>
-    <div class="theme-switcher" id="themeSwitcher" style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">
+
+  <!-- Footer: theme switcher -->
+  <div class="sidebar-footer">
+    <div class="theme-label-row" id="themeLabel">Theme</div>
+    <div class="theme-switcher" id="themeSwitcher">
       <button class="theme-swatch active" data-theme="matrix"    title="Premium"   style="--sw:#F5A623"></button>
       <button class="theme-swatch"        data-theme="cyberpunk" title="Cyberpunk" style="--sw:#00fff5"></button>
       <button class="theme-swatch"        data-theme="midnight"  title="Midnight"  style="--sw:#4da6ff"></button>
@@ -874,20 +1304,34 @@ footer{
 
 <!-- ── Header ── -->
 <header>
-  <div class="header-left" style="display:flex;align-items:center;gap:8px">
-    <span style="font-size:13px;color:var(--muted);font-weight:500" id="pageTitle">Execute</span>
+  <!-- Left: breadcrumb / title -->
+  <div class="header-left">
+    <div class="page-crumb">
+      <span class="crumb-root" style="color:var(--accent)">LUNA</span>
+      <span class="crumb-sep">/</span>
+      <span class="crumb-cur" id="pageTitle">Execute</span>
+    </div>
   </div>
+
+  <!-- Center: live performance stats -->
   <div class="header-stats">
     <div class="hstat"><div class="hstat-label">VUs</div><div class="hstat-value" id="hVus">—</div></div>
     <div class="hstat"><div class="hstat-label">Reqs</div><div class="hstat-value" id="hReqs">—</div></div>
     <div class="hstat"><div class="hstat-label">RPS</div><div class="hstat-value" id="hRps">—</div></div>
     <div class="hstat"><div class="hstat-label">p95 ms</div><div class="hstat-value" id="hP95">—</div></div>
     <div class="hstat"><div class="hstat-label">Errors</div><div class="hstat-value" id="hFail">—</div></div>
-    <div class="header-controls">
-      <button class="toggle-btn live" id="toggleBtn" onclick="toggleMode()">
-        <div class="led"></div><span id="toggleLabel">LIVE</span>
-      </button>
-    </div>
+  </div>
+
+  <!-- Right: controls -->
+  <div class="header-controls">
+    <!-- Quick-run shortcut (navigates to Execute tab) -->
+    <button class="btn-run-quick" id="headerRunBtn" onclick="showTab('run')" title="Go to Execute tab">
+      <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+      Run
+    </button>
+    <button class="toggle-btn live" id="toggleBtn" onclick="toggleMode()">
+      <div class="led"></div><span id="toggleLabel">LIVE</span>
+    </button>
   </div>
 </header>
 
@@ -1355,7 +1799,11 @@ footer{
 <div id="pane-log" class="pane">
   <div class="stitle">Event Stream</div>
   <div class="log-stream" id="logStream">
-    <div class="log-line"><span class="ts">--:--:--</span><span class="msg">Waiting for k6…</span></div>
+    <div class="log-line" style="opacity:.4;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:8px;padding:40px">
+      <span style="font-size:28px;opacity:.3">📋</span>
+      <span class="msg" style="color:var(--muted);font-size:11px;font-family:inherit;letter-spacing:.3px">Waiting for k6 event stream…</span>
+      <span style="font-size:10px;color:var(--muted);opacity:.6">Start a test run to see live log output</span>
+    </div>
   </div>
 </div>
 
@@ -1899,18 +2347,77 @@ footer{
     <div class="wiz-pane" id="wizPane7">
       <div class="stitle" style="margin-bottom:4px">Test Suite</div>
       <div style="color:var(--muted);font-size:11px;margin-bottom:14px">
-        Auto-generate and run API smoke tests from discovered endpoints, or trigger Playwright UI tests against the dashboard.
+        Auto-generate backend (API), frontend (Playwright), performance (k6), and Lighthouse tests from your discovered endpoints.
+        Each run is saved to a unique directory with results stored alongside the generated files.
       </div>
 
-      <!-- Test Plan Preview -->
+      <!-- ── GENERATE card ─────────────────────────────────────── -->
+      <div class="wiz7-card" style="border-color:var(--accent4)">
+        <div class="wiz7-card-hdr">
+          <span class="wiz7-card-title">⚡ Generate Test Suite</span>
+          <button class="disc-btn" id="wiz7GenBtn" onclick="wiz7Generate()" style="padding:4px 14px;font-size:10px;background:var(--accent3);color:var(--bg);border-color:var(--accent2)">Generate &amp; Save</button>
+        </div>
+        <div style="color:var(--muted);font-size:10px;margin-bottom:10px">
+          Creates test files from the current endpoint config into a timestamped directory under
+          <code style="font-family:monospace;color:var(--accent3)">data/generated-tests/</code>.
+          Select which test types to generate:
+        </div>
+        <!-- suite type checkboxes -->
+        <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px">
+          <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px;cursor:pointer">
+            <input type="checkbox" id="wiz7GenApi" checked style="accent-color:var(--accent)"> API Tests <span style="color:var(--muted);font-size:9px">(pytest/httpx)</span>
+          </label>
+          <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px;cursor:pointer">
+            <input type="checkbox" id="wiz7GenUi" checked style="accent-color:var(--accent)"> UI Tests <span style="color:var(--muted);font-size:9px">(Playwright)</span>
+          </label>
+          <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px;cursor:pointer">
+            <input type="checkbox" id="wiz7GenPerf" checked style="accent-color:var(--accent)"> Performance <span style="color:var(--muted);font-size:9px">(k6)</span>
+          </label>
+          <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px;cursor:pointer">
+            <input type="checkbox" id="wiz7GenLh" checked style="accent-color:var(--accent)"> Lighthouse <span style="color:var(--muted);font-size:9px">(audit)</span>
+          </label>
+        </div>
+        <!-- base url override -->
+        <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center">
+          <input class="field-input" id="wiz7GenBaseUrl" type="url" placeholder="Base URL override (optional — uses discovered URL)" style="flex:1;font-size:11px;padding:5px 10px"/>
+          <input class="field-input" id="wiz7GenToken" type="password" placeholder="Bearer token (optional)" style="flex:1;font-size:11px;padding:5px 10px"/>
+        </div>
+        <div id="wiz7GenResult" style="display:none;margin-top:8px;padding:10px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;font-size:11px">
+          <div style="font-weight:600;color:var(--accent);margin-bottom:6px" id="wiz7GenDirName"></div>
+          <div style="color:var(--muted)" id="wiz7GenFiles"></div>
+        </div>
+        <div id="wiz7GenError" style="display:none;margin-top:6px;font-size:11px;color:var(--err)"></div>
+      </div>
+
+      <!-- ── EXECUTE card ─────────────────────────────────────── -->
+      <div class="wiz7-card" id="wiz7ExecCard" style="display:none">
+        <div class="wiz7-card-hdr">
+          <span class="wiz7-card-title">▶ Execute Test Suite</span>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button class="disc-btn" onclick="wiz7Execute(['api'])"     style="padding:3px 10px;font-size:10px">API</button>
+            <button class="disc-btn" onclick="wiz7Execute(['ui'])"      style="padding:3px 10px;font-size:10px">UI</button>
+            <button class="disc-btn" onclick="wiz7Execute(['perf'])"    style="padding:3px 10px;font-size:10px">Performance</button>
+            <button class="disc-btn" onclick="wiz7Execute(['lighthouse'])" style="padding:3px 10px;font-size:10px">Lighthouse</button>
+            <button class="disc-btn" onclick="wiz7Execute()" style="padding:3px 10px;font-size:10px;background:var(--accent3);color:var(--bg);border-color:var(--accent2)">Run All</button>
+          </div>
+        </div>
+        <div style="font-size:10px;color:var(--muted);margin-bottom:8px">
+          Running against: <code id="wiz7ExecDir" style="font-family:monospace;color:var(--accent)">—</code>
+          Results are saved to <code style="font-family:monospace;color:var(--accent3)">results/</code> inside the same directory.
+        </div>
+        <!-- per-suite result panels -->
+        <div id="wiz7ExecResults" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px"></div>
+      </div>
+
+      <!-- ── TEST PLAN PREVIEW (existing) ─────────────────────── -->
       <div class="wiz7-card" id="wiz7PlanCard">
         <div class="wiz7-card-hdr">
-          <span class="wiz7-card-title">📋 Test Plan</span>
+          <span class="wiz7-card-title">📋 Endpoint Plan</span>
           <button class="disc-btn" onclick="wiz7RefreshPlan()" style="padding:3px 10px;font-size:10px">↻ Refresh</button>
         </div>
         <div id="wiz7PlanBody">
           <div class="wiz7-loading" id="wiz7PlanLoading" style="display:none">Loading plan…</div>
-          <div class="wiz7-empty" id="wiz7PlanEmpty">Click Refresh to load the current test plan.</div>
+          <div class="wiz7-empty" id="wiz7PlanEmpty">Click Refresh to load the current endpoint plan.</div>
           <div id="wiz7PlanContent" style="display:none">
             <div class="wiz7-stat-row" id="wiz7PlanStats"></div>
             <table class="wiz7-table" id="wiz7PlanTable">
@@ -1921,47 +2428,49 @@ footer{
         </div>
       </div>
 
-      <!-- API Tests -->
+      <!-- ── LEGACY: run existing project tests ───────────────── -->
       <div class="wiz7-card">
         <div class="wiz7-card-hdr">
-          <span class="wiz7-card-title">🧪 API Smoke Tests</span>
-          <div style="display:flex;gap:6px">
-            <button class="disc-btn" onclick="wiz7RunApiTests('api')" id="wiz7ApiSmokeBtn" style="padding:3px 10px;font-size:10px">Run Smoke</button>
-            <button class="disc-btn" onclick="wiz7RunApiTests('unit')" style="padding:3px 10px;font-size:10px">Unit Tests</button>
+          <span class="wiz7-card-title">🧪 Run Existing Project Tests</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+          <div>
+            <div style="font-size:10px;color:var(--muted);margin-bottom:5px">API Tests <code style="font-family:monospace;color:var(--accent3);font-size:9px">tests/api/</code></div>
+            <div style="display:flex;gap:4px">
+              <button class="disc-btn" onclick="wiz7RunApiTests('api')"  style="padding:3px 8px;font-size:10px">Smoke</button>
+              <button class="disc-btn" onclick="wiz7RunApiTests('unit')" style="padding:3px 8px;font-size:10px">Unit</button>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--muted);margin-bottom:5px">UI Tests <code style="font-family:monospace;color:var(--accent3);font-size:9px">tests/ui/</code></div>
+            <div style="display:flex;gap:4px">
+              <button class="disc-btn" onclick="wiz7RunUiTests('smoke')"      style="padding:3px 8px;font-size:10px">Smoke</button>
+              <button class="disc-btn" onclick="wiz7RunUiTests('regression')" style="padding:3px 8px;font-size:10px">Regression</button>
+              <button class="disc-btn" onclick="wiz7RunUiTests('all')"        style="padding:3px 8px;font-size:10px">All</button>
+            </div>
           </div>
         </div>
-        <div style="color:var(--muted);font-size:10px;margin-bottom:8px">
-          Runs <code style="font-family:monospace;color:var(--accent3)">pytest tests/api/</code> against the saved endpoint config.
-          Set <code style="font-family:monospace;color:var(--accent3)">BASE_URL</code> below if the service is not local.
+        <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center;flex-wrap:wrap">
+          <input class="field-input" id="wiz7ApiBaseUrl" type="url" placeholder="Base URL (default: local)" style="flex:1;min-width:160px;font-size:11px;padding:5px 10px"/>
+          <input class="field-input" id="wiz7ApiToken"   type="password" placeholder="Bearer token" style="flex:1;min-width:140px;font-size:11px;padding:5px 10px"/>
+          <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px;white-space:nowrap">
+            <input type="checkbox" id="wiz7UiHeaded"/> Headed
+          </label>
         </div>
-        <div style="display:flex;gap:8px;margin-bottom:10px;align-items:center">
-          <input class="field-input" id="wiz7ApiBaseUrl" type="url" placeholder="http://localhost:5656 (default)" style="flex:1;font-size:11px;padding:5px 10px"/>
-          <input class="field-input" id="wiz7ApiToken" type="password" placeholder="Bearer token (optional)" style="flex:1;font-size:11px;padding:5px 10px"/>
-        </div>
-        <div id="wiz7ApiResults" class="wiz7-results wiz7-results-empty">No run yet — click Run Smoke to start.</div>
+        <div id="wiz7ApiResults" class="wiz7-results wiz7-results-empty" style="margin-bottom:6px">No API run yet.</div>
+        <div id="wiz7UiResults"  class="wiz7-results wiz7-results-empty">No UI run yet.</div>
       </div>
 
-      <!-- UI Tests -->
+      <!-- ── HISTORY ────────────────────────────────────────────── -->
       <div class="wiz7-card">
         <div class="wiz7-card-hdr">
-          <span class="wiz7-card-title">🖥 UI Tests (Playwright)</span>
-          <div style="display:flex;gap:6px">
-            <button class="disc-btn" onclick="wiz7RunUiTests('smoke')" style="padding:3px 10px;font-size:10px">Smoke</button>
-            <button class="disc-btn" onclick="wiz7RunUiTests('regression')" style="padding:3px 10px;font-size:10px">Regression</button>
-            <button class="disc-btn" onclick="wiz7RunUiTests('all')" style="padding:3px 10px;font-size:10px">All</button>
-          </div>
+          <span class="wiz7-card-title">🗂 Generated Test History</span>
+          <button class="disc-btn" onclick="wiz7LoadHistory()" style="padding:3px 10px;font-size:10px">↻ Refresh</button>
         </div>
-        <div style="color:var(--muted);font-size:10px;margin-bottom:8px">
-          Runs <code style="font-family:monospace;color:var(--accent3)">pytest tests/ui/</code> with headless Chromium.
-          Requires <code style="font-family:monospace;color:var(--accent3)">just ui-install</code> to have been run once.
+        <div id="wiz7HistBody">
+          <div class="wiz7-empty" id="wiz7HistEmpty">No generated suites yet — click Generate &amp; Save above.</div>
+          <div id="wiz7HistList" style="display:flex;flex-direction:column;gap:6px"></div>
         </div>
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-          <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px">
-            <input type="checkbox" id="wiz7UiHeaded"/> Headed (visible browser)
-          </label>
-          <input class="field-input" id="wiz7UiMarkers" type="text" placeholder="markers, e.g. smoke (optional)" style="flex:1;font-size:11px;padding:5px 10px"/>
-        </div>
-        <div id="wiz7UiResults" class="wiz7-results wiz7-results-empty">No run yet — choose a suite above.</div>
       </div>
 
       <div class="wiz-nav">
@@ -2270,15 +2779,23 @@ footer{
 
 </div><!-- /.content -->
 
-<footer>
-  <span style="display:flex;align-items:center;gap:8px">
-    <span style="color:var(--accent);font-weight:700">M PERF</span>
-    <span>k6 :6565 · InfluxDB :8086</span>
+<footer style="flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:7px 20px;border-top:1px solid var(--border);background:var(--bg);font-size:10px;color:var(--muted);font-weight:500;gap:16px">
+  <span style="display:flex;align-items:center;gap:10px">
+    <span style="color:var(--accent);font-weight:800;letter-spacing:2px">LUNA</span>
+    <span style="opacity:.4">·</span>
+    <span style="display:flex;align-items:center;gap:5px">
+      <span style="width:5px;height:5px;border-radius:50%;background:var(--ok);display:inline-block"></span>
+      k6 :6565
+    </span>
+    <span style="display:flex;align-items:center;gap:5px">
+      <span style="width:5px;height:5px;border-radius:50%;background:var(--info);display:inline-block"></span>
+      InfluxDB :8086
+    </span>
   </span>
-  <span style="font-variant-numeric:tabular-nums" id="ticker">&nbsp;</span>
-  <span style="display:flex;gap:16px;align-items:center">
-    <span style="opacity:.4">1–7: tabs · T: theme · L: live</span>
-    <span id="lastUpdated">&nbsp;</span>
+  <span style="font-variant-numeric:tabular-nums;font-family:monospace;font-size:11px;color:var(--accent);opacity:.7" id="ticker">&nbsp;</span>
+  <span style="display:flex;gap:14px;align-items:center">
+    <span style="opacity:.35;font-size:9px;letter-spacing:.5px">TABS: 1–9 · THEME: T · LIVE: L</span>
+    <span id="lastUpdated" style="font-size:9px;opacity:.5">&nbsp;</span>
   </span>
 </footer>
 
@@ -2513,10 +3030,30 @@ function renderOffendersView(ops){
 /* ══════════════════════════════════════════════════════════════════
    TAB ROUTING
    ══════════════════════════════════════════════════════════════════ */
-const TAB_NAMES=['discover','run','overview','endpoints','http','log','history','lighthouse'];
-const TAB_LABELS={run:'Execute',overview:'Overview',endpoints:'Endpoints',http:'HTTP Metrics',log:'Log',history:'History',discover:'Discover'};
+const TAB_NAMES=['discover','run','history','overview','http','endpoints','log','lighthouse','visualqa'];
+const TAB_LABELS={
+  run:'Execute',overview:'Overview',endpoints:'Endpoints',http:'HTTP Metrics',
+  log:'Log',history:'History',discover:'Discover',lighthouse:'Lighthouse',visualqa:'Visual QA'
+};
+/* Breadcrumb context descriptions */
+const TAB_DESC={
+  run:'Configure and launch k6 performance tests',
+  discover:'Auto-discover API endpoints and generate test suites',
+  history:'Browse past test run results and comparisons',
+  overview:'Live performance dashboard and analytics',
+  http:'HTTP status codes and request metrics',
+  endpoints:'Per-endpoint latency, throughput, and health',
+  log:'Real-time test log stream',
+  lighthouse:'Lighthouse audits — performance, accessibility, SEO',
+  visualqa:'31 AI-powered visual QA agents',
+};
 function showTab(name){
-  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',TAB_NAMES[i]===name));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  /* match by onclick attribute content — more robust than index */
+  document.querySelectorAll('.tab').forEach(t=>{
+    const oc=t.getAttribute('onclick')||'';
+    if(oc.includes(`'${name}'`)) t.classList.add('active');
+  });
   document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('active',p.id==='pane-'+name));
   const pt=document.getElementById('pageTitle');if(pt)pt.textContent=TAB_LABELS[name]||name;
   if(name==='history')  loadHistory();
@@ -2524,6 +3061,27 @@ function showTab(name){
   if(name==='overview') loadHeatmap();
   if(name==='endpoints')loadOpSparklines();
   if(name==='discover') { loadWebhooks(); loadDataFiles(); }
+  /* hide quick-run button when already on Execute */
+  const hrb=document.getElementById('headerRunBtn');
+  if(hrb) hrb.style.display=(name==='run')?'none':'';
+}
+
+/* Update history badge from run count */
+function _updateHistBadge(count){
+  const el=document.getElementById('tabHistBadge');
+  if(!el) return;
+  if(count>0){el.textContent=count;el.style.display='';}else{el.style.display='none';}
+}
+/* Update endpoint count badge */
+function _updateEpBadge(count){
+  const el=document.getElementById('tabEpBadge');
+  if(!el) return;
+  if(count>0){el.textContent=count;el.style.display='';}else{el.style.display='none';}
+}
+/* Show/hide run-in-progress indicator on Execute tab */
+function _setRunDot(running){
+  const el=document.getElementById('tabRunDot');
+  if(el) el.style.display=running?'':'none';
 }
 
 /* ══════════════════════════════════════════════════════════════════
@@ -2604,15 +3162,21 @@ document.querySelectorAll('.theme-swatch').forEach(s=>
 /* ══════════════════════════════════════════════════════════════════
    TOAST NOTIFICATIONS
    ══════════════════════════════════════════════════════════════════ */
-function toast(msg,type='ok',duration=3000){
+function toast(msg,type='ok',duration=3500){
+  const icons={ok:'✓',err:'✗',warn:'⚠',info:'ℹ'};
   const el=document.createElement('div');
-  const colors={ok:'var(--accent)',err:'var(--err)',warn:'var(--warn)',info:'var(--muted)'};
-  const c=colors[type]||colors.ok;
-  el.style.cssText=`padding:8px 14px;background:var(--surface2);border:1px solid ${c};color:${c};font-size:11px;letter-spacing:1px;border-radius:2px;opacity:0;transition:opacity .3s;pointer-events:none;font-family:'Courier New',monospace;box-shadow:0 4px 20px rgba(0,0,0,.4)`;
-  el.textContent=msg;
+  el.className=`toast toast-${type}`;
+  el.innerHTML=`
+    <span class="toast-icon">${icons[type]||'•'}</span>
+    <span class="toast-msg">${_esc?_esc(msg):msg}</span>
+    <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+  `;
   document.getElementById('toastContainer').appendChild(el);
-  requestAnimationFrame(()=>{el.style.opacity='1';});
-  setTimeout(()=>{el.style.opacity='0';setTimeout(()=>el.remove(),300);},duration);
+  setTimeout(()=>{
+    el.style.transition='opacity .25s,transform .25s';
+    el.style.opacity='0';el.style.transform='translateX(8px)';
+    setTimeout(()=>el.remove(),260);
+  },duration);
 }
 
 /* ══════════════════════════════════════════════════════════════════
@@ -2620,7 +3184,7 @@ function toast(msg,type='ok',duration=3000){
    ══════════════════════════════════════════════════════════════════ */
 document.addEventListener('keydown',e=>{
   if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
-  const tabs=['discover','run','overview','endpoints','http','log','history','lighthouse'];
+  const tabs=['discover','run','overview','endpoints','http','log','history','lighthouse','visualqa'];
   if(e.key>='1'&&e.key<='8'){showTab(tabs[+e.key-1]);return;}
   if(e.key==='t'||e.key==='T'){
     const idx=THEMES.indexOf(document.documentElement.getAttribute('data-theme')||'matrix');
@@ -2656,6 +3220,7 @@ async function loadEndpointConfig(){
     OP_GROUP={};
     for(const ep of all_sections){if(ep.name)OP_GROUP[ep.name]=ep.group||ep.name;}
     ALL_OPS=Object.keys(OP_GROUP);
+    _updateEpBadge((cfg.endpoints||[]).length);
     // Pre-assign colors in stable order (groups from endpoints section)
     const groups=[...new Set(all_sections.map(e=>e.group||e.name).filter(Boolean))];
     groups.forEach(groupColor);
@@ -3005,6 +3570,7 @@ async function loadHistory(){
   try{
     const data=await fj('/runs');
     allRuns=data.runs??[];
+    _updateHistBadge(allRuns.length);
     renderRunList();
   }catch{
     document.getElementById('runsBody').innerHTML=`<tr><td colspan="11" style="text-align:center;padding:24px;color:var(--err)">Could not load run history</td></tr>`;
@@ -3420,7 +3986,11 @@ function backToList(){
 function idx(data){const m={};(data?.data??[]).forEach(e=>{m[e.id]=e.attributes});return m}
 function set(id,v){const e=document.getElementById(id);if(e)e.textContent=v??'—'}
 function setClass(id,c){const e=document.getElementById(id);if(e)e.className=c}
-function setDot(s,l){document.getElementById('statusDot').className='dot '+s;document.getElementById('statusLabel').textContent=l}
+function setDot(s,l){
+  document.getElementById('statusDot').className='dot '+s;
+  document.getElementById('statusLabel').textContent=l;
+  _setRunDot(s==='running');
+}
 function setLatClass(id,ms,lo=500,hi=1500){const c=ms>=hi?'err':ms>=lo?'warn':'';setClass(id,`card-value${c?' '+c:''}`)}
 function fmt(n){if(n==null||isNaN(n))return'—';return n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(1)+'k':String(Math.round(n))}
 function fmtMs(n){if(n==null||isNaN(n)||+n===0)return'—';return(+n<1000)?(+n).toFixed(0):(+n/1000).toFixed(2)+'k'}
@@ -3608,7 +4178,7 @@ function wizGo(step){
     if(sn&&!sn.value) sn.value=wizDeriveServiceName();
     wizBuildSummary();
   }
-  if(step===7) wiz7RefreshPlan();
+  if(step===7) wiz7OnEnter();
 }
 
 function wizSelectSource(type,el){
@@ -4280,6 +4850,10 @@ async function wizSaveAndRun(){
 
 // ── Step 7: Test Suite ──────────────────────────────────────────────────────
 
+/* State for current generated suite dir */
+let _wiz7CurrentDir = null;
+let _wiz7CurrentConfig = null;
+
 async function wizSaveAndGenerateTests(){
   const btn=document.getElementById('wizSaveTestBtn');
   if(btn) btn.disabled=true;
@@ -4290,7 +4864,7 @@ async function wizSaveAndGenerateTests(){
     if(data.ok){
       wizShowMsg(`Saved ${config.endpoints.length} endpoints — opening Test Suite`,'ok');
       loadEndpointConfig();
-      wizGo(7);  // navigate to test suite step (auto-loads plan)
+      wizGo(7);
     }else{
       wizShowMsg('Save failed','error');
     }
@@ -4300,6 +4874,210 @@ async function wizSaveAndGenerateTests(){
     if(btn) btn.disabled=false;
   }
 }
+
+/* Auto-load plan + history when arriving at step 7 */
+function wiz7OnEnter(){
+  wiz7RefreshPlan();
+  wiz7LoadHistory();
+}
+
+// ── Generate ─────────────────────────────────────────────────────────────────
+
+async function wiz7Generate(){
+  const btn=document.getElementById('wiz7GenBtn');
+  const errEl=document.getElementById('wiz7GenError');
+  const resEl=document.getElementById('wiz7GenResult');
+  btn.disabled=true;
+  btn.textContent='Generating…';
+  errEl.style.display='none';
+  resEl.style.display='none';
+
+  // Collect checked suites
+  const suites=[];
+  if(document.getElementById('wiz7GenApi').checked)  suites.push('api');
+  if(document.getElementById('wiz7GenUi').checked)   suites.push('ui');
+  if(document.getElementById('wiz7GenPerf').checked) suites.push('perf');
+  if(document.getElementById('wiz7GenLh').checked)   suites.push('lighthouse');
+  if(!suites.length){toast('Select at least one suite type','warn');btn.disabled=false;btn.textContent='Generate & Save';return;}
+
+  const baseUrl=(document.getElementById('wiz7GenBaseUrl').value||'').trim();
+
+  // Try to get current endpoint config
+  let config={};
+  try{
+    const cd=await fj('/endpoints');
+    config=cd||{};
+  }catch(_){}
+
+  // Also pull the wizUrl from step 1 as base_url fallback
+  const wizUrl=(document.getElementById('wizUrl')||{}).value||'';
+  const effectiveUrl=baseUrl||config.base_url||wizUrl;
+
+  try{
+    const body={config, base_url:effectiveUrl, suites};
+    const r=await fetch('/discover/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const d=await r.json();
+    if(d.detail){throw new Error(d.detail);}
+
+    _wiz7CurrentDir=d.dir_name;
+    _wiz7CurrentConfig=config;
+
+    // Show result
+    document.getElementById('wiz7GenDirName').textContent=`📁 data/generated-tests/${d.dir_name}`;
+    document.getElementById('wiz7GenFiles').innerHTML=
+      (d.files||[]).map(f=>`<code style="font-family:monospace;color:var(--accent3);font-size:10px">${_esc(f)}</code>`).join(' · ') +
+      `<span style="color:var(--muted);margin-left:6px">(${d.endpoints_count} endpoints)</span>`;
+    resEl.style.display='';
+
+    // Show execute card pointing at this dir
+    document.getElementById('wiz7ExecDir').textContent=d.dir_name;
+    document.getElementById('wiz7ExecCard').style.display='';
+    document.getElementById('wiz7ExecResults').innerHTML='';
+
+    wiz7LoadHistory();
+    toast(`Generated ${d.files.length} files → ${d.dir_name}`,'ok');
+  }catch(err){
+    errEl.textContent='Generation failed: '+err.message;
+    errEl.style.display='';
+  }finally{
+    btn.disabled=false;
+    btn.textContent='Generate & Save';
+  }
+}
+
+// ── Execute ───────────────────────────────────────────────────────────────────
+
+async function wiz7Execute(suites){
+  if(!_wiz7CurrentDir){toast('Generate a test suite first','warn');return;}
+  const container=document.getElementById('wiz7ExecResults');
+  const effectiveSuites=suites||['api','ui','perf','lighthouse'];
+  const baseUrl=(document.getElementById('wiz7GenBaseUrl').value||'').trim();
+  const token=(document.getElementById('wiz7GenToken').value||'').trim();
+
+  // Show running placeholders
+  effectiveSuites.forEach(s=>{
+    let el=document.getElementById(`wiz7ExecSuite-${s}`);
+    if(!el){
+      el=document.createElement('div');
+      el.id=`wiz7ExecSuite-${s}`;
+      el.className='wiz7-results wiz7-results-running';
+      container.appendChild(el);
+    }
+    el.className='wiz7-results wiz7-results-running';
+    el.innerHTML=`<b>${_suiteLabel(s)}</b><br><span style="font-size:10px;color:var(--muted)">Running…</span>`;
+  });
+
+  try{
+    const body={dir_name:_wiz7CurrentDir,suites:effectiveSuites,base_url:baseUrl,token};
+    const r=await fetch('/discover/execute',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const d=await r.json();
+    if(d.detail){throw new Error(d.detail);}
+
+    Object.entries(d.results||{}).forEach(([suite,res])=>{
+      let el=document.getElementById(`wiz7ExecSuite-${suite}`);
+      if(!el){el=document.createElement('div');el.id=`wiz7ExecSuite-${suite}`;container.appendChild(el);}
+      wiz7RenderSuiteResult(el, suite, res);
+    });
+    wiz7LoadHistory();
+  }catch(err){
+    effectiveSuites.forEach(s=>{
+      const el=document.getElementById(`wiz7ExecSuite-${s}`);
+      if(el){el.className='wiz7-results wiz7-results-fail';el.textContent='Error: '+err.message;}
+    });
+  }
+}
+
+function _suiteLabel(s){return{api:'🧪 API Tests',ui:'🖥 UI Tests',perf:'⚡ Performance',lighthouse:'🔦 Lighthouse'}[s]||s;}
+
+function wiz7RenderSuiteResult(el, suite, res){
+  const ok=res.status==='passed';
+  const notRun=res.status==='not_run';
+  const isErr=res.status==='error';
+  el.className='wiz7-results '+(ok?'wiz7-results-ok':notRun?'wiz7-results-empty':'wiz7-results-fail');
+  const dur=res.duration_ms?`${(res.duration_ms/1000).toFixed(1)}s`:'';
+  const badge=ok?'✓':'✗';
+  el.innerHTML=`
+    <div style="font-weight:700;font-size:12px;margin-bottom:4px">${_suiteLabel(suite)} ${badge}</div>
+    ${notRun||isErr
+      ? `<div style="font-size:10px;color:var(--muted)">${_esc(res.error_message||res.status)}</div>`
+      : `<div style="font-size:10px;display:flex;gap:10px;flex-wrap:wrap">
+           <span>✅ ${res.passed||0}</span><span>❌ ${res.failed||0}</span>
+           <span>⚠️ ${res.errors||0}</span><span style="color:var(--muted)">${res.total||0} total</span>
+           ${dur?`<span style="color:var(--muted)">${dur}</span>`:''}
+         </div>
+         ${res.output?`<pre style="margin-top:5px;font-size:9px;white-space:pre-wrap;max-height:80px;overflow-y:auto;color:var(--muted)">${_esc(res.output.slice(-800))}</pre>`:''}`
+    }
+  `;
+}
+
+// ── History ───────────────────────────────────────────────────────────────────
+
+async function wiz7LoadHistory(){
+  const listEl=document.getElementById('wiz7HistList');
+  const emptyEl=document.getElementById('wiz7HistEmpty');
+  try{
+    const rows=await fj('/discover/generated?limit=10');
+    if(!rows||!rows.length){emptyEl.style.display='';listEl.innerHTML='';return;}
+    emptyEl.style.display='none';
+    listEl.innerHTML=rows.map(r=>wiz7HistRow(r)).join('');
+  }catch(e){
+    emptyEl.textContent='Failed to load history: '+e.message;
+    emptyEl.style.display='';
+  }
+}
+
+function wiz7HistRow(r){
+  const ts=r.created_at?(new Date(r.created_at)).toLocaleString():r.dir_name;
+  const suites=(r.suites_generated||[]).join(', ');
+  const resultsMap=r.results||{};
+  const badges=Object.entries(resultsMap).map(([s,v])=>{
+    const col=v.status==='passed'?'var(--ok)':v.status==='not_run'?'var(--muted)':'var(--err)';
+    return `<span style="font-size:9px;padding:1px 5px;border-radius:3px;background:${col}20;color:${col};border:1px solid ${col}40">${s}: ${v.status}</span>`;
+  }).join(' ');
+  return `<div style="padding:8px 10px;background:var(--surface2);border:1px solid var(--border2);border-radius:7px;font-size:11px">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+      <div>
+        <code style="font-family:monospace;color:var(--accent);font-size:10px">${_esc(r.dir_name)}</code>
+        <span style="color:var(--muted);font-size:9px;margin-left:6px">${_esc(ts)}</span>
+      </div>
+      <button class="disc-btn" style="font-size:9px;padding:2px 8px"
+        onclick="wiz7LoadHistoryItem(${JSON.stringify(r.dir_name)})">Load &amp; Run</button>
+    </div>
+    <div style="margin-top:4px;color:var(--muted);font-size:10px">
+      ${_esc(r.base_url||'—')} · ${r.endpoints_count||0} endpoints · ${_esc(suites)}
+    </div>
+    ${badges?`<div style="margin-top:4px;display:flex;gap:4px;flex-wrap:wrap">${badges}</div>`:''}
+  </div>`;
+}
+
+async function wiz7LoadHistoryItem(dirName){
+  _wiz7CurrentDir=dirName;
+  document.getElementById('wiz7ExecDir').textContent=dirName;
+  document.getElementById('wiz7ExecCard').style.display='';
+  document.getElementById('wiz7ExecResults').innerHTML='';
+  // Show the detail
+  try{
+    const d=await fj(`/discover/generated/${encodeURIComponent(dirName)}`);
+    if(d&&d.result_files&&d.result_files.length){
+      const container=document.getElementById('wiz7ExecResults');
+      d.result_files.forEach(rf=>{
+        const suite=rf.name.replace('_results.json','').replace('results.json','summary');
+        const data=rf.data;
+        // Handle summary differently
+        if(rf.name==='summary.json'&&data.suites){
+          Object.entries(data.suites).forEach(([s,res])=>{
+            let el=document.getElementById(`wiz7ExecSuite-${s}`);
+            if(!el){el=document.createElement('div');el.id=`wiz7ExecSuite-${s}`;container.appendChild(el);}
+            wiz7RenderSuiteResult(el,s,res);
+          });
+        }
+      });
+    }
+  }catch(_){}
+  toast(`Loaded ${dirName}`,'ok');
+}
+
+// ── Plan preview ──────────────────────────────────────────────────────────────
 
 async function wiz7RefreshPlan(){
   const loading=document.getElementById('wiz7PlanLoading');
@@ -4319,7 +5097,6 @@ async function wiz7RefreshPlan(){
       empty.textContent=data.error?`Error: ${data.error}`:'No endpoints configured. Complete discovery first.';
       return;
     }
-    // Aggregate by group
     const groups={};
     (data.entries||[]).forEach(e=>{
       const g=e.group||'default';
@@ -4344,6 +5121,8 @@ async function wiz7RefreshPlan(){
   }
 }
 
+// ── Legacy: run existing project tests ────────────────────────────────────────
+
 async function wiz7RunApiTests(suite='api'){
   const resultsEl=document.getElementById('wiz7ApiResults');
   const baseUrl=(document.getElementById('wiz7ApiBaseUrl').value||'').trim();
@@ -4364,11 +5143,10 @@ async function wiz7RunApiTests(suite='api'){
 async function wiz7RunUiTests(suite='all'){
   const resultsEl=document.getElementById('wiz7UiResults');
   const headed=document.getElementById('wiz7UiHeaded').checked;
-  const markers=(document.getElementById('wiz7UiMarkers').value||'').trim();
   resultsEl.className='wiz7-results wiz7-results-running';
   resultsEl.textContent=`Running UI ${suite} tests${headed?' (headed)':''}…`;
   try{
-    const body={suite,headed,markers};
+    const body={suite,headed,markers:''};
     const r=await fetch('/ui-tests/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     const d=await r.json();
     wiz7RenderTestResult(resultsEl,d);
@@ -5408,6 +6186,421 @@ async function lhLoadRun(run_id, url) {
     <div id="diffContent">Loading…</div>
   </div>
 </div>
+<!-- ═══════════════════════════════════════════════════════════════
+     VISUAL QA PANE
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="pane-visualqa" class="pane">
+  <div style="display:flex;gap:16px;height:100%;min-height:0;overflow:hidden">
+
+    <!-- LEFT: setup + results -->
+    <div style="flex:1;min-width:0;overflow-y:auto;padding-bottom:20px">
+
+      <!-- Setup card -->
+      <div class="run-section">
+        <div class="stitle">Visual QA — 31 AI Tester Agents</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:12px">
+          Each agent analyses your page (screenshot + accessibility tree + console logs) for a specific quality dimension.
+          Requires <code style="background:var(--surface2);padding:1px 4px;border-radius:3px">VISUAL_QA_AI_KEY</code> in <code style="background:var(--surface2);padding:1px 4px;border-radius:3px">.env</code>.
+        </div>
+
+        <!-- URL row -->
+        <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px">
+          <div class="field-group" style="flex:1;min-width:220px;margin-bottom:0">
+            <div class="field-label">URL to analyse</div>
+            <input class="field-input" id="vqaUrl" type="url" placeholder="https://example.com"/>
+          </div>
+          <button class="wiz-run-btn" id="vqaRunBtn" onclick="vqaRun()">Run Visual QA</button>
+        </div>
+
+        <!-- Auth row (reuse lighthouse pattern) -->
+        <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px">
+          <div class="field-group" style="min-width:140px;margin-bottom:0">
+            <div class="field-label">Auth</div>
+            <select class="field-input" id="vqaAuthMode" onchange="vqaAuthModeChange(this.value)" style="padding:6px 8px">
+              <option value="none">None</option>
+              <option value="bearer">Bearer Token</option>
+              <option value="cookie">Cookie</option>
+              <option value="basic">Basic Auth</option>
+              <option value="custom">Custom Header</option>
+            </select>
+          </div>
+          <div class="field-group" id="vqaAuthSingle" style="flex:1;min-width:200px;margin-bottom:0;display:none">
+            <div class="field-label" id="vqaAuthSingleLabel">Token</div>
+            <input class="field-input" id="vqaAuthSingleVal" type="password" placeholder=""/>
+          </div>
+          <div class="field-group" id="vqaAuthBasicUser" style="min-width:140px;margin-bottom:0;display:none">
+            <div class="field-label">Username</div>
+            <input class="field-input" id="vqaAuthUser" placeholder="user"/>
+          </div>
+          <div class="field-group" id="vqaAuthBasicPwd" style="min-width:140px;margin-bottom:0;display:none">
+            <div class="field-label">Password</div>
+            <input class="field-input" id="vqaAuthPwd" type="password" placeholder="••••••"/>
+          </div>
+          <div class="field-group" id="vqaAuthCustName" style="min-width:140px;margin-bottom:0;display:none">
+            <div class="field-label">Header Name</div>
+            <input class="field-input" id="vqaAuthHdrName" placeholder="X-API-Key"/>
+          </div>
+          <div class="field-group" id="vqaAuthCustVal" style="flex:1;min-width:160px;margin-bottom:0;display:none">
+            <div class="field-label">Header Value</div>
+            <input class="field-input" id="vqaAuthHdrVal" placeholder="value"/>
+          </div>
+        </div>
+
+        <!-- Agent selector -->
+        <div style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <div class="field-label" style="margin:0">Agents</div>
+            <div style="display:flex;gap:6px">
+              <button onclick="vqaSelectAll(true)" style="font-size:10px;padding:2px 8px;background:var(--surface2);border:1px solid var(--border2);border-radius:4px;color:var(--muted);cursor:pointer">All</button>
+              <button onclick="vqaSelectAll(false)" style="font-size:10px;padding:2px 8px;background:var(--surface2);border:1px solid var(--border2);border-radius:4px;color:var(--muted);cursor:pointer">None</button>
+            </div>
+          </div>
+          <div id="vqaAgentSelector" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:4px;max-height:280px;overflow-y:auto;padding:8px;background:var(--surface2);border:1px solid var(--border);border-radius:8px">
+            <div style="color:var(--muted);font-size:11px;padding:8px">Loading agents…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress -->
+      <div id="vqaProgress" style="display:none;margin-bottom:16px">
+        <div class="lh-spinner-wrap">
+          <span class="wiz-spinner" style="width:28px;height:28px;border-width:3px"></span>
+          <div>Capturing page &amp; running agents…</div>
+          <div id="vqaProgressText" style="font-size:11px;color:var(--muted)">This may take 30–120 seconds</div>
+        </div>
+      </div>
+
+      <!-- Error -->
+      <div id="vqaError" style="display:none;padding:16px;background:rgba(255,78,66,.08);border:1px solid rgba(255,78,66,.3);border-radius:12px;font-size:12px;color:#FF4E42;margin-bottom:16px"></div>
+
+      <!-- Results -->
+      <div id="vqaResults" style="display:none">
+        <!-- Summary cards -->
+        <div id="vqaSummaryCards" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px"></div>
+        <!-- Agent result cards -->
+        <div id="vqaAgentResults"></div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: history sidebar -->
+    <div style="width:260px;flex-shrink:0;overflow-y:auto;display:flex;flex-direction:column;gap:0">
+      <div class="stitle" style="margin-bottom:8px;padding-top:4px">Recent Runs</div>
+      <div id="vqaHistory" style="display:flex;flex-direction:column;gap:6px">
+        <div style="color:var(--muted);font-size:11px">Loading…</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<style>
+.vqa-agent-check{display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:6px;cursor:pointer;font-size:11px;color:var(--muted);transition:background .1s}
+.vqa-agent-check:hover{background:var(--surface);color:var(--text)}
+.vqa-agent-check input[type=checkbox]{accent-color:var(--accent);flex-shrink:0}
+.vqa-group-label{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);padding:8px 6px 2px;grid-column:1/-1}
+.vqa-bug-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:10px}
+.vqa-bug-card:hover{border-color:var(--border2)}
+.vqa-bug-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px;line-height:1.4}
+.vqa-bug-meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;align-items:center}
+.vqa-badge{font-size:10px;padding:2px 6px;border-radius:4px;font-weight:600;letter-spacing:.3px}
+.vqa-badge.p-high{background:rgba(239,68,68,.15);color:#EF4444;border:1px solid rgba(239,68,68,.3)}
+.vqa-badge.p-med{background:rgba(255,181,71,.15);color:#FFB547;border:1px solid rgba(255,181,71,.3)}
+.vqa-badge.p-low{background:rgba(34,197,94,.15);color:#22C55E;border:1px solid rgba(34,197,94,.3)}
+.vqa-badge.type{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
+.vqa-reasoning{font-size:11px;color:var(--muted);margin-bottom:6px;line-height:1.5}
+.vqa-fix{font-size:10px;color:var(--accent);background:var(--accentdim);border:1px solid var(--accent4);border-radius:6px;padding:4px 8px;margin-top:4px}
+.vqa-fix-prompt{display:none;margin-top:6px;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:8px;font-size:10px;font-family:monospace;color:var(--text);white-space:pre-wrap;word-break:break-word}
+.vqa-copy-btn{font-size:9px;padding:2px 6px;background:var(--surface2);border:1px solid var(--border2);border-radius:4px;color:var(--muted);cursor:pointer;float:right;margin-top:-2px}
+.vqa-copy-btn:hover{color:var(--accent);border-color:var(--accent3)}
+.vqa-agent-section{margin-bottom:16px}
+.vqa-agent-header{display:flex;align-items:center;gap:10px;margin-bottom:8px;cursor:pointer;user-select:none}
+.vqa-agent-name{font-size:12px;font-weight:700;color:var(--text)}
+.vqa-agent-spec{font-size:10px;color:var(--muted)}
+.vqa-agent-count{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600}
+.vqa-agent-count.has-bugs{background:rgba(255,181,71,.15);color:#FFB547;border:1px solid rgba(255,181,71,.3)}
+.vqa-agent-count.no-bugs{background:rgba(34,197,94,.1);color:#22C55E;border:1px solid rgba(34,197,94,.2)}
+.vqa-agent-count.err{background:rgba(239,68,68,.1);color:#EF4444;border:1px solid rgba(239,68,68,.2)}
+.vqa-hist-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;cursor:pointer;transition:border-color .15s;font-size:11px}
+.vqa-hist-card:hover{border-color:var(--accent3)}
+.vqa-hist-url{color:var(--accent);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
+.vqa-hist-meta{color:var(--muted);font-size:10px}
+</style>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════
+   VISUAL QA TAB
+   ══════════════════════════════════════════════════════════════════ */
+
+let _vqaPollTimer = null;
+let _vqaAgents = [];
+
+// ── Auth helpers ────────────────────────────────────────────────────
+function vqaAuthModeChange(m){
+  document.getElementById('vqaAuthSingle').style.display = (m==='bearer'||m==='cookie') ? '' : 'none';
+  document.getElementById('vqaAuthSingleLabel').textContent = m==='bearer' ? 'Token' : 'Cookie';
+  document.getElementById('vqaAuthBasicUser').style.display = m==='basic' ? '' : 'none';
+  document.getElementById('vqaAuthBasicPwd').style.display  = m==='basic' ? '' : 'none';
+  document.getElementById('vqaAuthCustName').style.display  = m==='custom' ? '' : 'none';
+  document.getElementById('vqaAuthCustVal').style.display   = m==='custom' ? '' : 'none';
+}
+
+function vqaBuildAuthPayload() {
+  const mode = (document.getElementById('vqaAuthMode').value || 'none').toLowerCase();
+  if (mode === 'bearer') return {auth_mode:'bearer', auth_token:(document.getElementById('vqaAuthSingleVal').value||'').trim()};
+  if (mode === 'cookie') return {auth_mode:'cookie', auth_cookie:(document.getElementById('vqaAuthSingleVal').value||'').trim()};
+  if (mode === 'basic')  return {auth_mode:'basic',  auth_user:(document.getElementById('vqaAuthUser').value||'').trim(), auth_password:(document.getElementById('vqaAuthPwd').value||'').trim()};
+  if (mode === 'custom') return {auth_mode:'custom', auth_header_name:(document.getElementById('vqaAuthHdrName').value||'').trim(), auth_header_value:(document.getElementById('vqaAuthHdrVal').value||'').trim()};
+  return {};
+}
+
+// ── Agent selector ──────────────────────────────────────────────────
+async function vqaLoadAgents() {
+  try {
+    const data = await fj('/visual-qa/agents');
+    _vqaAgents = data.agents || [];
+    const sel = document.getElementById('vqaAgentSelector');
+    if (!sel) return;
+    const groups = data.groups || {};
+    const ORDER = ['core','compliance','ecommerce','social','content','specialist'];
+    let html = '';
+    for (const grp of ORDER) {
+      const agents = groups[grp] || [];
+      if (!agents.length) continue;
+      html += `<div class="vqa-group-label">${grp}</div>`;
+      for (const a of agents) {
+        html += `<label class="vqa-agent-check">
+          <input type="checkbox" id="vqaChk_${a.id}" value="${a.id}" checked>
+          <span title="${a.specialty}">${a.name}</span>
+          <span style="font-size:9px;color:var(--muted);margin-left:auto">${a.check_types[0]}</span>
+        </label>`;
+      }
+    }
+    sel.innerHTML = html;
+  } catch(e) {
+    const sel = document.getElementById('vqaAgentSelector');
+    if (sel) sel.innerHTML = `<div style="color:var(--err);font-size:11px;padding:8px">Failed to load agents: ${e.message}</div>`;
+  }
+}
+
+function vqaSelectAll(checked) {
+  document.querySelectorAll('#vqaAgentSelector input[type=checkbox]').forEach(cb => cb.checked = checked);
+}
+
+function vqaGetSelectedAgents() {
+  const selected = [];
+  document.querySelectorAll('#vqaAgentSelector input[type=checkbox]:checked').forEach(cb => selected.push(cb.value));
+  return selected;
+}
+
+// ── Run ─────────────────────────────────────────────────────────────
+async function vqaRun() {
+  const url = (document.getElementById('vqaUrl').value || '').trim();
+  if (!url) { document.getElementById('vqaUrl').focus(); return; }
+
+  const agents = vqaGetSelectedAgents();
+  if (!agents.length) { toast('Select at least one agent', 'warn'); return; }
+
+  document.getElementById('vqaResults').style.display = 'none';
+  document.getElementById('vqaError').style.display = 'none';
+  document.getElementById('vqaProgress').style.display = '';
+  document.getElementById('vqaProgressText').textContent = 'Launching Playwright & capturing page…';
+  document.getElementById('vqaRunBtn').disabled = true;
+  if (_vqaPollTimer) clearInterval(_vqaPollTimer);
+
+  let elapsed = 0;
+  const tick = setInterval(() => {
+    elapsed += 2;
+    document.getElementById('vqaProgressText').textContent = `Running ${agents.length} agents… ${elapsed}s elapsed`;
+  }, 2000);
+
+  try {
+    const resp = await fetch('/visual-qa/run', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({url, agents, ...vqaBuildAuthPayload()}),
+    });
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({detail: resp.status}));
+      throw new Error(err.detail || resp.status);
+    }
+    const r = await resp.json();
+    const run_id = r.run_id;
+
+    _vqaPollTimer = setInterval(async () => {
+      try {
+        const st = await fj('/visual-qa/status/' + run_id);
+        if (st.status === 'done') {
+          clearInterval(_vqaPollTimer); clearInterval(tick);
+          const result = await fj('/visual-qa/result/' + run_id);
+          _vqaRenderResult(result);
+          document.getElementById('vqaRunBtn').disabled = false;
+          document.getElementById('vqaProgress').style.display = 'none';
+          vqaLoadHistory();
+        } else if (st.status === 'error') {
+          clearInterval(_vqaPollTimer); clearInterval(tick);
+          throw new Error('Run failed on server');
+        } else {
+          const p = st.progress || {};
+          document.getElementById('vqaProgressText').textContent =
+            `Agents: ${p.done||0}/${p.total||agents.length} complete — ${elapsed}s elapsed`;
+        }
+      } catch(pollErr) {
+        clearInterval(_vqaPollTimer); clearInterval(tick);
+        _vqaShowError(String(pollErr));
+      }
+    }, 3000);
+
+  } catch(e) {
+    clearInterval(tick);
+    _vqaShowError(String(e));
+  }
+}
+
+function _vqaShowError(msg) {
+  const el = document.getElementById('vqaError');
+  el.textContent = 'Error: ' + msg;
+  el.style.display = '';
+  document.getElementById('vqaProgress').style.display = 'none';
+  document.getElementById('vqaRunBtn').disabled = false;
+}
+
+// ── Render results ──────────────────────────────────────────────────
+function _vqaRenderResult(run) {
+  const results = run.results || [];
+  const totalBugs = results.reduce((s,r) => s + (r.bugs||[]).length, 0);
+  const critical = results.reduce((s,r) => s + (r.bugs||[]).filter(b=>b.bug_priority>=8).length, 0);
+  const agentsRan = results.length;
+  const agentsClean = results.filter(r=>!r.error&&(r.bugs||[]).length===0).length;
+
+  document.getElementById('vqaSummaryCards').innerHTML = `
+    <div class="card"><div class="card-label">Total Bugs</div><div class="card-value ${totalBugs>0?'warn':''}">${totalBugs}</div></div>
+    <div class="card"><div class="card-label">Critical (P≥8)</div><div class="card-value ${critical>0?'err':''}">${critical}</div></div>
+    <div class="card"><div class="card-label">Agents Run</div><div class="card-value">${agentsRan}</div></div>
+    <div class="card"><div class="card-label">Clean</div><div class="card-value" style="color:var(--accent)">${agentsClean}</div></div>
+  `;
+
+  // Sort: most bugs first, then errors, then clean
+  const sorted = [...results].sort((a,b) => {
+    const ba = (a.bugs||[]).length, bb = (b.bugs||[]).length;
+    return bb - ba;
+  });
+
+  let html = '';
+  for (const result of sorted) {
+    const bugs = result.bugs || [];
+    const sortedBugs = [...bugs].sort((a,b) => b.bug_priority - a.bug_priority);
+    const countClass = result.error ? 'err' : bugs.length > 0 ? 'has-bugs' : 'no-bugs';
+    const countLabel = result.error ? 'ERROR' : bugs.length === 0 ? '✓ Clean' : `${bugs.length} bug${bugs.length!==1?'s':''}`;
+
+    html += `<div class="vqa-agent-section">
+      <div class="vqa-agent-header" onclick="this.nextElementSibling.classList.toggle('hidden')">
+        <span class="vqa-agent-name">${_esc(result.agent_name)}</span>
+        <span class="vqa-agent-spec">${_esc(result.specialty)}</span>
+        <span class="vqa-agent-count ${countClass}">${countLabel}</span>
+      </div>
+      <div>`;
+
+    if (result.error) {
+      html += `<div class="vqa-bug-card" style="border-color:rgba(239,68,68,.3)">
+        <div style="font-size:11px;color:var(--err)">${_esc(result.error)}</div>
+      </div>`;
+    } else if (bugs.length === 0) {
+      html += `<div style="font-size:11px;color:var(--muted);padding:8px 0">No issues found.</div>`;
+    } else {
+      for (const bug of sortedBugs) {
+        const p = bug.bug_priority;
+        const pClass = p >= 8 ? 'p-high' : p >= 5 ? 'p-med' : 'p-low';
+        const typeLabels = (bug.bug_type||[]).map(t=>`<span class="vqa-badge type">${_esc(t)}</span>`).join('');
+        const fixId = 'vqaFix_' + Math.random().toString(36).slice(2);
+        html += `<div class="vqa-bug-card">
+          <div class="vqa-bug-title">${_esc(bug.bug_title)}</div>
+          <div class="vqa-bug-meta">
+            <span class="vqa-badge ${pClass}">P${p}</span>
+            <span class="vqa-badge type" style="color:var(--muted)">C${bug.bug_confidence}</span>
+            ${typeLabels}
+          </div>
+          <div class="vqa-reasoning">${_esc(bug.bug_reasoning_why_a_bug)}</div>
+          ${bug.suggested_fix ? `<div class="vqa-fix">${_esc(bug.suggested_fix)}</div>` : ''}
+          ${bug.fix_prompt ? `<div style="margin-top:6px">
+            <button class="vqa-copy-btn" onclick="vqaToggleFix('${fixId}',this)">Fix Prompt ▾</button>
+            <div id="${fixId}" class="vqa-fix-prompt">${_esc(bug.fix_prompt)}<br><button onclick="navigator.clipboard.writeText(${JSON.stringify(bug.fix_prompt)}).then(()=>toast('Copied!','ok'))" style="margin-top:6px;font-size:9px;padding:2px 8px;background:var(--surface);border:1px solid var(--border2);border-radius:4px;color:var(--accent);cursor:pointer">Copy</button></div>
+          </div>` : ''}
+        </div>`;
+      }
+    }
+    html += `</div></div>`;
+  }
+
+  document.getElementById('vqaAgentResults').innerHTML = html || '<div style="color:var(--muted);font-size:12px">No results.</div>';
+  document.getElementById('vqaResults').style.display = '';
+}
+
+function vqaToggleFix(id, btn) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const visible = el.style.display !== 'none' && el.style.display !== '';
+  el.style.display = visible ? 'none' : 'block';
+  btn.textContent = visible ? 'Fix Prompt ▾' : 'Fix Prompt ▴';
+}
+
+function _esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── History ──────────────────────────────────────────────────────────
+async function vqaLoadHistory() {
+  try {
+    const runs = await fj('/visual-qa/history?limit=15');
+    const el = document.getElementById('vqaHistory');
+    if (!el) return;
+    if (!runs.length) { el.innerHTML = '<div style="color:var(--muted);font-size:11px">No past runs.</div>'; return; }
+    el.innerHTML = runs.map(r => {
+      const urlShort = (r.url||'').replace(/^https?:\/\//, '').slice(0,32) + (r.url.length>38?'…':'');
+      const statusColor = r.status==='done' ? 'var(--accent)' : r.status==='error' ? 'var(--err)' : 'var(--warn)';
+      const ts = r.created_at ? r.created_at.slice(0,16).replace('T',' ') : '';
+      return `<div class="vqa-hist-card" onclick="vqaLoadRun('${r.run_id}')">
+        <div class="vqa-hist-url" title="${_esc(r.url)}">${_esc(urlShort)}</div>
+        <div class="vqa-hist-meta">
+          <span style="color:${statusColor}">${r.status}</span> ·
+          ${r.total_bugs} bug${r.total_bugs!==1?'s':''} ·
+          ${r.critical_bugs} critical
+        </div>
+        <div class="vqa-hist-meta">${ts}</div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    const el = document.getElementById('vqaHistory');
+    if (el) el.innerHTML = `<div style="color:var(--err);font-size:11px">Failed: ${e.message}</div>`;
+  }
+}
+
+async function vqaLoadRun(runId) {
+  try {
+    const result = await fj('/visual-qa/result/' + runId);
+    document.getElementById('vqaUrl').value = result.url || '';
+    document.getElementById('vqaError').style.display = 'none';
+    _vqaRenderResult(result);
+  } catch(e) {
+    toast('Could not load run: ' + e.message, 'err');
+  }
+}
+
+// ── Init ─────────────────────────────────────────────────────────────
+(function(){
+  const _vqaPane = document.getElementById('pane-visualqa');
+  if (_vqaPane) {
+    let loaded = false;
+    new MutationObserver(() => {
+      if (_vqaPane.classList.contains('active')) {
+        if (!loaded) { loaded = true; vqaLoadAgents(); }
+        vqaLoadHistory();
+      }
+    }).observe(_vqaPane, {attributes: true, attributeFilter: ['class']});
+  }
+})();
+</script>
+
 <script>
 (function(){
   function connect(){

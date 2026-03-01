@@ -311,6 +311,61 @@ cli-health:
 cli-history limit="10":
     uv run luna history --limit {{limit}}
 
+# ── Test Codegen (Discover → Test Suite) ─────────────────────────────────────
+
+# Generate all test types from a URL (api, ui, perf, lighthouse) and save to data/generated-tests/
+gen-tests url suites="api,ui,perf,lighthouse":
+    uv run python -c "
+import sys; sys.path.insert(0,'dashboard')
+from test_codegen import generate_suite
+from discovery import discover_url
+config = discover_url('{{url}}')
+suite = generate_suite(config, base_url='{{url}}', suites='{{suites}}'.split(','))
+print('Generated:', suite.dir_name)
+print('Files:', ', '.join(suite.files))
+"
+
+# Execute test suites for a generated directory (usage: just run-tests <dir_name> [suites])
+run-tests dir_name suites="api,ui,perf,lighthouse" base_url="" token="":
+    uv run python -c "
+import sys; sys.path.insert(0,'dashboard')
+from test_codegen import run_suite
+results = run_suite('{{dir_name}}', suites='{{suites}}'.split(','), base_url='{{base_url}}', token='{{token}}')
+for suite, r in results.items():
+    print(f'{suite}: {r.status} ({r.passed}✓ {r.failed}✗ {r.errors}⚠)')
+"
+
+# List all generated test directories
+gen-list:
+    uv run python -c "
+import sys; sys.path.insert(0,'dashboard')
+from test_codegen import list_generated
+rows = list_generated()
+if not rows:
+    print('No generated suites found.')
+else:
+    for r in rows:
+        print(f'{r[\"dir_name\"]}  {r[\"base_url\"]}  [{r[\"endpoints_count\"]} endpoints]  {r[\"suites_generated\"]}')
+"
+
+# ── Visual QA Agents ─────────────────────────────────────────────────────────
+
+# Run all 31 visual QA agents against a URL (requires VISUAL_QA_AI_KEY)
+vqa url agents="all":
+    uv run python -m dashboard.vqa_cli {{url}} --agents {{agents}}
+
+# List past visual QA runs
+vqa-list:
+    uv run python -m dashboard.vqa_cli --list
+
+# Show a specific visual QA run result (usage: just vqa-show <run_id>)
+vqa-show run_id:
+    uv run python -m dashboard.vqa_cli --show {{run_id}}
+
+# List all available visual QA agents
+vqa-agents:
+    uv run python -m dashboard.vqa_cli --agents-list
+
 # ── UI Tests (Playwright) ─────────────────────────────────────────────────────
 
 # Install Playwright browser binaries (run once after uv sync)
