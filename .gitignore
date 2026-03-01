@@ -8,3 +8,8 @@ influxdb_data/
 CLAUDE.md
 k6/config/*.json
 .venv/
+.beads/
+AGENTS.md
+memory/
+*.egg-info/
+data/

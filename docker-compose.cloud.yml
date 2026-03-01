@@ -1,0 +1,61 @@
+# docker-compose.cloud.yml — production-ready Luna deployment
+#
+# Usage:
+#   LUNA_API_KEY=your-secret-here docker compose -f docker-compose.cloud.yml up -d
+#
+# Then run on any engineer's machine:
+#   luna install-claude --url https://your-luna-host.com --key your-secret-here
+#
+# Or point the Claude API at it:
+#   mcp_servers=[{"type":"url","url":"https://your-luna-host.com/mcp","authorization_token":"your-secret-here"}]
+
+services:
+  influxdb:
+    image: influxdb:2.7
+    restart: unless-stopped
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: admin
+      DOCKER_INFLUXDB_INIT_PASSWORD: ${INFLUX_PASSWORD:-lunaadmin}
+      DOCKER_INFLUXDB_INIT_ORG: luna
+      DOCKER_INFLUXDB_INIT_BUCKET: k6
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${INFLUX_TOKEN:-luna-k6-token}
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+    healthcheck:
+      test: ["CMD", "influx", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  luna:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "${LUNA_PORT:-5656}:5656"
+    environment:
+      # ── Auth — set this to gate the MCP and REST API ──────────────────────
+      LUNA_API_KEY: ${LUNA_API_KEY:-}          # empty = dev mode (no auth)
+
+      # ── InfluxDB ──────────────────────────────────────────────────────────
+      INFLUXDB_URL: http://influxdb:8086
+      INFLUXDB_ORG: luna
+      INFLUXDB_BUCKET: k6
+      INFLUXDB_TOKEN: ${INFLUX_TOKEN:-luna-k6-token}
+    depends_on:
+      influxdb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python3", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:5656/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    volumes:
+      - luna_data:/app/data          # persists run history and endpoint configs
+
+volumes:
+  influxdb_data:
+  luna_data:

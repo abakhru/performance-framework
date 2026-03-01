@@ -131,11 +131,11 @@ influx-run profile="smoke":
 # Start dashboard only (use the Run tab to launch tests)
 dashboard: influx-up
     uv run uvicorn dashboard.server:app --host 127.0.0.1 --port 5656 \
-      --reload --reload-dir dashboard
+      --reload --reload-dir src/dashboard --reload-dir src/plugins --reload-dir src/core
 
 # Run a profile with the dashboard server  e.g. just dash ramp
 dash profile="smoke":
-    uv run python dashboard/server.py {{profile}}
+    uv run python -m dashboard.server {{profile}}
 
 # ── Docker ─────────────────────────────────────────────────────────────────────
 
@@ -167,20 +167,46 @@ py-add-dev dep:
 
 # Lint with ruff
 lint:
-    uv run ruff check dashboard/ tests/
+    uv run ruff check src/ tests/
 
 # Lint, fix, and format
 fix:
-    uv run ruff check --fix dashboard/ tests/
-    uv run ruff format dashboard/ tests/
+    uv run ruff check --fix src/ tests/
+    uv run ruff format src/ tests/
 
 # Type-check with ty
 typecheck:
-    uv run ty check dashboard/
+    uv run ty check src/
 
 # Run tests
 test:
     uv run pytest
+
+# Run unit tests only
+test-unit:
+    uv run pytest tests/unit/ -v
+
+# Run per-component tests (each component in isolation)
+test-components:
+    uv run pytest tests/components/ -v
+
+# Run integration tests (multi-component, needs local services)
+test-integration:
+    uv run pytest tests/integration/ -v
+
+# Run E2E tests (full stack)
+test-e2e:
+    uv run pytest tests/e2e/ -v
+
+# Run API smoke tests against a live target (set BASE_URL env var)
+test-api:
+    uv run pytest tests/api/ -v
+
+# Combine and report coverage after running tests
+coverage:
+    uv run coverage combine
+    uv run coverage html
+    uv run coverage report
 
 # Lint + typecheck + test
 ci: lint typecheck test
@@ -218,3 +244,143 @@ clean:
     rm -rf out/
     find . -type d -name __pycache__ -exec rm -rf {} +
     rm -rf .ruff_cache .pytest_cache
+
+# ── Agent / Luna ───────────────────────────────────────────────────────────────
+
+# Start Luna dashboard + InfluxDB, print the MCP connection URL
+agent-start: influx-up
+    @echo ""
+    @echo "╔══════════════════════════════════════════════════════╗"
+    @echo "║  Luna is starting…                                   ║"
+    @echo "║  Dashboard  →  http://localhost:5656                  ║"
+    @echo "║  MCP        →  http://localhost:5656/mcp              ║"
+    @echo "║  Health     →  http://localhost:5656/health           ║"
+    @echo "║  API Docs   →  http://localhost:5656/docs              ║"
+    @echo "╚══════════════════════════════════════════════════════╝"
+    @echo ""
+    uv run uvicorn dashboard.server:app --host 0.0.0.0 --port 5656 \
+      --reload --reload-dir src/dashboard --reload-dir src/plugins --reload-dir src/core
+
+# Test any service in one command  e.g. just test-service url=https://api.example.com profile=smoke
+test-service url profile="smoke" auth="":
+    @echo "Luna: testing {{url}} with profile={{profile}}"
+    uv run python -c "from api_tests.luna import LunaClient; luna = LunaClient(); result = luna.test_service('{{url}}', token='{{auth}}', profile='{{profile}}'); print(result.summary); exit(0 if result.success else 1)"
+
+# Luna REPL
+luna-repl:
+    uv run python -c "from api_tests.luna import LunaClient; luna = LunaClient(); print('Connected to', luna._base_url)"
+
+# Print MCP server connection info for agents
+mcp-info:
+    @echo "MCP server:  http://localhost:5656/mcp"
+    @echo "Transport:   streamable-http (spec 2025-03-26)"
+    @echo ""
+    @echo "Connect with Claude Desktop — add to claude_desktop_config.json:"
+    @echo '  "luna": {'
+    @echo '    "command": "npx",'
+    @echo '    "args": ["-y", "mcp-remote", "http://localhost:5656/mcp"]'
+    @echo '  }'
+    @echo ""
+    @echo "Connect with Python (mcp library):"
+    @echo '  from mcp import ClientSession'
+    @echo '  from mcp.client.streamable_http import streamablehttp_client'
+
+# Show Luna health status
+luna-health:
+    @curl -sf http://localhost:5656/health | python3 -m json.tool || echo "Luna is not running — run: just agent-start"
+
+# ── Luna CLI ──────────────────────────────────────────────────────────────────
+
+# Launch the Luna interactive CLI (REPL)
+cli:
+    uv run luna
+
+# One-shot test via CLI  e.g. just cli-test url=https://api.example.com
+cli-test url profile="smoke" vus="2" duration="30":
+    uv run luna test {{url}} --profile {{profile}} --vus {{vus}} --duration {{duration}}
+
+# Show CLI help
+cli-help:
+    uv run luna --help
+
+# Check health via CLI
+cli-health:
+    uv run luna health
+
+# Show recent run history via CLI
+cli-history limit="10":
+    uv run luna history --limit {{limit}}
+
+# ── Test Codegen (Discover → Test Suite) ─────────────────────────────────────
+
+# Generate all test types from a URL (api, ui, perf, lighthouse) and save to data/generated-tests/
+gen-tests url suites="api,ui,perf,lighthouse":
+    uv run python -c "
+from plugins.test_generator.codegen import generate_suite
+from plugins.discovery.engine import discover_url
+config = discover_url('{{url}}')
+suite = generate_suite(config, base_url='{{url}}', suites='{{suites}}'.split(','))
+print('Generated:', suite.dir_name)
+print('Files:', ', '.join(suite.files))
+"
+
+# Execute test suites for a generated directory (usage: just run-tests <dir_name> [suites])
+run-tests dir_name suites="api,ui,perf,lighthouse" base_url="" token="":
+    uv run python -c "
+from plugins.test_generator.codegen import run_suite
+results = run_suite('{{dir_name}}', suites='{{suites}}'.split(','), base_url='{{base_url}}', token='{{token}}')
+for suite, r in results.items():
+    print(f'{suite}: {r.status} ({r.passed}✓ {r.failed}✗ {r.errors}⚠)')
+"
+
+# List all generated test directories
+gen-list:
+    uv run python -c "
+from plugins.test_generator.codegen import list_generated
+rows = list_generated()
+if not rows:
+    print('No generated suites found.')
+else:
+    for r in rows:
+        print(f'{r[\"dir_name\"]}  {r[\"base_url\"]}  [{r[\"endpoints_count\"]} endpoints]  {r[\"suites_generated\"]}')
+"
+
+# ── Visual QA Agents ─────────────────────────────────────────────────────────
+
+# Run all 31 visual QA agents against a URL (requires VISUAL_QA_AI_KEY)
+vqa url agents="all":
+    uv run python -m plugins.visual_qa.cli {{url}} --agents {{agents}}
+
+# List past visual QA runs
+vqa-list:
+    uv run python -m plugins.visual_qa.cli --list
+
+# Show a specific visual QA run result (usage: just vqa-show <run_id>)
+vqa-show run_id:
+    uv run python -m plugins.visual_qa.cli --show {{run_id}}
+
+# List all available visual QA agents
+vqa-agents:
+    uv run python -m plugins.visual_qa.cli --agents-list
+
+# ── UI Tests (Playwright) ─────────────────────────────────────────────────────
+
+# Install Playwright browser binaries (run once after uv sync)
+ui-install:
+    uv run playwright install chromium
+
+# Run UI smoke tests (headless) — fast sanity check
+test-ui-smoke:
+    uv run pytest tests/ui/smoke/ -v -m smoke
+
+# Run UI regression tests (headless)
+test-ui-regression:
+    uv run pytest tests/ui/regression/ -v -m regression
+
+# Run all UI tests
+test-ui:
+    uv run pytest tests/ui/ -v
+
+# Run UI tests with headed browser (for debugging)
+test-ui-headed:
+    HEADLESS=false uv run pytest tests/ui/ -v

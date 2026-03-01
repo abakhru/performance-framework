@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  quality:
+    name: Lint · Typecheck · Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install mise
+        uses: jdx/mise-action@v2
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true  # caches the uv package cache across runs
+
+      - name: Install Python deps
+        run: uv sync --all-groups
+
+      # Cache ruff's analysis cache — speeds up subsequent lint runs significantly
+      - name: Cache ruff
+        uses: actions/cache@v4
+        with:
+          path: .ruff_cache
+          key: ruff-${{ runner.os }}-${{ hashFiles('pyproject.toml', '**/*.py') }}
+          restore-keys: ruff-${{ runner.os }}-
+
+      - name: Lint
+        run: uv run ruff check dashboard/ tests/
+
+      - name: Typecheck
+        run: uv run ty check dashboard/
+
+      - name: Test
+        run: uv run pytest --tb=short

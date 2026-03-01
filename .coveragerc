@@ -1,0 +1,14 @@
+[run]
+source = dashboard
+parallel = true
+omit =
+    tests/*
+    api_tests/*
+    */__pycache__/*
+
+[report]
+show_missing = true
+fail_under = 60
+
+[html]
+directory = htmlcov

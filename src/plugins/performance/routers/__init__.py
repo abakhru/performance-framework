@@ -1,0 +1,1 @@
+"""Performance plugin FastAPI routers."""

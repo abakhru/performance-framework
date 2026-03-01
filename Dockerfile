@@ -1,26 +1,37 @@
-FROM grafana/k6:latest AS k6base
+FROM grafana/k6:1.6.1 AS k6base
 
 FROM python:3.12-slim
 
-# Copy k6 binary from official image
 COPY --from=k6base /usr/bin/k6 /usr/bin/k6
 
-WORKDIR /tests
+# Install uv + deps in a cached layer (only busts when lockfile changes)
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --no-cache-dir uv
 
-COPY k6/ ./k6/
+COPY pyproject.toml uv.lock ./
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --no-dev --frozen
+
+WORKDIR /app
+
+# Source code — copy after deps so this layer is cheap to rebuild
+COPY k6/       ./k6/
 COPY dashboard/ ./dashboard/
+COPY api_tests/ ./api_tests/
+COPY luna_cli/  ./luna_cli/
+
+# luna CLI is available inside the container
+ENV PATH="/app/.venv/bin:$PATH"
 
 EXPOSE 5656 6565
 
-# Default: plain smoke run. Override CMD for dashboard mode.
+# Healthcheck — hits the /health endpoint every 30s
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD python3 -c "import urllib.request; urllib.request.urlopen('http://localhost:5656/health')" || exit 1
+
 # Usage:
-#   docker run matrix-k6                → plain smoke
-#   docker run matrix-k6 smoke          → dashboard smoke at :5656
-#   docker run matrix-k6 ramp           → dashboard ramp  at :5656
-ENTRYPOINT ["/bin/sh", "-c", "\
-  if [ \"$1\" = 'smoke' ] || [ \"$1\" = 'ramp' ]; then \
-    python3 dashboard/server.py \"$1\"; \
-  else \
-    k6 run k6/main.js; \
-  fi", "--"]
-CMD []
+#   docker run luna                          → standalone dashboard at :5656
+#   docker run luna smoke                    → immediate smoke run
+#   LUNA_API_KEY=secret docker run luna      → dashboard with auth
+CMD ["python3", "dashboard/server.py"]
+ENTRYPOINT []
