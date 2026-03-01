@@ -341,7 +341,16 @@ def stop_run() -> dict:
 
 @mcp.tool
 def generate_test_plan(url: str = "", token: str = "") -> dict:
-    """Generate a test plan from the current endpoint config or by discovering a URL."""
+    """Generate a test plan from the current endpoint config or by discovering a URL.
+
+    Args:
+        url:   If provided, run auto-discovery against this URL first.
+               If empty, loads the existing endpoints.json config.
+        token: Optional Bearer token for authenticated discovery.
+
+    Returns a structured test plan with each endpoint's name, method, path,
+    group, type, and expected status code.
+    """
     import sys
     from pathlib import Path
 
@@ -357,16 +366,33 @@ def generate_test_plan(url: str = "", token: str = "") -> dict:
         plan = gen.generate_test_plan()
         return {
             "service": plan.service,
+            "base_url": plan.base_url or url,
             "total": len(plan),
-            "entries": [{"name": e.name, "method": e.method, "path": e.path} for e in plan.entries],
+            "entries": [
+                {
+                    "name": e.name,
+                    "method": e.method,
+                    "path": e.path,
+                    "group": e.group,
+                    "type": e.endpoint_type,
+                    "expected_status": e.expected_status,
+                }
+                for e in plan.entries
+            ],
         }
     except Exception as exc:
         return {"error": str(exc)}
 
 
 @mcp.tool
-def run_api_tests(suite: str = "api", base_url: str = "", auth_token: str = "") -> dict:
-    """Trigger a pytest suite and return results."""
+def run_api_tests(base_url: str = "", token: str = "", suite: str = "api") -> dict:
+    """Trigger a pytest suite and return structured pass/fail results.
+
+    Args:
+        base_url: Base URL injected as BASE_URL env var into the test run.
+        token:    Auth token injected as AUTH_TOKEN env var into the test run.
+        suite:    Which test suite to run: unit | components | integration | e2e | api | all.
+    """
     import sys
     from pathlib import Path
 
@@ -375,11 +401,13 @@ def run_api_tests(suite: str = "api", base_url: str = "", auth_token: str = "") 
     from api_tests.runner import TestRunner
 
     runner = TestRunner()
-    result = runner.run(suite=suite, base_url=base_url, auth_token=auth_token)
+    result = runner.run(suite=suite, base_url=base_url, auth_token=token)
     return {
+        "suite": result.suite,
         "passed": result.passed,
         "failed": result.failed,
         "errors": result.errors,
+        "skipped": result.skipped,
         "total": result.total,
         "success": result.success,
         "duration_ms": result.duration_ms,

@@ -53,7 +53,8 @@ def _safe_name(text: str) -> str:
 class TestGenerator:
     """Generates a TestPlan from an endpoint config dict or endpoints.json file.
 
-    Usage:
+    Usage::
+
         # From saved endpoints.json
         gen = TestGenerator.from_endpoints_json()
         plan = gen.generate_test_plan()
@@ -65,6 +66,8 @@ class TestGenerator:
         # Write a test file
         gen.write_test_file(plan, Path("tests/api/test_generated.py"))
     """
+
+    __test__ = False  # tell pytest not to collect this class
 
     def __init__(self, config: dict, base_url: str = ""):
         self._config = config
