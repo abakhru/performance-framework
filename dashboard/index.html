@@ -823,6 +823,10 @@ footer{
     </div>
   </div>
   <nav class="sidebar-nav">
+    <div class="tab" onclick="showTab('discover')">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span>Discover</span><div class="tab-dot"></div>
+    </div>
     <div class="tab active" onclick="showTab('run')">
       <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5,3 19,12 5,21"/></svg>
       <span>Execute</span><div class="tab-dot"></div>
@@ -846,10 +850,6 @@ footer{
     <div class="tab" onclick="showTab('history')">
       <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
       <span>History</span><div class="tab-dot"></div>
-    </div>
-    <div class="tab" onclick="showTab('discover')">
-      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <span>Discover</span><div class="tab-dot"></div>
     </div>
     <div class="tab" onclick="showTab('lighthouse')">
       <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
@@ -2513,7 +2513,7 @@ function renderOffendersView(ops){
 /* ══════════════════════════════════════════════════════════════════
    TAB ROUTING
    ══════════════════════════════════════════════════════════════════ */
-const TAB_NAMES=['run','overview','endpoints','http','log','history','discover','lighthouse'];
+const TAB_NAMES=['discover','run','overview','endpoints','http','log','history','lighthouse'];
 const TAB_LABELS={run:'Execute',overview:'Overview',endpoints:'Endpoints',http:'HTTP Metrics',log:'Log',history:'History',discover:'Discover'};
 function showTab(name){
   document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',TAB_NAMES[i]===name));
@@ -2620,7 +2620,7 @@ function toast(msg,type='ok',duration=3000){
    ══════════════════════════════════════════════════════════════════ */
 document.addEventListener('keydown',e=>{
   if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
-  const tabs=['run','overview','endpoints','http','log','history','discover','lighthouse'];
+  const tabs=['discover','run','overview','endpoints','http','log','history','lighthouse'];
   if(e.key>='1'&&e.key<='8'){showTab(tabs[+e.key-1]);return;}
   if(e.key==='t'||e.key==='T'){
     const idx=THEMES.indexOf(document.documentElement.getAttribute('data-theme')||'matrix');
