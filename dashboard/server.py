@@ -37,6 +37,7 @@ from routers import api_tests as api_tests_router  # noqa: E402
 from routers import discovery as discovery_router  # noqa: E402
 from routers import health as health_router  # noqa: E402
 from routers import lighthouse as lighthouse_router  # noqa: E402
+from routers import ui_tests as ui_tests_router  # noqa: E402
 from starlette.middleware.base import BaseHTTPMiddleware  # noqa: E402
 from starlette.requests import Request  # noqa: E402
 from storage import DATA_DIR, HOOKS_DIR, REPO_ROOT, SCRIPT_DIR  # noqa: E402
@@ -123,6 +124,7 @@ app.include_router(webhooks.router)
 app.include_router(data_files.router)
 app.include_router(discovery_router.router)
 app.include_router(api_tests_router.router)
+app.include_router(ui_tests_router.router)
 app.include_router(lighthouse_router.router)
 
 # ── MCP server (streamable-http, spec 2025-03-26) ──────────────────────────────

@@ -16,6 +16,9 @@ _SUITE_PATHS: dict[str, str] = {
     "integration": "tests/integration",
     "e2e": "tests/e2e",
     "api": "tests/api",
+    "ui": "tests/ui",
+    "ui-smoke": "tests/ui/smoke",
+    "ui-regression": "tests/ui/regression",
     "all": "tests",
 }
 
@@ -68,9 +71,19 @@ class TestRunner:
         suite: str = "api",
         base_url: str = "",
         auth_token: str = "",
+        markers: str = "",
         extra_args: list[str] | None = None,
     ) -> TestRunResult:
-        """Run pytest for the given suite and return structured results."""
+        """Run pytest for the given suite and return structured results.
+
+        Args:
+            suite:      Named suite key (unit | components | integration | e2e |
+                        api | ui | ui-smoke | ui-regression | all) or a raw path.
+            base_url:   Injected as BASE_URL env var.
+            auth_token: Injected as AUTH_TOKEN env var.
+            markers:    pytest -m expression, e.g. "smoke" or "smoke and not slow".
+            extra_args: Any additional pytest CLI arguments.
+        """
         global _last_result
 
         suite_path = _SUITE_PATHS.get(suite, suite)
@@ -86,6 +99,8 @@ class TestRunner:
             "-q",
             f"--junit-xml={REPO_ROOT}/out/test-results-{suite}.xml",
         ]
+        if markers:
+            cmd += ["-m", markers]
         if extra_args:
             cmd += extra_args
 
