@@ -564,6 +564,26 @@ footer{
 .wiz-run-btn{padding:8px 22px;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;font-family:inherit;background:var(--accent);border:none;color:#0B0D10;border-radius:20px;cursor:pointer;transition:all .2s}
 .wiz-run-btn:hover{opacity:.85}
 .wiz-run-btn:disabled{opacity:.4;cursor:not-allowed}
+/* step 7 — test suite */
+.wiz7-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.wiz7-card-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.wiz7-card-title{font-size:12px;font-weight:700;color:var(--text);letter-spacing:.3px}
+.wiz7-stat-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px}
+.wiz7-stat{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:6px 12px;font-size:10px;text-align:center}
+.wiz7-stat-num{font-size:18px;font-weight:700;color:var(--accent);display:block}
+.wiz7-stat-lbl{color:var(--muted);letter-spacing:.4px;text-transform:uppercase;font-size:9px}
+.wiz7-table{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:4px}
+.wiz7-table th{color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.5px;padding:5px 8px;border-bottom:1px solid var(--border);text-align:left;font-weight:600}
+.wiz7-table td{padding:5px 8px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--text)}
+.wiz7-table tr:last-child td{border-bottom:none}
+.wiz7-results{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:10px 12px;font-size:11px;min-height:38px}
+.wiz7-results-empty{color:var(--muted);font-style:italic}
+.wiz7-results-running{color:var(--accent3);animation:pulse 1.2s ease-in-out infinite}
+.wiz7-results-ok{color:#4ade80}
+.wiz7-results-fail{color:#f87171}
+.wiz7-result-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0}
+.wiz7-loading{color:var(--muted);font-size:11px;font-style:italic;padding:6px 0}
+.wiz7-empty{color:var(--muted);font-size:11px;font-style:italic;padding:6px 0}
 /* Saved configs modal */
 .saved-modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:900;display:flex;align-items:center;justify-content:center}
 .saved-modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;width:min(560px,95vw);max-height:70vh;display:flex;flex-direction:column;overflow:hidden}
@@ -1483,6 +1503,7 @@ footer{
       <div class="wiz-step" id="wizStep4Tab">4 · Run Config</div>
       <div class="wiz-step" id="wizStep5Tab">5 · Notify</div>
       <div class="wiz-step" id="wizStep6Tab">6 · Save &amp; Launch</div>
+      <div class="wiz-step" id="wizStep7Tab">7 · Test Suite</div>
     </div>
 
     <!-- ── Step 1: Source & Input ── -->
@@ -1868,7 +1889,85 @@ footer{
         </div>
         <div class="wiz-nav-right">
           <button class="disc-btn" id="wizSaveOnlyBtn" onclick="wizSaveOnly()">Save Only</button>
+          <button class="disc-btn" id="wizSaveTestBtn" onclick="wizSaveAndGenerateTests()" title="Save endpoints then open the test-generation wizard step">Save &amp; Test ⚗</button>
           <button class="wiz-run-btn" id="wizSaveRunBtn" onclick="wizSaveAndRun()">Save &amp; Run</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Step 7: Test Suite ── -->
+    <div class="wiz-pane" id="wizPane7">
+      <div class="stitle" style="margin-bottom:4px">Test Suite</div>
+      <div style="color:var(--muted);font-size:11px;margin-bottom:14px">
+        Auto-generate and run API smoke tests from discovered endpoints, or trigger Playwright UI tests against the dashboard.
+      </div>
+
+      <!-- Test Plan Preview -->
+      <div class="wiz7-card" id="wiz7PlanCard">
+        <div class="wiz7-card-hdr">
+          <span class="wiz7-card-title">📋 Test Plan</span>
+          <button class="disc-btn" onclick="wiz7RefreshPlan()" style="padding:3px 10px;font-size:10px">↻ Refresh</button>
+        </div>
+        <div id="wiz7PlanBody">
+          <div class="wiz7-loading" id="wiz7PlanLoading" style="display:none">Loading plan…</div>
+          <div class="wiz7-empty" id="wiz7PlanEmpty">Click Refresh to load the current test plan.</div>
+          <div id="wiz7PlanContent" style="display:none">
+            <div class="wiz7-stat-row" id="wiz7PlanStats"></div>
+            <table class="wiz7-table" id="wiz7PlanTable">
+              <thead><tr><th>Group</th><th>Count</th><th>Methods</th></tr></thead>
+              <tbody id="wiz7PlanTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- API Tests -->
+      <div class="wiz7-card">
+        <div class="wiz7-card-hdr">
+          <span class="wiz7-card-title">🧪 API Smoke Tests</span>
+          <div style="display:flex;gap:6px">
+            <button class="disc-btn" onclick="wiz7RunApiTests('api')" id="wiz7ApiSmokeBtn" style="padding:3px 10px;font-size:10px">Run Smoke</button>
+            <button class="disc-btn" onclick="wiz7RunApiTests('unit')" style="padding:3px 10px;font-size:10px">Unit Tests</button>
+          </div>
+        </div>
+        <div style="color:var(--muted);font-size:10px;margin-bottom:8px">
+          Runs <code style="font-family:monospace;color:var(--accent3)">pytest tests/api/</code> against the saved endpoint config.
+          Set <code style="font-family:monospace;color:var(--accent3)">BASE_URL</code> below if the service is not local.
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:10px;align-items:center">
+          <input class="field-input" id="wiz7ApiBaseUrl" type="url" placeholder="http://localhost:5656 (default)" style="flex:1;font-size:11px;padding:5px 10px"/>
+          <input class="field-input" id="wiz7ApiToken" type="password" placeholder="Bearer token (optional)" style="flex:1;font-size:11px;padding:5px 10px"/>
+        </div>
+        <div id="wiz7ApiResults" class="wiz7-results wiz7-results-empty">No run yet — click Run Smoke to start.</div>
+      </div>
+
+      <!-- UI Tests -->
+      <div class="wiz7-card">
+        <div class="wiz7-card-hdr">
+          <span class="wiz7-card-title">🖥 UI Tests (Playwright)</span>
+          <div style="display:flex;gap:6px">
+            <button class="disc-btn" onclick="wiz7RunUiTests('smoke')" style="padding:3px 10px;font-size:10px">Smoke</button>
+            <button class="disc-btn" onclick="wiz7RunUiTests('regression')" style="padding:3px 10px;font-size:10px">Regression</button>
+            <button class="disc-btn" onclick="wiz7RunUiTests('all')" style="padding:3px 10px;font-size:10px">All</button>
+          </div>
+        </div>
+        <div style="color:var(--muted);font-size:10px;margin-bottom:8px">
+          Runs <code style="font-family:monospace;color:var(--accent3)">pytest tests/ui/</code> with headless Chromium.
+          Requires <code style="font-family:monospace;color:var(--accent3)">just ui-install</code> to have been run once.
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px">
+            <input type="checkbox" id="wiz7UiHeaded"/> Headed (visible browser)
+          </label>
+          <input class="field-input" id="wiz7UiMarkers" type="text" placeholder="markers, e.g. smoke (optional)" style="flex:1;font-size:11px;padding:5px 10px"/>
+        </div>
+        <div id="wiz7UiResults" class="wiz7-results wiz7-results-empty">No run yet — choose a suite above.</div>
+      </div>
+
+      <div class="wiz-nav">
+        <div style="display:flex;gap:8px">
+          <button class="disc-btn" onclick="wizGo(6)">← Back</button>
+          <button class="disc-btn" onclick="wizReset()">↺ Start Over</button>
         </div>
       </div>
     </div>
@@ -3493,7 +3592,7 @@ function wizShowMsg(msg,type){
 
 function wizGo(step){
   _wStep=step;
-  for(let i=1;i<=6;i++){
+  for(let i=1;i<=7;i++){
     const pane=document.getElementById('wizPane'+i);
     const tab=document.getElementById('wizStep'+i+'Tab');
     if(pane)pane.classList.toggle('active',i===step);
@@ -3509,6 +3608,7 @@ function wizGo(step){
     if(sn&&!sn.value) sn.value=wizDeriveServiceName();
     wizBuildSummary();
   }
+  if(step===7) wiz7RefreshPlan();
 }
 
 function wizSelectSource(type,el){
@@ -4176,6 +4276,125 @@ async function wizSaveAndRun(){
     wizShowMsg('Error: '+err.message,'error');
     if(btn) btn.disabled=false;
   }
+}
+
+// ── Step 7: Test Suite ──────────────────────────────────────────────────────
+
+async function wizSaveAndGenerateTests(){
+  const btn=document.getElementById('wizSaveTestBtn');
+  if(btn) btn.disabled=true;
+  try{
+    const config=await wizGetSelectedConfig();
+    const r=await fetch('/endpoints/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(config)});
+    const data=await r.json();
+    if(data.ok){
+      wizShowMsg(`Saved ${config.endpoints.length} endpoints — opening Test Suite`,'ok');
+      loadEndpointConfig();
+      wizGo(7);  // navigate to test suite step (auto-loads plan)
+    }else{
+      wizShowMsg('Save failed','error');
+    }
+  }catch(err){
+    wizShowMsg('Save error: '+err.message,'error');
+  }finally{
+    if(btn) btn.disabled=false;
+  }
+}
+
+async function wiz7RefreshPlan(){
+  const loading=document.getElementById('wiz7PlanLoading');
+  const empty=document.getElementById('wiz7PlanEmpty');
+  const content=document.getElementById('wiz7PlanContent');
+  const stats=document.getElementById('wiz7PlanStats');
+  const tbody=document.getElementById('wiz7PlanTableBody');
+  if(!loading||!content) return;
+  loading.style.display='';
+  empty.style.display='none';
+  content.style.display='none';
+  try{
+    const data=await fj('/api-tests/plan');
+    if(data.error||!data.total){
+      loading.style.display='none';
+      empty.style.display='';
+      empty.textContent=data.error?`Error: ${data.error}`:'No endpoints configured. Complete discovery first.';
+      return;
+    }
+    // Aggregate by group
+    const groups={};
+    (data.entries||[]).forEach(e=>{
+      const g=e.group||'default';
+      if(!groups[g]) groups[g]={count:0,methods:new Set()};
+      groups[g].count++;
+      groups[g].methods.add(e.method);
+    });
+    stats.innerHTML=`
+      <div class="wiz7-stat"><span class="wiz7-stat-num">${data.total}</span><span class="wiz7-stat-lbl">Endpoints</span></div>
+      <div class="wiz7-stat"><span class="wiz7-stat-num">${Object.keys(groups).length}</span><span class="wiz7-stat-lbl">Groups</span></div>
+      <div class="wiz7-stat"><span class="wiz7-stat-num">${_esc(data.service||'—')}</span><span class="wiz7-stat-lbl">Service</span></div>
+    `;
+    tbody.innerHTML=Object.entries(groups).map(([g,v])=>
+      `<tr><td>${_esc(g)}</td><td>${v.count}</td><td style="color:var(--muted);font-size:10px">${[...v.methods].join(', ')}</td></tr>`
+    ).join('');
+    loading.style.display='none';
+    content.style.display='';
+  }catch(err){
+    loading.style.display='none';
+    empty.style.display='';
+    empty.textContent='Failed to load plan: '+err.message;
+  }
+}
+
+async function wiz7RunApiTests(suite='api'){
+  const resultsEl=document.getElementById('wiz7ApiResults');
+  const baseUrl=(document.getElementById('wiz7ApiBaseUrl').value||'').trim();
+  const token=(document.getElementById('wiz7ApiToken').value||'').trim();
+  resultsEl.className='wiz7-results wiz7-results-running';
+  resultsEl.textContent=`Running ${suite} tests…`;
+  try{
+    const body={suite,base_url:baseUrl,auth_token:token};
+    const r=await fetch('/api-tests/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const d=await r.json();
+    wiz7RenderTestResult(resultsEl,d);
+  }catch(err){
+    resultsEl.className='wiz7-results wiz7-results-fail';
+    resultsEl.textContent='Request failed: '+err.message;
+  }
+}
+
+async function wiz7RunUiTests(suite='all'){
+  const resultsEl=document.getElementById('wiz7UiResults');
+  const headed=document.getElementById('wiz7UiHeaded').checked;
+  const markers=(document.getElementById('wiz7UiMarkers').value||'').trim();
+  resultsEl.className='wiz7-results wiz7-results-running';
+  resultsEl.textContent=`Running UI ${suite} tests${headed?' (headed)':''}…`;
+  try{
+    const body={suite,headed,markers};
+    const r=await fetch('/ui-tests/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const d=await r.json();
+    wiz7RenderTestResult(resultsEl,d);
+  }catch(err){
+    resultsEl.className='wiz7-results wiz7-results-fail';
+    resultsEl.textContent='Request failed: '+err.message;
+  }
+}
+
+function wiz7RenderTestResult(el,d){
+  const ok=d.success;
+  el.className='wiz7-results '+(ok?'wiz7-results-ok':'wiz7-results-fail');
+  const dur=d.duration_ms!=null?`${(d.duration_ms/1000).toFixed(1)}s`:'—';
+  el.innerHTML=`
+    <div class="wiz7-result-row">
+      <span style="font-weight:700;font-size:13px">${ok?'✓ Passed':'✗ Failed'}</span>
+      <span style="color:var(--muted);font-size:10px">${dur} · suite: ${_esc(d.suite||'—')}</span>
+    </div>
+    <div class="wiz7-result-row" style="margin-top:6px;font-size:10px;gap:14px">
+      <span>✅ ${d.passed||0} passed</span>
+      <span>❌ ${d.failed||0} failed</span>
+      <span>⚠️ ${d.errors||0} errors</span>
+      <span>⏭ ${d.skipped||0} skipped</span>
+      <span style="color:var(--muted)">${d.total||0} total</span>
+    </div>
+  `;
 }
 
 // ── Manual add (step 1 manual source) ───────────────────────────────────────
