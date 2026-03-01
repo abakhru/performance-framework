@@ -1847,6 +1847,42 @@ footer{
           </div>
           <button class="wiz-run-btn" id="lhRunBtn" onclick="lhRun()">Run Audit</button>
         </div>
+        <!-- Auth row -->
+        <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px">
+          <div class="field-group" style="min-width:140px;margin-bottom:0">
+            <div class="field-label">Auth</div>
+            <select class="field-input" id="lhAuthMode" onchange="lhAuthModeChange(this.value)" style="padding:6px 8px">
+              <option value="none">None</option>
+              <option value="bearer">Bearer Token</option>
+              <option value="cookie">Cookie</option>
+              <option value="basic">Basic Auth</option>
+              <option value="custom">Custom Header</option>
+            </select>
+          </div>
+          <!-- Bearer / Cookie -->
+          <div class="field-group" id="lhAuthSingle" style="flex:1;min-width:200px;margin-bottom:0;display:none">
+            <div class="field-label" id="lhAuthSingleLabel">Token</div>
+            <input class="field-input" id="lhAuthSingleVal" type="password" placeholder=""/>
+          </div>
+          <!-- Basic Auth -->
+          <div class="field-group" id="lhAuthBasicUser" style="min-width:140px;margin-bottom:0;display:none">
+            <div class="field-label">Username</div>
+            <input class="field-input" id="lhAuthUser" placeholder="user"/>
+          </div>
+          <div class="field-group" id="lhAuthBasicPwd" style="min-width:140px;margin-bottom:0;display:none">
+            <div class="field-label">Password</div>
+            <input class="field-input" id="lhAuthPwd" type="password" placeholder="••••••"/>
+          </div>
+          <!-- Custom Header -->
+          <div class="field-group" id="lhAuthCustName" style="min-width:140px;margin-bottom:0;display:none">
+            <div class="field-label">Header Name</div>
+            <input class="field-input" id="lhAuthHdrName" placeholder="X-API-Key"/>
+          </div>
+          <div class="field-group" id="lhAuthCustVal" style="flex:1;min-width:160px;margin-bottom:0;display:none">
+            <div class="field-label">Header Value</div>
+            <input class="field-input" id="lhAuthHdrVal" placeholder="value"/>
+          </div>
+        </div>
         <div class="lh-device-toggle">
           <button class="lh-device-btn active" id="lhDevDesktop" onclick="lhSetDevice('desktop',this)">Desktop</button>
           <button class="lh-device-btn" id="lhDevMobile" onclick="lhSetDevice('mobile',this)">Mobile</button>
@@ -4759,6 +4795,32 @@ function _lhRenderResult(data) {
   document.getElementById('lhError').style.display = 'none';
 }
 
+function lhAuthModeChange(mode) {
+  const show = (id, vis) => { const el=document.getElementById(id); if(el) el.style.display=vis?'':'none'; };
+  show('lhAuthSingle',   mode==='bearer'||mode==='cookie');
+  show('lhAuthBasicUser',mode==='basic');
+  show('lhAuthBasicPwd', mode==='basic');
+  show('lhAuthCustName', mode==='custom');
+  show('lhAuthCustVal',  mode==='custom');
+  const lbl = document.getElementById('lhAuthSingleLabel');
+  if (lbl) lbl.textContent = mode==='cookie' ? 'Cookie String' : 'Token';
+  const inp = document.getElementById('lhAuthSingleVal');
+  if (inp) {
+    inp.placeholder = mode==='cookie' ? 'session=abc; other=val' : 'eyJhb…';
+    inp.type = mode==='cookie' ? 'text' : 'password';
+  }
+}
+
+function lhBuildAuthPayload() {
+  const mode = (document.getElementById('lhAuthMode')||{}).value||'none';
+  if (mode==='none') return {};
+  if (mode==='bearer') return {auth_mode:'bearer', auth_token:(document.getElementById('lhAuthSingleVal').value||'').trim()};
+  if (mode==='cookie') return {auth_mode:'cookie', auth_cookie:(document.getElementById('lhAuthSingleVal').value||'').trim()};
+  if (mode==='basic')  return {auth_mode:'basic',  auth_user:(document.getElementById('lhAuthUser').value||'').trim(), auth_password:(document.getElementById('lhAuthPwd').value||'').trim()};
+  if (mode==='custom') return {auth_mode:'custom', auth_header_name:(document.getElementById('lhAuthHdrName').value||'').trim(), auth_header_value:(document.getElementById('lhAuthHdrVal').value||'').trim()};
+  return {};
+}
+
 async function lhRun() {
   const url = (document.getElementById('lhUrl').value || '').trim();
   if (!url) { document.getElementById('lhUrl').focus(); return; }
@@ -4788,7 +4850,7 @@ async function lhRun() {
     const resp = await fetch('/lighthouse/run', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({url, device: _lhDevice, categories: cats}),
+      body: JSON.stringify({url, device: _lhDevice, categories: cats, ...lhBuildAuthPayload()}),
     });
     if (!resp.ok) throw new Error(resp.status);
     const r = await resp.json();

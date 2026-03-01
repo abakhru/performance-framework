@@ -101,16 +101,27 @@ def _extract_result(lh_json: dict) -> dict:
     }
 
 
-def run_lighthouse(url: str, device: str = "desktop", categories: list | None = None) -> str:
+def run_lighthouse(
+    url: str,
+    device: str = "desktop",
+    categories: list | None = None,
+    extra_headers: dict | None = None,
+) -> str:
     """Start a Lighthouse run in a background thread. Returns run_id."""
     run_id = str(uuid.uuid4())
     with _runs_lock:
         _runs[run_id] = {"status": "running", "error": None, "result": None}
-    threading.Thread(target=_run_worker, args=(run_id, url, device, categories or []), daemon=True).start()
+    threading.Thread(
+        target=_run_worker,
+        args=(run_id, url, device, categories or [], extra_headers or {}),
+        daemon=True,
+    ).start()
     return run_id
 
 
-def _run_worker(run_id: str, url: str, device: str, categories: list) -> None:
+def _run_worker(run_id: str, url: str, device: str, categories: list, extra_headers: dict) -> None:
+    import json as _json
+
     LH_DATA_DIR.mkdir(parents=True, exist_ok=True)
     out_path = LH_DATA_DIR / f"{run_id}.json"
 
@@ -130,6 +141,7 @@ def _run_worker(run_id: str, url: str, device: str, categories: list) -> None:
         f"--only-categories={cat_flag}",
         "--quiet",
         "--no-enable-error-reporting",
+        *(["--extra-headers", _json.dumps(extra_headers)] if extra_headers else []),
     ]
 
     try:
