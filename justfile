@@ -167,12 +167,12 @@ py-add-dev dep:
 
 # Lint with ruff
 lint:
-    uv run ruff check dashboard/ tests/ api_tests/
+    uv run ruff check dashboard/ tests/ api_tests/ luna_cli/
 
 # Lint, fix, and format
 fix:
-    uv run ruff check --fix dashboard/ tests/ api_tests/
-    uv run ruff format dashboard/ tests/ api_tests/
+    uv run ruff check --fix dashboard/ tests/ api_tests/ luna_cli/
+    uv run ruff format dashboard/ tests/ api_tests/ luna_cli/
 
 # Type-check with ty
 typecheck:
@@ -288,3 +288,25 @@ luna-repl:
 # Show Luna health status
 luna-health:
     @curl -sf http://localhost:5656/health | python3 -m json.tool || echo "Luna is not running — run: just agent-start"
+
+# ── Luna CLI ──────────────────────────────────────────────────────────────────
+
+# Launch the Luna interactive CLI (REPL)
+cli:
+    uv run luna
+
+# One-shot test via CLI  e.g. just cli-test url=https://api.example.com
+cli-test url profile="smoke" vus="2" duration="30":
+    uv run luna test {{url}} --profile {{profile}} --vus {{vus}} --duration {{duration}}
+
+# Show CLI help
+cli-help:
+    uv run luna --help
+
+# Check health via CLI
+cli-health:
+    uv run luna health
+
+# Show recent run history via CLI
+cli-history limit="10":
+    uv run luna history --limit {{limit}}

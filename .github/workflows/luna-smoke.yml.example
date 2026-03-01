@@ -1,0 +1,133 @@
+# luna-smoke.yml.example
+#
+# Drop this into .github/workflows/luna-smoke.yml in your service repo.
+# Runs a Luna smoke test against your service after every deploy.
+#
+# Required secrets:
+#   LUNA_URL       — URL of your hosted Luna instance  (e.g. https://luna.example.com)
+#   LUNA_API_KEY   — API key set on Luna              (LUNA_API_KEY env var)
+#
+# Optional secrets:
+#   SERVICE_TOKEN  — Bearer token your service requires for authenticated endpoints
+#
+# How it works:
+#   1. Luna discovers your service's endpoints (OpenAPI / crawl / probe)
+#   2. Runs a smoke load test (2 VUs · 30s by default)
+#   3. Uploads the JSON result as a GitHub Actions artifact
+#   4. Fails the job if the SLO threshold is breached
+
+name: Luna Smoke Test
+
+on:
+  # Run after your deploy workflow completes
+  workflow_run:
+    workflows: ["Deploy"]
+    types: [completed]
+
+  # Or trigger manually with a URL override
+  workflow_dispatch:
+    inputs:
+      service_url:
+        description: "URL of the service to test"
+        required: true
+        default: "https://staging.yourapp.com"
+      profile:
+        description: "Load profile (smoke | ramp | soak | stress | spike)"
+        required: false
+        default: "smoke"
+
+jobs:
+  smoke:
+    name: Luna · ${{ inputs.profile || 'smoke' }}
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install Luna
+        run: uv sync --no-dev
+
+      - name: Wait for service to be healthy
+        env:
+          SERVICE_URL: ${{ inputs.service_url || vars.STAGING_URL }}
+        run: |
+          for i in $(seq 1 12); do
+            if curl -sf "$SERVICE_URL/health" > /dev/null 2>&1; then
+              echo "Service is healthy"; break
+            fi
+            echo "Waiting for service ($i/12)…"; sleep 10
+          done
+
+      - name: Run Luna smoke test
+        id: luna
+        env:
+          LUNA_URL: ${{ secrets.LUNA_URL }}
+          LUNA_API_KEY: ${{ secrets.LUNA_API_KEY }}
+          SERVICE_TOKEN: ${{ secrets.SERVICE_TOKEN }}
+          SERVICE_URL: ${{ inputs.service_url || vars.STAGING_URL }}
+          PROFILE: ${{ inputs.profile || 'smoke' }}
+        run: |
+          uv run luna test "$SERVICE_URL" \
+            --profile "$PROFILE" \
+            --token "$SERVICE_TOKEN" \
+            --url "$LUNA_URL" \
+            --key "$LUNA_API_KEY" \
+            --verbose
+          echo "exit_code=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Fetch run results JSON
+        if: always()
+        env:
+          LUNA_URL: ${{ secrets.LUNA_URL }}
+          LUNA_API_KEY: ${{ secrets.LUNA_API_KEY }}
+        run: |
+          curl -sf \
+            -H "Authorization: Bearer $LUNA_API_KEY" \
+            "$LUNA_URL/runs?limit=1" \
+            | python3 -m json.tool > luna-result.json
+          cat luna-result.json
+
+      - name: Upload result artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: luna-smoke-result
+          path: luna-result.json
+          retention-days: 30
+
+      - name: Post summary to PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const result = JSON.parse(fs.readFileSync('luna-result.json', 'utf8'));
+            const runs = Array.isArray(result) ? result : (result.runs || []);
+            const run = runs[0] || {};
+            const icon = run.slo_pass ? '✅' : '❌';
+            const body = [
+              `## ${icon} Luna Smoke Test`,
+              `| Metric | Value |`,
+              `|--------|-------|`,
+              `| Profile | \`${run.profile || 'smoke'}\` |`,
+              `| Status | \`${run.status || 'unknown'}\` |`,
+              `| p95 | ${run.p95_ms ? run.p95_ms.toFixed(0) + 'ms' : '—'} |`,
+              `| Error rate | ${run.error_rate != null ? (run.error_rate * 100).toFixed(1) + '%' : '—'} |`,
+              `| SLO | ${run.slo_pass ? 'PASS ✓' : 'FAIL ✗'} |`,
+              '',
+              `[View full results in Luna](${process.env.LUNA_URL})`,
+            ].join('\n');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });
+        env:
+          LUNA_URL: ${{ secrets.LUNA_URL }}

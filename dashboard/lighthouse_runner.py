@@ -126,7 +126,7 @@ def _run_worker(run_id: str, url: str, device: str, categories: list) -> None:
         "--chrome-path",
         CHROME_PATH,
         "--chrome-flags=--headless --no-sandbox --disable-gpu --disable-dev-shm-usage",
-        f"--form-factor={device}",
+        *(["--preset=desktop"] if device == "desktop" else []),
         f"--only-categories={cat_flag}",
         "--quiet",
         "--no-enable-error-reporting",

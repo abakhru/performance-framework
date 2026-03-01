@@ -27,7 +27,7 @@ if str(_DASHBOARD_DIR) not in sys.path:
 import influx as _influx_mod  # noqa: E402
 import uvicorn  # noqa: E402
 from fastapi import FastAPI  # noqa: E402
-from fastapi.responses import HTMLResponse  # noqa: E402
+from fastapi.responses import HTMLResponse, JSONResponse  # noqa: E402
 from lifecycle import _k6_lock, _k6_state, cleanup_orphans, load_plugin_hooks, run_k6_supervised  # noqa: E402
 from livereload import router as livereload_router  # noqa: E402
 from livereload import start_file_watcher  # noqa: E402
@@ -37,6 +37,8 @@ from routers import api_tests as api_tests_router  # noqa: E402
 from routers import discovery as discovery_router  # noqa: E402
 from routers import health as health_router  # noqa: E402
 from routers import lighthouse as lighthouse_router  # noqa: E402
+from starlette.middleware.base import BaseHTTPMiddleware  # noqa: E402
+from starlette.requests import Request  # noqa: E402
 from storage import DATA_DIR, HOOKS_DIR, REPO_ROOT, SCRIPT_DIR  # noqa: E402
 
 DASHBOARD_PORT = 5656
@@ -57,6 +59,41 @@ class _QuietAccessFilter(logging.Filter):
 
 logging.getLogger("uvicorn.access").addFilter(_QuietAccessFilter())
 
+# Paths that skip auth so health checks and the UI itself always work
+_AUTH_EXEMPT = {"/", "/health", "/ready", "/index.html", "/favicon.ico"}
+
+
+class _APIKeyMiddleware(BaseHTTPMiddleware):
+    """
+    Bearer-token gate activated only when LUNA_API_KEY env var is set.
+
+    In dev mode (no env var) the middleware is a no-op so local usage
+    requires zero configuration.  For deployed instances, set:
+
+        LUNA_API_KEY=<secret>
+
+    Clients then send:   Authorization: Bearer <secret>
+    Or:                  X-Luna-Key: <secret>   (for MCP proxies)
+    """
+
+    async def dispatch(self, request: Request, call_next):
+        api_key = os.environ.get("LUNA_API_KEY", "")
+        if not api_key:
+            return await call_next(request)  # dev mode — no auth required
+
+        if request.url.path in _AUTH_EXEMPT or request.url.path.startswith("/static"):
+            return await call_next(request)
+
+        auth_header = request.headers.get("Authorization", "")
+        luna_key_header = request.headers.get("X-Luna-Key", "")
+        if auth_header == f"Bearer {api_key}" or luna_key_header == api_key:
+            return await call_next(request)
+
+        return JSONResponse(
+            {"error": "Unauthorized", "detail": "Provide Authorization: Bearer <LUNA_API_KEY>"},
+            status_code=401,
+        )
+
 
 @asynccontextmanager
 async def _lifespan(app: FastAPI):  # noqa: ARG001
@@ -69,6 +106,7 @@ async def _lifespan(app: FastAPI):  # noqa: ARG001
 
 
 app = FastAPI(docs_url="/docs", redoc_url=None, lifespan=_lifespan)
+app.add_middleware(_APIKeyMiddleware)
 
 # ── Register routers ───────────────────────────────────────────────────────────
 
