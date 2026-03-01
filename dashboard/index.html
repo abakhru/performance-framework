@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>MATRIX // PERFORMANCE</title>
+<title>Luna // Performance</title>
 <style>
 /* ═══════════════════════════════════════════════════════════════════
-   PREMIUM FINTECH THEME — Matrix Performance Dashboard
+   PREMIUM FINTECH THEME — Luna Performance Dashboard
    ═══════════════════════════════════════════════════════════════════ */
 :root,[data-theme="matrix"]{
   --bg:#0B0D10;--bg2:#0E1014;--surface:#14171C;--surface2:#1A1E25;
@@ -756,6 +756,34 @@ footer{
 .lh-device-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(245,166,35,.08)}
 .lh-spinner-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;padding:40px;color:var(--muted);font-size:12px}
 .lh-audit-progress{font-size:11px;color:var(--muted);text-align:center;margin-top:4px}
+/* Expandable sub-items */
+.lh-expand-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:10px;padding:0 4px;vertical-align:middle;transition:transform .2s}
+.lh-expand-btn.open{transform:rotate(90deg)}
+.lh-sub-row td{padding:4px 10px 4px 28px;background:rgba(255,255,255,.02);font-size:10px;color:var(--muted);border-bottom:1px solid rgba(255,255,255,.03)}
+.lh-sub-row td:first-child{color:var(--text)}
+.lh-bytes{color:var(--accent);font-weight:600}
+.lh-url-cell{max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:rgba(255,255,255,.7);font-family:monospace;font-size:10px}
+/* Category audit accordion */
+.lh-cat-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.lh-cat-tab{padding:5px 13px;font-size:10px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;border:1px solid var(--border);background:none;color:var(--muted);border-radius:20px;cursor:pointer;font-family:inherit;transition:all .2s}
+.lh-cat-tab.active{border-color:var(--accent);color:var(--accent);background:rgba(245,166,35,.08)}
+.lh-cat-panel{display:none}.lh-cat-panel.active{display:block}
+.lh-audit-item{border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden}
+.lh-audit-hdr{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;transition:background .15s}
+.lh-audit-hdr:hover{background:rgba(255,255,255,.03)}
+.lh-audit-score-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.lh-audit-score-dot.good{background:#0CCE6B}.lh-audit-score-dot.average{background:#FFA400}.lh-audit-score-dot.poor{background:#FF4E42}
+.lh-audit-title{flex:1;font-size:12px;font-weight:600;color:var(--text)}
+.lh-audit-disp{font-size:10px;color:var(--muted);white-space:nowrap}
+.lh-audit-chevron{font-size:10px;color:var(--muted);transition:transform .2s;flex-shrink:0}
+.lh-audit-chevron.open{transform:rotate(90deg)}
+.lh-audit-body{display:none;padding:10px 14px;border-top:1px solid var(--border);background:rgba(255,255,255,.015)}
+.lh-audit-body.open{display:block}
+.lh-audit-desc{font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:8px}
+.lh-passed-toggle{font-size:10px;color:var(--muted);cursor:pointer;margin-top:12px;padding:6px 0;border-top:1px solid var(--border);display:flex;align-items:center;gap:6px}
+.lh-passed-list{display:none;margin-top:6px}
+.lh-passed-item{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:11px;color:var(--muted)}
+.lh-passed-item::before{content:'✓';color:#0CCE6B;font-weight:700;flex-shrink:0}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 </head>
@@ -767,7 +795,7 @@ footer{
 <!-- ══ SIDEBAR ═══════════════════════════════════════════════════════════════ -->
 <aside class="sidebar">
   <div class="sidebar-logo">
-    <span class="logo"><span style="color:var(--accent)">M</span> PERF</span>
+    <span class="logo"><span style="color:var(--accent)">L</span>UNA</span>
     <div class="logo-sub">
       <div class="dot waiting" id="statusDot"></div>
       <span id="statusLabel">CONNECTING</span>
@@ -1484,9 +1512,41 @@ footer{
           <div class="field-label">Service Base URL</div>
           <input class="field-input" id="wizUrl" type="url" placeholder="https://api.example.com"/>
         </div>
-        <div class="field-group">
-          <div class="field-label">Bearer Token (optional)</div>
-          <input class="field-input" id="wizToken" type="password" placeholder="eyJ…"/>
+        <!-- Auth row — mode + credential(s) -->
+        <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">
+          <div class="field-group" style="min-width:140px;margin-bottom:0">
+            <div class="field-label">Auth</div>
+            <select class="field-input" id="wizAuthMode" onchange="wizAuthModeChange(this.value)" style="padding:6px 8px">
+              <option value="none">None</option>
+              <option value="bearer">Bearer Token</option>
+              <option value="cookie">Cookie</option>
+              <option value="basic">Basic Auth</option>
+              <option value="custom">Custom Header</option>
+            </select>
+          </div>
+          <!-- Bearer / Cookie -->
+          <div class="field-group" id="wizAuthSingle" style="flex:1;min-width:200px;margin-bottom:0;display:none">
+            <div class="field-label" id="wizAuthSingleLabel">Token</div>
+            <input class="field-input" id="wizToken" type="password" placeholder="eyJ…"/>
+          </div>
+          <!-- Basic Auth -->
+          <div class="field-group" id="wizAuthBasicUser" style="min-width:130px;margin-bottom:0;display:none">
+            <div class="field-label">Username</div>
+            <input class="field-input" id="wizAuthUser" placeholder="user"/>
+          </div>
+          <div class="field-group" id="wizAuthBasicPwd" style="min-width:130px;margin-bottom:0;display:none">
+            <div class="field-label">Password</div>
+            <input class="field-input" id="wizAuthPwd" type="password" placeholder="••••"/>
+          </div>
+          <!-- Custom Header -->
+          <div class="field-group" id="wizAuthCustName" style="min-width:130px;margin-bottom:0;display:none">
+            <div class="field-label">Header Name</div>
+            <input class="field-input" id="wizAuthHdrName" placeholder="X-API-Key"/>
+          </div>
+          <div class="field-group" id="wizAuthCustVal" style="flex:1;min-width:150px;margin-bottom:0;display:none">
+            <div class="field-label">Header Value</div>
+            <input class="field-input" id="wizAuthHdrVal" placeholder="value"/>
+          </div>
         </div>
         <div style="margin-top:10px;display:flex;align-items:center;gap:8px">
           <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:var(--muted)">
@@ -1929,6 +1989,13 @@ footer{
             <thead><tr><th>Issue</th><th>Value</th></tr></thead>
             <tbody id="lhDiagsBody"></tbody>
           </table>
+        </div>
+
+        <!-- Issues by category -->
+        <div id="lhCatSection">
+          <div class="stitle" style="margin-bottom:12px">Issues by Category</div>
+          <div class="lh-cat-tabs" id="lhCatTabs"></div>
+          <div id="lhCatPanels"></div>
         </div>
       </div>
 
@@ -3592,9 +3659,24 @@ async function wizStep2Discover(){
   }
 }
 
+function wizGetDiscoveryToken(){
+  // Returns the effective bearer token for discovery (discovery endpoints accept a single token string).
+  // Other auth modes either pass their credential or return '' if not applicable.
+  const mode=(document.getElementById('wizAuthMode')||{}).value||'none';
+  if(mode==='bearer') return (document.getElementById('wizToken').value||'').trim();
+  if(mode==='cookie') return ''; // cookies not supported by discovery probe
+  if(mode==='basic'){
+    const u=(document.getElementById('wizAuthUser').value||'').trim();
+    const p=(document.getElementById('wizAuthPwd').value||'').trim();
+    return u||p ? btoa(u+':'+p) : '';  // basic auth passed as base64 for discover_url
+  }
+  if(mode==='custom') return (document.getElementById('wizAuthHdrVal').value||'').trim();
+  return '';
+}
+
 async function wizDiscoverUrl(){
   const url=(document.getElementById('wizUrl').value||'').trim().replace(/\/+$/,'');
-  const token=(document.getElementById('wizToken').value||'').trim();
+  const token=wizGetDiscoveryToken();
   const deepScan=document.getElementById('wizDeepScan')&&document.getElementById('wizDeepScan').checked;
 
   wiz2SetProgress('Probing OpenAPI / Swagger…');
@@ -3926,7 +4008,8 @@ function wizReset(){
   const smokeBtn=document.getElementById('wiz4BtnSmoke');
   if(smokeBtn) smokeBtn.classList.add('active');
   // Clear inputs
-  ['wizUrl','wizToken','wiz4BaseUrl','wiz6ServiceName'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['wizUrl','wizToken','wizAuthUser','wizAuthPwd','wizAuthHdrName','wizAuthHdrVal','wiz4BaseUrl','wiz6ServiceName'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  const wam=document.getElementById('wizAuthMode'); if(wam){wam.value='none'; wizAuthModeChange('none');}
   document.getElementById('wiz2NextBtn').disabled=true;
   document.getElementById('wiz2Badge').style.display='none';
   document.getElementById('wiz2AuthBanner').style.display='none';
@@ -4204,7 +4287,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         }
         // Pre-fill credential from Step 1 token input if not already set
         const cred=document.getElementById('wiz4AuthCred');
-        const tok=(document.getElementById('wizToken').value||'').trim();
+        const tok=wizGetDiscoveryToken();
         if(cred&&!cred.value&&tok) cred.value=tok;
       }
     });
@@ -4747,6 +4830,28 @@ function _lhMetricCard(label, metric) {
   </div>`;
 }
 
+// Format a single item cell value for display
+function _lhFmtVal(cell) {
+  if (!cell) return '';
+  const {v, t} = cell;
+  if (t === 'bytes') return (v/1024).toFixed(1) + ' KB';
+  if (t === 'timespanMs') return Math.round(v) + ' ms';
+  if (t === 'url') return `<span class="lh-url-cell" title="${_esc(String(v))}">${_esc(String(v))}</span>`;
+  if (t === 'numeric') return typeof v === 'number' ? v.toLocaleString() : _esc(String(v));
+  return _esc(String(v));
+}
+
+// Build a collapsible sub-items table for opportunities/diagnostics
+function _lhSubRows(items, uid) {
+  if (!items || !items.length) return '';
+  const rows = items.map(item => {
+    const cells = Object.values(item).map(c => `<td>${_lhFmtVal(c)}</td>`).join('');
+    return `<tr class="lh-sub-row">${cells}</tr>`;
+  }).join('');
+  return `<tr id="lhsub_${uid}" style="display:none"><td colspan="2" style="padding:0">
+    <table style="width:100%;border-collapse:collapse">${rows}</table></td></tr>`;
+}
+
 function _lhRenderResult(data) {
   document.getElementById('lhResultUrl').textContent = data.url || '';
   const cats = data.categories || {};
@@ -4765,51 +4870,189 @@ function _lhRenderResult(data) {
     _lhMetricCard('Time to Interactive',      m.tti || {}) +
     _lhMetricCard('Speed Index',              m.si  || {});
 
+  // Opportunities — with expandable sub-item rows
   const opps = data.opportunities || [];
   const obody = document.getElementById('lhOppsBody');
   if (opps.length) {
-    obody.innerHTML = opps.map(o => `<tr>
-      <td><div style="font-weight:600;color:var(--text)">${_esc(o.title)}</div>
-          <div style="font-size:10px;color:var(--muted)">${_esc(o.display)}</div></td>
-      <td><span class="lh-savings">${o.savings_ms > 0 ? o.savings_ms + ' ms' : '\u2014'}</span></td>
-    </tr>`).join('');
+    obody.innerHTML = opps.map((o, i) => {
+      const uid = 'opp_' + i;
+      const hasItems = o.items && o.items.length;
+      const expandBtn = hasItems
+        ? `<button class="lh-expand-btn" id="lhexpbtn_${uid}" onclick="lhToggleSub('${uid}')">&#9658;</button>`
+        : '';
+      return `<tr>
+        <td>${expandBtn}<span style="font-weight:600;color:var(--text)">${_esc(o.title)}</span>
+            <div style="font-size:10px;color:var(--muted);margin-top:2px">${_esc(o.display||'')}</div></td>
+        <td><span class="lh-savings">${o.savings_ms > 0 ? o.savings_ms + ' ms' : '&mdash;'}</span></td>
+      </tr>${_lhSubRows(o.items, uid)}`;
+    }).join('');
     document.getElementById('lhOppsSection').style.display = '';
   } else {
     document.getElementById('lhOppsSection').style.display = 'none';
   }
 
+  // Diagnostics — with expandable sub-item rows
   const diags = data.diagnostics || [];
   const dbody = document.getElementById('lhDiagsBody');
   if (diags.length) {
-    dbody.innerHTML = diags.map(d => `<tr>
-      <td style="font-weight:600;color:var(--text)">${_esc(d.title)}</td>
-      <td style="color:var(--muted)">${_esc(d.display)}</td>
-    </tr>`).join('');
+    dbody.innerHTML = diags.map((d, i) => {
+      const uid = 'diag_' + i;
+      const hasItems = d.items && d.items.length;
+      const expandBtn = hasItems
+        ? `<button class="lh-expand-btn" id="lhexpbtn_${uid}" onclick="lhToggleSub('${uid}')">&#9658;</button>`
+        : '';
+      return `<tr>
+        <td>${expandBtn}<span style="font-weight:600;color:var(--text)">${_esc(d.title)}</span></td>
+        <td style="color:var(--muted)">${_esc(d.display||'')}</td>
+      </tr>${_lhSubRows(d.items, uid)}`;
+    }).join('');
     document.getElementById('lhDiagsSection').style.display = '';
   } else {
     document.getElementById('lhDiagsSection').style.display = 'none';
   }
+
+  // Issues by Category
+  _lhRenderCategoryAudits(data.audits_by_category || {});
 
   document.getElementById('lhProgress').style.display = 'none';
   document.getElementById('lhResults').style.display = '';
   document.getElementById('lhError').style.display = 'none';
 }
 
-function lhAuthModeChange(mode) {
+function lhToggleSub(uid) {
+  const row = document.getElementById('lhsub_' + uid);
+  const btn = document.getElementById('lhexpbtn_' + uid);
+  if (!row) return;
+  const open = row.style.display === '';
+  row.style.display = open ? 'none' : '';
+  if (btn) btn.classList.toggle('open', !open);
+}
+
+const _LH_CAT_LABELS = {
+  performance: 'Performance', accessibility: 'Accessibility',
+  'best-practices': 'Best Practices', seo: 'SEO', other: 'Other'
+};
+
+function _lhAuditScoreDot(score) {
+  const cls = score === null ? 'average' : score >= 0.9 ? 'good' : score >= 0.5 ? 'average' : 'poor';
+  return `<span class="lh-audit-score-dot ${cls}"></span>`;
+}
+
+function _lhAuditItemsHtml(items) {
+  if (!items || !items.length) return '';
+  const rows = items.map(item => {
+    const cells = Object.values(item);
+    if (!cells.length) return '';
+    const primary = cells[0];
+    const rest = cells.slice(1).filter(c => c).map(c =>
+      `<span style="margin-left:12px;color:var(--accent)">${_lhFmtVal(c)}</span>`
+    ).join('');
+    return `<div style="padding:3px 0;font-size:10px;border-bottom:1px solid rgba(255,255,255,.04)">${_lhFmtVal(primary)}${rest}</div>`;
+  }).join('');
+  return `<div style="margin-top:8px;padding:8px;background:rgba(0,0,0,.2);border-radius:6px;max-height:160px;overflow-y:auto">${rows}</div>`;
+}
+
+function _lhRenderCategoryAudits(byCategory) {
+  const tabsEl = document.getElementById('lhCatTabs');
+  const panelsEl = document.getElementById('lhCatPanels');
+  const catSection = document.getElementById('lhCatSection');
+  if (!tabsEl || !panelsEl) return;
+
+  const catOrder = ['performance', 'accessibility', 'best-practices', 'seo', 'other'];
+  const available = catOrder.filter(c => byCategory[c] && (byCategory[c].failed.length || byCategory[c].passed.length));
+
+  if (!available.length) { if (catSection) catSection.style.display = 'none'; return; }
+  if (catSection) catSection.style.display = '';
+
+  let tabsHtml = '';
+  let panelsHtml = '';
+  available.forEach((cat, idx) => {
+    const bucket = byCategory[cat];
+    const label = _LH_CAT_LABELS[cat] || cat;
+    const failCnt = bucket.failed.length;
+    const badge = failCnt ? ` <span style="background:rgba(255,78,66,.18);color:#FF4E42;border-radius:10px;padding:1px 6px;font-size:9px">${failCnt}</span>` : '';
+    const isActive = idx === 0;
+    tabsHtml += `<button class="lh-cat-tab${isActive?' active':''}" onclick="lhSwitchCat('${cat}',this)">${label}${badge}</button>`;
+
+    // Failed audits
+    let failedHtml = '';
+    (bucket.failed || []).forEach((a, ai) => {
+      const pid = `lhaud_${cat}_${ai}`;
+      const descHtml = a.description ? `<div class="lh-audit-desc">${_esc(a.description)}</div>` : '';
+      const itemsHtml = _lhAuditItemsHtml(a.items);
+      failedHtml += `<div class="lh-audit-item">
+        <div class="lh-audit-hdr" onclick="lhToggleAudit('${pid}')">
+          ${_lhAuditScoreDot(a.score)}
+          <span class="lh-audit-title">${_esc(a.title)}</span>
+          ${a.display ? `<span class="lh-audit-disp">${_esc(a.display)}</span>` : ''}
+          <span class="lh-audit-chevron" id="${pid}_chev">&#9658;</span>
+        </div>
+        <div class="lh-audit-body" id="${pid}">${descHtml}${itemsHtml}</div>
+      </div>`;
+    });
+    if (!failedHtml) failedHtml = `<div style="font-size:11px;color:#0CCE6B;padding:8px 0">&#10003; All audits passed</div>`;
+
+    // Passed audits (collapsed)
+    const passedList = (bucket.passed || []).map(a =>
+      `<div class="lh-passed-item">${_esc(a.title)}</div>`
+    ).join('');
+    const passedSection = passedList ? `
+      <div class="lh-passed-toggle" onclick="lhTogglePassed('lhpassed_${cat}',this)">
+        <span>&#9658;</span> ${bucket.passed.length} passed audit${bucket.passed.length!==1?'s':''}
+      </div>
+      <div class="lh-passed-list" id="lhpassed_${cat}">${passedList}</div>` : '';
+
+    panelsHtml += `<div class="lh-cat-panel${isActive?' active':''}" id="lhcatpanel_${cat}">
+      ${failedHtml}${passedSection}
+    </div>`;
+  });
+
+  tabsEl.innerHTML = tabsHtml;
+  panelsEl.innerHTML = panelsHtml;
+}
+
+function lhSwitchCat(cat, btn) {
+  document.querySelectorAll('.lh-cat-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.lh-cat-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  const panel = document.getElementById('lhcatpanel_' + cat);
+  if (panel) panel.classList.add('active');
+}
+
+function lhToggleAudit(id) {
+  const body = document.getElementById(id);
+  const chev = document.getElementById(id + '_chev');
+  if (!body) return;
+  const open = body.classList.toggle('open');
+  if (chev) chev.classList.toggle('open', open);
+}
+
+function lhTogglePassed(id, triggerEl) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const open = el.style.display === 'block';
+  el.style.display = open ? 'none' : 'block';
+  const arrow = triggerEl.querySelector('span');
+  if (arrow) arrow.style.transform = open ? '' : 'rotate(90deg)';
+}
+
+function _authModeChange(prefix, mode) {
   const show = (id, vis) => { const el=document.getElementById(id); if(el) el.style.display=vis?'':'none'; };
-  show('lhAuthSingle',   mode==='bearer'||mode==='cookie');
-  show('lhAuthBasicUser',mode==='basic');
-  show('lhAuthBasicPwd', mode==='basic');
-  show('lhAuthCustName', mode==='custom');
-  show('lhAuthCustVal',  mode==='custom');
-  const lbl = document.getElementById('lhAuthSingleLabel');
+  show(prefix+'AuthSingle',   mode==='bearer'||mode==='cookie');
+  show(prefix+'AuthBasicUser',mode==='basic');
+  show(prefix+'AuthBasicPwd', mode==='basic');
+  show(prefix+'AuthCustName', mode==='custom');
+  show(prefix+'AuthCustVal',  mode==='custom');
+  const lbl = document.getElementById(prefix+'AuthSingleLabel');
   if (lbl) lbl.textContent = mode==='cookie' ? 'Cookie String' : 'Token';
-  const inp = document.getElementById('lhAuthSingleVal');
+  const inp = document.getElementById(prefix==='lh' ? 'lhAuthSingleVal' : 'wizToken');
   if (inp) {
-    inp.placeholder = mode==='cookie' ? 'session=abc; other=val' : 'eyJhb…';
+    inp.placeholder = mode==='cookie' ? 'session=abc; other=val' : 'eyJhb\u2026';
     inp.type = mode==='cookie' ? 'text' : 'password';
   }
 }
+function lhAuthModeChange(mode) { _authModeChange('lh', mode); }
+function wizAuthModeChange(mode) { _authModeChange('wiz', mode); }
 
 function lhBuildAuthPayload() {
   const mode = (document.getElementById('lhAuthMode')||{}).value||'none';

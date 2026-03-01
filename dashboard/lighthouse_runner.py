@@ -30,12 +30,44 @@ def _score_color(score: int | None) -> str:
     return "poor"
 
 
+def _flatten_item(item: dict, headings: list) -> dict:
+    """Flatten one audit details item into a display-friendly dict."""
+    cols = [(h.get("key"), h.get("valueType", ""), h.get("label", "")) for h in headings if h.get("key")]
+    row: dict = {}
+    for key, vtype, label in cols:
+        val = item.get(key)
+        if val is None:
+            continue
+        # Unwrap nested Lighthouse value objects (source-location, url, code, etc.)
+        if isinstance(val, dict):
+            val = val.get("url") or val.get("value") or val.get("text") or val.get("type") or str(val)
+        if isinstance(val, (str, int, float)):
+            row[key] = {"v": val, "t": vtype, "l": label}
+    return row
+
+
+def _extract_items(details: dict, max_items: int = 8) -> list:
+    """Extract display rows from audit details.items, resolving heading metadata."""
+    items = details.get("items", [])
+    if not isinstance(items, list):
+        return []
+    headings = details.get("headings", [])
+    if not isinstance(headings, list):
+        headings = []
+    result = []
+    for item in items[:max_items]:
+        row = _flatten_item(item, headings)
+        if row:
+            result.append(row)
+    return result
+
+
 def _extract_result(lh_json: dict) -> dict:
-    """Extract key fields from full Lighthouse JSON into a compact result dict."""
+    """Extract key fields from full Lighthouse JSON into a rich result dict."""
     cats = lh_json.get("categories", {})
     audits = lh_json.get("audits", {})
 
-    def score(key: str) -> int | None:
+    def cat_score(key: str) -> int | None:
         s = cats.get(key, {}).get("score")
         return round(s * 100) if s is not None else None
 
@@ -47,46 +79,88 @@ def _extract_result(lh_json: dict) -> dict:
             "score": a.get("score"),
         }
 
-    # Collect opportunities (type=opportunity with savings)
+    # Build audit-id → category mapping from auditRefs
+    audit_category: dict[str, str] = {}
+    for cat_key, cat_data in cats.items():
+        for ref in cat_data.get("auditRefs") or []:
+            audit_category[ref["id"]] = cat_key
+
+    # Collect opportunities (type=opportunity, any failing score)
     opportunities = []
     for aid, a in audits.items():
-        if a.get("details", {}).get("type") == "opportunity" and a.get("score") is not None and a.get("score") < 1:
-            savings = a.get("details", {}).get("overallSavingsMs", 0) or 0
-            if savings > 0 or a.get("score") < 0.9:
-                opportunities.append(
-                    {
-                        "id": aid,
-                        "title": a.get("title", aid),
-                        "description": a.get("description", ""),
-                        "display": a.get("displayValue", ""),
-                        "savings_ms": round(savings),
-                        "score": a.get("score"),
-                    }
-                )
+        details = a.get("details", {})
+        sc = a.get("score")
+        if details.get("type") == "opportunity" and sc is not None and sc < 1:
+            savings = details.get("overallSavingsMs", 0) or 0
+            opportunities.append(
+                {
+                    "id": aid,
+                    "title": a.get("title", aid),
+                    "description": a.get("description", ""),
+                    "display": a.get("displayValue", ""),
+                    "savings_ms": round(savings),
+                    "score": sc,
+                    "items": _extract_items(details),
+                }
+            )
     opportunities.sort(key=lambda x: x["savings_ms"], reverse=True)
 
     # Collect diagnostics (type=diagnostic, score < 1)
     diagnostics = []
     for aid, a in audits.items():
-        if a.get("details", {}).get("type") == "diagnostic" and a.get("score") is not None and a.get("score") < 1:
+        details = a.get("details", {})
+        sc = a.get("score")
+        if details.get("type") == "diagnostic" and sc is not None and sc < 1:
             diagnostics.append(
                 {
                     "id": aid,
                     "title": a.get("title", aid),
+                    "description": a.get("description", ""),
                     "display": a.get("displayValue", ""),
-                    "score": a.get("score"),
+                    "score": sc,
+                    "items": _extract_items(details),
                 }
             )
-    diagnostics.sort(key=lambda x: x["score"] or 1)
+    diagnostics.sort(key=lambda x: x["score"] if x["score"] is not None else 1)
+
+    # Group all audits by category into failed / passed lists
+    audits_by_category: dict[str, dict] = {}
+    for aid, a in audits.items():
+        mode = a.get("scoreDisplayMode", "")
+        if mode in ("notApplicable", "manual", "error"):
+            continue
+        sc = a.get("score")
+        if sc is None:
+            continue
+        cat = audit_category.get(aid, "other")
+        bucket = audits_by_category.setdefault(cat, {"failed": [], "passed": []})
+        entry = {
+            "id": aid,
+            "title": a.get("title", aid),
+            "description": a.get("description", ""),
+            "display": a.get("displayValue", ""),
+            "score": sc,
+        }
+        if sc < 0.9:
+            details = a.get("details", {})
+            if details.get("items"):
+                entry["items"] = _extract_items(details)
+            bucket["failed"].append(entry)
+        else:
+            bucket["passed"].append(entry)
+
+    # Sort failed audits within each category by score ascending
+    for bucket in audits_by_category.values():
+        bucket["failed"].sort(key=lambda x: x["score"] if x["score"] is not None else 1)
 
     return {
         "url": lh_json.get("finalDisplayedUrl") or lh_json.get("requestedUrl", ""),
         "ran_at": lh_json.get("fetchTime", datetime.now().isoformat()),
         "categories": {
-            "performance": score("performance"),
-            "accessibility": score("accessibility"),
-            "best_practices": score("best-practices"),
-            "seo": score("seo"),
+            "performance": cat_score("performance"),
+            "accessibility": cat_score("accessibility"),
+            "best_practices": cat_score("best-practices"),
+            "seo": cat_score("seo"),
         },
         "metrics": {
             "fcp": audit_val("first-contentful-paint"),
@@ -96,8 +170,9 @@ def _extract_result(lh_json: dict) -> dict:
             "tti": audit_val("interactive"),
             "si": audit_val("speed-index"),
         },
-        "opportunities": opportunities[:8],
-        "diagnostics": diagnostics[:8],
+        "opportunities": opportunities,
+        "diagnostics": diagnostics,
+        "audits_by_category": audits_by_category,
     }
 
 

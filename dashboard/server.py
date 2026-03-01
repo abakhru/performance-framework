@@ -211,7 +211,7 @@ def main():
         try:
             srv = threading.Thread(
                 target=uvicorn.run,
-                kwargs={"app": app, "host": "127.0.0.1", "port": DASHBOARD_PORT, "log_level": "warning"},
+                kwargs={"app": app, "host": "127.0.0.1", "port": DASHBOARD_PORT, "log_level": "info"},
                 daemon=True,
             )
             srv.start()

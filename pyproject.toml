@@ -28,6 +28,7 @@ dev = [
     "respx>=0.21",
     "coverage[toml]>=7.0",
     "testcontainers>=4.0",
+    "playwright>=1.58.0",
 ]
 
 [project.scripts]
@@ -42,6 +43,11 @@ package = true
 [tool.pytest.ini_options]
 testpaths = ["tests/unit"]
 pythonpath = ["dashboard", "."]
+markers = [
+    "smoke: smoke-level UI tests",
+    "regression: regression-level UI tests",
+    "sanity: critical sanity check tests",
+]
 
 [tool.ruff]
 line-length = 120

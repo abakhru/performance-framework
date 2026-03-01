@@ -310,3 +310,25 @@ cli-health:
 # Show recent run history via CLI
 cli-history limit="10":
     uv run luna history --limit {{limit}}
+
+# ── UI Tests (Playwright) ─────────────────────────────────────────────────────
+
+# Install Playwright browser binaries (run once after uv sync)
+ui-install:
+    uv run playwright install chromium
+
+# Run UI smoke tests (headless) — fast sanity check
+test-ui-smoke:
+    uv run pytest tests/ui/smoke/ -v -m smoke
+
+# Run UI regression tests (headless)
+test-ui-regression:
+    uv run pytest tests/ui/regression/ -v -m regression
+
+# Run all UI tests
+test-ui:
+    uv run pytest tests/ui/ -v
+
+# Run UI tests with headed browser (for debugging)
+test-ui-headed:
+    HEADLESS=false uv run pytest tests/ui/ -v
