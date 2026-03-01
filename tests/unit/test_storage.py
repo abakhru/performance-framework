@@ -6,14 +6,10 @@ Tests cover file round-trips, type coercions, and endpoint config loading.
 """
 
 import json
-import sys
-from pathlib import Path
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "dashboard"))
-
-import storage
+import core.storage as storage
 
 # ── load_state / save_state ────────────────────────────────────────────────────
 

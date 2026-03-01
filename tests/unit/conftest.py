@@ -7,8 +7,10 @@ from pathlib import Path
 
 import pytest
 
-# Ensure dashboard/ is on the path so modules import cleanly
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "dashboard"))
+# src/ is the Python root for all packages (core, plugins, api_tests, cli, dashboard)
+_SRC = Path(__file__).parent.parent.parent / "src"
+if str(_SRC) not in sys.path:
+    sys.path.insert(0, str(_SRC))
 
 
 @pytest.fixture

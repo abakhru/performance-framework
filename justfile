@@ -131,11 +131,11 @@ influx-run profile="smoke":
 # Start dashboard only (use the Run tab to launch tests)
 dashboard: influx-up
     uv run uvicorn dashboard.server:app --host 127.0.0.1 --port 5656 \
-      --reload --reload-dir dashboard
+      --reload --reload-dir src/dashboard --reload-dir src/plugins --reload-dir src/core
 
 # Run a profile with the dashboard server  e.g. just dash ramp
 dash profile="smoke":
-    uv run python dashboard/server.py {{profile}}
+    uv run python -m dashboard.server {{profile}}
 
 # ── Docker ─────────────────────────────────────────────────────────────────────
 
@@ -167,16 +167,16 @@ py-add-dev dep:
 
 # Lint with ruff
 lint:
-    uv run ruff check dashboard/ tests/ api_tests/ luna_cli/
+    uv run ruff check src/ tests/
 
 # Lint, fix, and format
 fix:
-    uv run ruff check --fix dashboard/ tests/ api_tests/ luna_cli/
-    uv run ruff format dashboard/ tests/ api_tests/ luna_cli/
+    uv run ruff check --fix src/ tests/
+    uv run ruff format src/ tests/
 
 # Type-check with ty
 typecheck:
-    uv run ty check dashboard/
+    uv run ty check src/
 
 # Run tests
 test:
@@ -259,12 +259,16 @@ agent-start: influx-up
     @echo "╚══════════════════════════════════════════════════════╝"
     @echo ""
     uv run uvicorn dashboard.server:app --host 0.0.0.0 --port 5656 \
-      --reload --reload-dir dashboard
+      --reload --reload-dir src/dashboard --reload-dir src/plugins --reload-dir src/core
 
 # Test any service in one command  e.g. just test-service url=https://api.example.com profile=smoke
 test-service url profile="smoke" auth="":
     @echo "Luna: testing {{url}} with profile={{profile}}"
     uv run python -c "from api_tests.luna import LunaClient; luna = LunaClient(); result = luna.test_service('{{url}}', token='{{auth}}', profile='{{profile}}'); print(result.summary); exit(0 if result.success else 1)"
+
+# Luna REPL
+luna-repl:
+    uv run python -c "from api_tests.luna import LunaClient; luna = LunaClient(); print('Connected to', luna._base_url)"
 
 # Print MCP server connection info for agents
 mcp-info:
@@ -280,10 +284,6 @@ mcp-info:
     @echo "Connect with Python (mcp library):"
     @echo '  from mcp import ClientSession'
     @echo '  from mcp.client.streamable_http import streamablehttp_client'
-
-# Run the Luna Python client in interactive mode (REPL)
-luna-repl:
-    uv run python -c "from api_tests.luna import LunaClient; luna = LunaClient(); print('LunaClient connected to', luna._base_url); print('luna.health()         ->', luna.health()); print('luna.list_configs()   ->', len(luna.list_configs()), 'configs'); print(); print('Try: luna.test_service(\"https://your-api.com\")')"
 
 # Show Luna health status
 luna-health:
@@ -316,9 +316,8 @@ cli-history limit="10":
 # Generate all test types from a URL (api, ui, perf, lighthouse) and save to data/generated-tests/
 gen-tests url suites="api,ui,perf,lighthouse":
     uv run python -c "
-import sys; sys.path.insert(0,'dashboard')
-from test_codegen import generate_suite
-from discovery import discover_url
+from plugins.test_generator.codegen import generate_suite
+from plugins.discovery.engine import discover_url
 config = discover_url('{{url}}')
 suite = generate_suite(config, base_url='{{url}}', suites='{{suites}}'.split(','))
 print('Generated:', suite.dir_name)
@@ -328,8 +327,7 @@ print('Files:', ', '.join(suite.files))
 # Execute test suites for a generated directory (usage: just run-tests <dir_name> [suites])
 run-tests dir_name suites="api,ui,perf,lighthouse" base_url="" token="":
     uv run python -c "
-import sys; sys.path.insert(0,'dashboard')
-from test_codegen import run_suite
+from plugins.test_generator.codegen import run_suite
 results = run_suite('{{dir_name}}', suites='{{suites}}'.split(','), base_url='{{base_url}}', token='{{token}}')
 for suite, r in results.items():
     print(f'{suite}: {r.status} ({r.passed}✓ {r.failed}✗ {r.errors}⚠)')
@@ -338,8 +336,7 @@ for suite, r in results.items():
 # List all generated test directories
 gen-list:
     uv run python -c "
-import sys; sys.path.insert(0,'dashboard')
-from test_codegen import list_generated
+from plugins.test_generator.codegen import list_generated
 rows = list_generated()
 if not rows:
     print('No generated suites found.')
@@ -352,19 +349,19 @@ else:
 
 # Run all 31 visual QA agents against a URL (requires VISUAL_QA_AI_KEY)
 vqa url agents="all":
-    uv run python -m dashboard.vqa_cli {{url}} --agents {{agents}}
+    uv run python -m plugins.visual_qa.cli {{url}} --agents {{agents}}
 
 # List past visual QA runs
 vqa-list:
-    uv run python -m dashboard.vqa_cli --list
+    uv run python -m plugins.visual_qa.cli --list
 
 # Show a specific visual QA run result (usage: just vqa-show <run_id>)
 vqa-show run_id:
-    uv run python -m dashboard.vqa_cli --show {{run_id}}
+    uv run python -m plugins.visual_qa.cli --show {{run_id}}
 
 # List all available visual QA agents
 vqa-agents:
-    uv run python -m dashboard.vqa_cli --agents-list
+    uv run python -m plugins.visual_qa.cli --agents-list
 
 # ── UI Tests (Playwright) ─────────────────────────────────────────────────────
 

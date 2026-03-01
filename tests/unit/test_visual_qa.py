@@ -8,16 +8,13 @@ run storage round-trip, agent resolution, and _format_a11y_snapshot.
 from __future__ import annotations
 
 import json
-import sys
 import tempfile
 import unittest
 from dataclasses import asdict
 from pathlib import Path
 from unittest.mock import patch
 
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "dashboard"))
-
-import visual_qa as vqa
+import plugins.visual_qa.agents as vqa
 
 # ── Profile loading ────────────────────────────────────────────────────────────
 

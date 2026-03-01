@@ -8,13 +8,9 @@ Tests cover SLO checks, badge generation, and webhook HMAC signing.
 import hashlib
 import hmac
 import json
-import sys
-from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "dashboard"))
-
-import lifecycle
+import plugins.performance.runner as lifecycle
 
 # ── compute_slo_checks ─────────────────────────────────────────────────────────
 

@@ -33,17 +33,19 @@ dev = [
 ]
 
 [project.scripts]
-luna = "luna_cli.main:main"
+luna = "cli.main:main"
 
 [tool.setuptools.packages.find]
-include = ["luna_cli*", "api_tests*"]
+where = ["src"]
+include = ["*"]
 
 [tool.uv]
 package = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests/unit"]
-pythonpath = ["dashboard", "."]
+# src/ is on the path so all packages (core, plugins, api_tests, cli, dashboard) resolve cleanly
+pythonpath = ["src", "."]
 markers = [
     "smoke: smoke-level UI tests",
     "regression: regression-level UI tests",
@@ -52,15 +54,16 @@ markers = [
 
 [tool.ruff]
 line-length = 120
+src = ["src"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP"]
 ignore = ["E501"]
 
 [tool.coverage.run]
-source = ["dashboard"]
+source = ["src"]
 parallel = true
-omit = ["tests/*", "api_tests/*"]
+omit = ["tests/*"]
 
 [tool.coverage.report]
 show_missing = true

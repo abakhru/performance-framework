@@ -5,13 +5,9 @@ Covers Postman parsing, OpenAPI conversion, HAR/WSDL/API Blueprint/RAML parsers,
 auth detection, weight assignment, schema stubs, and SLO baseline probe.
 """
 
-import sys
-from pathlib import Path
 from unittest.mock import patch
 
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "dashboard"))
-
-import discovery
+import plugins.discovery.engine as discovery
 
 # ── parse_postman ──────────────────────────────────────────────────────────────
 
